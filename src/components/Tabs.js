@@ -1,14 +1,17 @@
-import React, { useState } from 'react';
-
-// Imports do react-icons
-import { BsPersonCircle } from "react-icons/bs";
-
-// Imports de componentes
-import BasicModal from "./Modal";
+import React, { useState, useEffect } from 'react';
+import BasicModal from "./ModalPedidos";
+import ListaClientes from '../data/ListaClientes';
+import ModalCadastroCliente from './ModalCadastroCliente';
 
 const Tabs = () => {
     const [activeTab, setActiveTab] = useState('clientes');
     const [modalOpen, setModalOpen] = useState(false);
+    const [clientes, setClientes] = useState([]);
+
+    useEffect(() => {
+        const clientesArmazenados = JSON.parse(localStorage.getItem('clientes')) || [];
+        setClientes(clientesArmazenados);
+    }, []);
 
     const handleOpenModal = () => {
         setModalOpen(true);
@@ -16,6 +19,10 @@ const Tabs = () => {
 
     const handleCloseModal = () => {
         setModalOpen(false);
+    };
+
+    const handleClienteCadastrado = (novoCliente) => {
+        setClientes((prevClientes) => [...prevClientes, novoCliente]);
     };
 
     return (
@@ -40,28 +47,11 @@ const Tabs = () => {
             <div className="mt-4">
                 {activeTab === 'clientes' && (
                     <div>
-                        {/* Conteúdo da aba Clientes */}
-                        <div className='flex bg-slate-200 p-7 rounded-3xl gap-y-4'>
-                            <div className='bg-slate-400 p-2 mr-3 content-none rounded-full'>
-                                <BsPersonCircle size={60} />
-                            </div>
-                            <div>
-                                <h1 className='text-3xl'>Nome do cliente</h1>
-                                <div className='flex space-x-2'>
-                                    <p className='text-2xl'>Telefone:</p>
-                                    <p className='text-2xl font-light'>19998324253</p>
-                                </div>
-                            </div>
-                            <div className='flex ml-auto'>
-                                <button className='bg-slate-400 mr-8 text-2xl p-3 rounded-full'>Editar cliente</button>
-                                <button className='bg-slate-400 mr-8 text-2xl p-3 rounded-full'>Excluir cliente</button>
-                            </div>
-                        </div>
+                        <ListaClientes clientes={clientes} />
                     </div>
                 )}
                 {activeTab === 'marcacoes' && (
                     <div>
-                        {/* Conteúdo da aba Marcações */}
                         <div className='grid grid-cols-4 gap-x-36 gap-y-12'>
                             <div className='flex justify-center items-center flex-col bg-slate-200 w-96 p-10 rounded-xl'>
                                 <p className='text-2xl'>Cliente:</p>
@@ -76,12 +66,12 @@ const Tabs = () => {
                                 </div>
                                 <button onClick={handleOpenModal} className='bg-slate-400 mt-6 p-4 rounded-full text-2xl'> Visualizar</button>
                             </div>
-                            {/* fim do grid */}
                         </div>
                     </div>
                 )}
             </div>
             <BasicModal open={modalOpen} handleClose={handleCloseModal} />
+            <ModalCadastroCliente open={modalOpen} handleClose={handleCloseModal} onClienteCadastrado={handleClienteCadastrado} />
         </div>
     );
 };
