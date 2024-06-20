@@ -1,15 +1,31 @@
 import * as React from 'react';
+import { useState } from "react";
 import { BsPersonCircle } from "react-icons/bs";
 
-const ListaClientes = ({ clientes, onDelete }) => {
+const ListaClientes = ({ clientes, onDelete, onEdit }) => {
+    const [editIndex, setEditIndex] = useState(null);
+    const [editNome, setEditNome] = useState('');
+    const [editTelefone, setEditTelefone] = useState('');
+
+    const handleEdit = (index) => {
+        setEditIndex(index);
+        setEditNome(clientes[index].nome);
+        setEditTelefone(clientes[index].telefone);
+    };
+
+    const handleSaveEdit = () => {
+        onEdit(editIndex, { nome: editNome, telefone: editTelefone });
+        setEditIndex(null);
+        setEditNome('');
+        setEditTelefone('');
+    };
+
     return (
         <div>
-            <h2>Lista de Clientes</h2>
             <ul>
                 {clientes.map((cliente, index) => (
                     <li key={index}>
                         <div>
-                            {/* Conteúdo da aba Clientes */}
                             <div className='flex bg-slate-200 p-7 rounded-3xl gap-y-4 mt-5'>
                                 <div className='bg-slate-400 p-2 mr-3 content-none rounded-full'>
                                     <BsPersonCircle size={60} />
@@ -22,7 +38,12 @@ const ListaClientes = ({ clientes, onDelete }) => {
                                     </div>
                                 </div>
                                 <div className='flex ml-auto'>
-                                    <button className='bg-slate-400 mr-8 text-2xl p-3 rounded-full'>Editar cliente</button>
+                                    <button
+                                        className='bg-slate-400 mr-8 text-2xl p-3 rounded-full'
+                                        onClick={() => handleEdit(index)}
+                                    >
+                                        Editar cliente
+                                    </button>
                                     <button
                                         className='bg-slate-400 mr-8 text-2xl p-3 rounded-full'
                                         onClick={() => onDelete(index)}
@@ -31,6 +52,32 @@ const ListaClientes = ({ clientes, onDelete }) => {
                                     </button>
                                 </div>
                             </div>
+                            {editIndex === index && (
+                                <div className='flex flex-col bg-slate-300 p-5 rounded-3xl mt-3'>
+                                    <div className='flex flex-col'>
+                                        <p>Nome do cliente</p>
+                                        <input
+                                            type="text"
+                                            className='border-gray-950 bg-slate-200 w-48'
+                                            value={editNome}
+                                            onChange={(e) => setEditNome(e.target.value)}
+                                        />
+                                        <p>Telefone</p>
+                                        <input
+                                            type="text"
+                                            className='border-gray-950 bg-slate-200 w-48'
+                                            value={editTelefone}
+                                            onChange={(e) => setEditTelefone(e.target.value)}
+                                        />
+                                    </div>
+                                    <button
+                                        className='mt-3 bg-slate-400 p-2 w-56 rounded-xl'
+                                        onClick={handleSaveEdit}
+                                    >
+                                        Salvar
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </li>
                 ))}

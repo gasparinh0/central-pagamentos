@@ -31,6 +31,13 @@ const Tabs = () => {
         localStorage.setItem('clientes', JSON.stringify(novosClientes));
     };
 
+    const handleEditCliente = (index, clienteAtualizado) => {
+        const novosClientes = [...clientes];
+        novosClientes[index] = clienteAtualizado;
+        setClientes(novosClientes);
+        localStorage.setItem('clientes', JSON.stringify(novosClientes));
+    };
+
     return (
         <div className="container mx-auto p-4">
             <div className="relative flex justify-around text-3xl space-x-4 border-b">
@@ -53,7 +60,11 @@ const Tabs = () => {
             <div className="mt-4">
                 {activeTab === 'clientes' && (
                     <div>
-                        <ListaClientes clientes={clientes} onDelete={handleDeleteCliente} />
+                        <ListaClientes
+                            clientes={clientes}
+                            onDelete={handleDeleteCliente}
+                            onEdit={handleEditCliente}
+                        />
                     </div>
                 )}
                 {activeTab === 'marcacoes' && (

@@ -64,7 +64,7 @@ const ModalCadastroCliente = ({ open, handleClose, onClienteCadastrado }) => {
                             className='mt-3 bg-slate-200 p-2 w-56 rounded-xl'
                             onClick={handleCadastrar}
                         >
-                            Acrescentar
+                            Cadastrar
                         </button>
                     </div>
                 </Typography>
