@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { BsPersonCircle } from "react-icons/bs";
 
-const ListaClientes = ({ clientes }) => {
+const ListaClientes = ({ clientes, onDelete }) => {
     return (
         <div>
             <h2>Lista de Clientes</h2>
@@ -23,7 +23,12 @@ const ListaClientes = ({ clientes }) => {
                                 </div>
                                 <div className='flex ml-auto'>
                                     <button className='bg-slate-400 mr-8 text-2xl p-3 rounded-full'>Editar cliente</button>
-                                    <button className='bg-slate-400 mr-8 text-2xl p-3 rounded-full'>Excluir cliente</button>
+                                    <button
+                                        className='bg-slate-400 mr-8 text-2xl p-3 rounded-full'
+                                        onClick={() => onDelete(index)}
+                                    >
+                                        Excluir cliente
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -35,4 +40,3 @@ const ListaClientes = ({ clientes }) => {
 };
 
 export default ListaClientes;
-

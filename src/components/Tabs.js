@@ -25,6 +25,12 @@ const Tabs = () => {
         setClientes((prevClientes) => [...prevClientes, novoCliente]);
     };
 
+    const handleDeleteCliente = (index) => {
+        const novosClientes = clientes.filter((_, i) => i !== index);
+        setClientes(novosClientes);
+        localStorage.setItem('clientes', JSON.stringify(novosClientes));
+    };
+
     return (
         <div className="container mx-auto p-4">
             <div className="relative flex justify-around text-3xl space-x-4 border-b">
@@ -47,7 +53,7 @@ const Tabs = () => {
             <div className="mt-4">
                 {activeTab === 'clientes' && (
                     <div>
-                        <ListaClientes clientes={clientes} />
+                        <ListaClientes clientes={clientes} onDelete={handleDeleteCliente} />
                     </div>
                 )}
                 {activeTab === 'marcacoes' && (
