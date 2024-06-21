@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import BasicModal from "./ModalPedidos";
 import ListaClientes from '../data/ListaClientes';
 import ModalCadastroCliente from './ModalCadastroCliente';
+import ListaPedidos from '../data/ListaPedidos';
 
 const Tabs = () => {
     const [activeTab, setActiveTab] = useState('clientes');
@@ -73,23 +74,7 @@ const Tabs = () => {
                     </div>
                 )}
                 {activeTab === 'marcacoes' && (
-                    <div>
-                        <div className='grid grid-cols-4 gap-x-36 gap-y-12'>
-                            <div className='flex justify-center items-center flex-col bg-slate-200 w-96 p-10 rounded-xl'>
-                                <p className='text-2xl'>Cliente:</p>
-                                <h1 className='text-3xl mb-5'>Nome do cliente</h1>
-                                <div className='flex space-x-2'>
-                                    <p>Total do pedido:</p>
-                                    <p>R$100</p>
-                                </div>
-                                <div className='flex space-x-2'>
-                                    <p>Último pedido feito:</p>
-                                    <p>23/06/2019</p>
-                                </div>
-                                <button onClick={handleOpenModalPedidos} className='bg-slate-400 mt-6 p-4 rounded-full text-2xl'> Visualizar</button>
-                            </div>
-                        </div>
-                    </div>
+                    < ListaPedidos/>
                 )}
             </div>
             <BasicModal open={modalPedidosOpen} handleClose={handleCloseModalPedidos} />

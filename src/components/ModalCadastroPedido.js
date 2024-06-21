@@ -44,7 +44,9 @@ const ModalCadastroPedido = ({ open, handleClose }) => {
             produtos,
             total,
         };
-        localStorage.setItem('pedido', JSON.stringify(pedido));
+        const pedidosSalvos = JSON.parse(localStorage.getItem('pedidos')) || [];
+        pedidosSalvos.push(pedido);
+        localStorage.setItem('pedidos', JSON.stringify(pedidosSalvos));
         handleClose();
     };
 

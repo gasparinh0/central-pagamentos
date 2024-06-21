@@ -19,7 +19,11 @@ const style = {
     p: 4,
 };
 
-const BasicModal = ({ open, handleClose }) => {
+const BasicModal = ({ open, handleClose, pedido }) => {
+    if (!pedido) {
+        return null;
+    }
+
     return (
         <Modal
             open={open}
@@ -29,25 +33,26 @@ const BasicModal = ({ open, handleClose }) => {
         >
             <Box sx={style}>
                 <Typography id="modal-modal-title" variant="h6" component="h2">
-                    <h1 className='text-3xl'>Nome do cliente</h1>
+                    <h1 className='text-3xl'>{pedido.nomeCliente}</h1>
                 </Typography>
                 <Typography id="modal-modal-description" sx={{ mt: 2 }}>
                     <div className='grid grid-cols-2'>
                         <div>
                             <div className='flex space-x-2 text-2xl'>
                                 <p>Total do pedido:</p>
-                                <p>R$100</p>
+                                <p>Total: R$ {pedido.total.toFixed(2)}</p>
                             </div>
                             <div className='flex space-x-2 text-2xl'>
                                 <p>Último pedido feito:</p>
-                                <p>23/06/2019</p>
+                                <p>{pedido.dataPedido}</p>
                             </div>
                             <p className='mt-3'>Produtos obtidos:</p>
                             <ul className='list-disc list-inside ml-5'>
-                                <li>oi</li>
-                                <li>oi</li>
-                                <li>oi</li>
-                                <li>oi</li>
+                                {pedido.produtos.map((produto, index) => (
+                                    <li key={index}>
+                                        {produto.nome} - R$ {parseFloat(produto.preco).toFixed(2)}
+                                    </li>
+                                ))}
                             </ul>
                         </div>
                         <div>
@@ -70,7 +75,6 @@ const BasicModal = ({ open, handleClose }) => {
                                             <input type="text" className='border-gray-950 bg-slate-200'></input>
                                             <button className='mt-3 bg-slate-200 p-2 w-56 rounded-xl'>Acrescentar</button>
                                         </div>
-
                                     </Typography>
                                 </AccordionDetails>
                             </Accordion>
