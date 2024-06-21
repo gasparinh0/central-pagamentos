@@ -3,7 +3,7 @@ import { TbPigMoney } from "react-icons/tb";
 import ModalCadastro from "./ModalCadastroCliente";
 import ModalCadastroPedido from "./ModalCadastroPedido";
 
-function Navbar() {
+function Navbar({ onClienteCadastrado }) {
   const [modalCadastroOpen, setModalCadastroOpen] = useState(false);
   const [modalPedidoOpen, setModalPedidoOpen] = useState(false);
 
@@ -47,7 +47,7 @@ function Navbar() {
           Cadastrar Pedido
         </button>
       </div>
-      <ModalCadastro open={modalCadastroOpen} handleClose={handleCloseModalCadastro} />
+      <ModalCadastro open={modalCadastroOpen} handleClose={handleCloseModalCadastro} onClienteCadastrado={onClienteCadastrado} />
       <ModalCadastroPedido open={modalPedidoOpen} handleClose={handleCloseModalPedido} />
     </div>
   );

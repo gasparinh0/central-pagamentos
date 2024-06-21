@@ -56,7 +56,7 @@ const ModalCadastroCliente = ({ open, handleClose, onClienteCadastrado }) => {
                         <p>Telefone</p>
                         <input
                             type="text"
-                            className='border-gray-950 bg-slate-200  w-48'
+                            className='border-gray-950 bg-slate-200 w-48'
                             value={telefone}
                             onChange={(e) => setTelefone(e.target.value)}
                         />
