@@ -5,7 +5,8 @@ import ModalCadastroCliente from './ModalCadastroCliente';
 
 const Tabs = () => {
     const [activeTab, setActiveTab] = useState('clientes');
-    const [modalOpen, setModalOpen] = useState(false);
+    const [modalCadastroOpen, setModalCadastroOpen] = useState(false);
+    const [modalPedidosOpen, setModalPedidosOpen] = useState(false);
     const [clientes, setClientes] = useState([]);
 
     useEffect(() => {
@@ -13,12 +14,16 @@ const Tabs = () => {
         setClientes(clientesArmazenados);
     }, []);
 
-    const handleOpenModal = () => {
-        setModalOpen(true);
+    const handleCloseModalCadastro = () => {
+        setModalCadastroOpen(false);
     };
 
-    const handleCloseModal = () => {
-        setModalOpen(false);
+    const handleOpenModalPedidos = () => {
+        setModalPedidosOpen(true);
+    };
+
+    const handleCloseModalPedidos = () => {
+        setModalPedidosOpen(false);
     };
 
     const handleClienteCadastrado = (novoCliente) => {
@@ -81,14 +86,14 @@ const Tabs = () => {
                                     <p>Último pedido feito:</p>
                                     <p>23/06/2019</p>
                                 </div>
-                                <button onClick={handleOpenModal} className='bg-slate-400 mt-6 p-4 rounded-full text-2xl'> Visualizar</button>
+                                <button onClick={handleOpenModalPedidos} className='bg-slate-400 mt-6 p-4 rounded-full text-2xl'> Visualizar</button>
                             </div>
                         </div>
                     </div>
                 )}
             </div>
-            <BasicModal open={modalOpen} handleClose={handleCloseModal} />
-            <ModalCadastroCliente open={modalOpen} handleClose={handleCloseModal} onClienteCadastrado={handleClienteCadastrado} />
+            <BasicModal open={modalPedidosOpen} handleClose={handleCloseModalPedidos} />
+            <ModalCadastroCliente open={modalCadastroOpen} handleClose={handleCloseModalCadastro} onClienteCadastrado={handleClienteCadastrado} />
         </div>
     );
 };
