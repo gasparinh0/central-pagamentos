@@ -20,10 +20,11 @@ const style = {
     p: 4,
 };
 
-const BasicModal = ({ open, handleClose, pedido, atualizarPedido }) => {
+const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido }) => {
     const [produtoNome, setProdutoNome] = useState('');
     const [produtoPreco, setProdutoPreco] = useState('');
     const [total, setTotal] = useState(pedido?.total || 0);
+    const [valorAbater, setValorAbater] = useState('');
 
     useEffect(() => {
         setTotal(pedido?.total || 0);
@@ -62,6 +63,38 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido }) => {
         setTotal(totalAtualizado);
     };
 
+    const handleAbaterValor = () => {
+        const valorNumerico = parseFloat(valorAbater);
+        if (isNaN(valorNumerico)) {
+            alert('Por favor, insira um valor numérico válido para o valor a abater.');
+            return;
+        }
+
+        const totalAtualizado = total - valorNumerico;
+        const dataAtualizada = new Date().toLocaleDateString();
+
+        const historicoAbatimentos = pedido.historicoAbatimentos ? [...pedido.historicoAbatimentos] : [];
+        historicoAbatimentos.push({
+            valor: valorNumerico,
+            data: dataAtualizada
+        });
+
+        const pedidoAtualizado = {
+            ...pedido,
+            total: totalAtualizado,
+            historicoAbatimentos: historicoAbatimentos,
+        };
+
+        atualizarPedido(pedidoAtualizado);
+        setValorAbater('');
+        setTotal(totalAtualizado);
+    };
+
+    const handleDeleteCliente = () => {
+        deletarPedido(pedido.nomeCliente);
+        handleClose();
+    };
+
     return (
         <Modal
             open={open}
@@ -88,6 +121,14 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido }) => {
                                 {pedido.produtos.map((produto, index) => (
                                     <li key={index}>
                                         {produto.nome} - R$ {(produto.preco*1).toFixed(2)}
+                                    </li>
+                                ))}
+                            </ul>
+                            <p className='mt-3'>Histórico de Abatimentos:</p>
+                            <ul className='list-disc list-inside ml-5'>
+                                {pedido.historicoAbatimentos && pedido.historicoAbatimentos.map((abatimento, index) => (
+                                    <li key={index}>
+                                        R$ {(abatimento.valor*1).toFixed(2)} - {abatimento.data}
                                     </li>
                                 ))}
                             </ul>
@@ -139,12 +180,27 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido }) => {
                                 <AccordionDetails>
                                     <Typography>
                                         <p>Valor para abater</p>
-                                        <input type="text" className='border-gray-950 bg-slate-200'></input>
-                                        <button className='mt-3 bg-slate-200 p-2 w-56 rounded-xl'>Abater</button>
+                                        <input 
+                                            type="text" 
+                                            value={valorAbater}
+                                            onChange={(e) => setValorAbater(e.target.value)} 
+                                            className='border-gray-950 bg-slate-200'
+                                        />
+                                        <button 
+                                            onClick={handleAbaterValor} 
+                                            className='mt-3 bg-slate-200 p-2 w-56 rounded-xl'
+                                        >
+                                            Abater
+                                        </button>
                                     </Typography>
                                 </AccordionDetails>
                             </Accordion>
-                            <button className='bg-slate-400 mt-2 p-4 rounded-full text-2xl'> Apagar</button>
+                            <button 
+                                onClick={handleDeleteCliente} 
+                                className='bg-slate-400 mt-2 p-4 rounded-full text-2xl'
+                            >
+                                Apagar
+                            </button>
                         </div>
                     </div>
                 </Typography>

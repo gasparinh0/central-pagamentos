@@ -30,6 +30,12 @@ const ResumoPedido = () => {
         localStorage.setItem('pedidos', JSON.stringify(pedidosAtualizados));
     };
 
+    const deletarPedido = (nomeCliente) => {
+        const pedidosAtualizados = pedidos.filter(p => p.nomeCliente !== nomeCliente);
+        setPedidos(pedidosAtualizados);
+        localStorage.setItem('pedidos', JSON.stringify(pedidosAtualizados));
+    };
+
     if (pedidos.length === 0) {
         return <div>Nenhum pedido encontrado.</div>;
     }
@@ -43,7 +49,7 @@ const ResumoPedido = () => {
                         <h1 className='text-3xl mb-5'>{pedido.nomeCliente}</h1>
                         <div className='flex space-x-2'>
                             <p>Total do pedido:</p>
-                            <p>R$ {(pedido.total*1).toFixed()}</p>
+                            <p>R$ {(pedido.total*1).toFixed(2)}</p>
                         </div>
                         <div className='flex space-x-2'>
                             <p>Último pedido feito:</p>
@@ -58,12 +64,15 @@ const ResumoPedido = () => {
                     </div>
                 ))}
             </div>
-            <BasicModal 
-                open={modalPedidosOpen} 
-                handleClose={handleCloseModalPedidos} 
-                pedido={pedidoSelecionado} 
-                atualizarPedido={atualizarPedido} 
-            />
+            {pedidoSelecionado && (
+                <BasicModal
+                    open={modalPedidosOpen}
+                    handleClose={handleCloseModalPedidos}
+                    pedido={pedidoSelecionado}
+                    atualizarPedido={atualizarPedido}
+                    deletarPedido={deletarPedido}
+                />
+            )}
         </div>
     );
 };
