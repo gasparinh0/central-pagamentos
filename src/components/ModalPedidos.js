@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
@@ -19,10 +20,47 @@ const style = {
     p: 4,
 };
 
-const BasicModal = ({ open, handleClose, pedido }) => {
+const BasicModal = ({ open, handleClose, pedido, atualizarPedido }) => {
+    const [produtoNome, setProdutoNome] = useState('');
+    const [produtoPreco, setProdutoPreco] = useState('');
+    const [total, setTotal] = useState(pedido?.total || 0);
+
+    useEffect(() => {
+        setTotal(pedido?.total || 0);
+    }, [pedido]);
+
     if (!pedido) {
         return null;
     }
+
+    const handleAddProduto = () => {
+        const precoNumerico = parseFloat(produtoPreco);
+        if (isNaN(precoNumerico)) {
+            alert('Por favor, insira um valor numérico válido para o preço.');
+            return;
+        }
+
+        const novoProduto = {
+            nome: produtoNome,
+            preco: precoNumerico
+        };
+
+        const produtosAtualizados = [...pedido.produtos, novoProduto];
+        const totalAtualizado = total + precoNumerico;
+        const dataAtualizada = new Date().toLocaleDateString();
+
+        const pedidoAtualizado = {
+            ...pedido,
+            produtos: produtosAtualizados,
+            total: totalAtualizado,
+            dataPedido: dataAtualizada
+        };
+
+        atualizarPedido(pedidoAtualizado);
+        setProdutoNome('');
+        setProdutoPreco('');
+        setTotal(totalAtualizado);
+    };
 
     return (
         <Modal
@@ -39,8 +77,7 @@ const BasicModal = ({ open, handleClose, pedido }) => {
                     <div className='grid grid-cols-2'>
                         <div>
                             <div className='flex space-x-2 text-2xl'>
-                                <p>Total do pedido:</p>
-                                <p>Total: R$ {pedido.total.toFixed(2)}</p>
+                                <p>Total: R$ {(total*1).toFixed(2)}</p>
                             </div>
                             <div className='flex space-x-2 text-2xl'>
                                 <p>Último pedido feito:</p>
@@ -50,7 +87,7 @@ const BasicModal = ({ open, handleClose, pedido }) => {
                             <ul className='list-disc list-inside ml-5'>
                                 {pedido.produtos.map((produto, index) => (
                                     <li key={index}>
-                                        {produto.nome} - R$ {parseFloat(produto.preco).toFixed(2)}
+                                        {produto.nome} - R$ {(produto.preco*1).toFixed(2)}
                                     </li>
                                 ))}
                             </ul>
@@ -68,12 +105,25 @@ const BasicModal = ({ open, handleClose, pedido }) => {
                                     <Typography>
                                         <div className='flex flex-col justify-start'>
                                             <p>Nome do produto</p>
-                                            <input type="text" className='border-gray-950 bg-slate-200'></input>
-                                            <p>Data:</p>
-                                            <input type="text" className='border-gray-950 bg-slate-200'></input>
+                                            <input 
+                                                type="text" 
+                                                value={produtoNome} 
+                                                onChange={(e) => setProdutoNome(e.target.value)} 
+                                                className='border-gray-950 bg-slate-200' 
+                                            />
                                             <p>Preço</p>
-                                            <input type="text" className='border-gray-950 bg-slate-200'></input>
-                                            <button className='mt-3 bg-slate-200 p-2 w-56 rounded-xl'>Acrescentar</button>
+                                            <input 
+                                                type="text" 
+                                                value={produtoPreco} 
+                                                onChange={(e) => setProdutoPreco(e.target.value)} 
+                                                className='border-gray-950 bg-slate-200' 
+                                            />
+                                            <button 
+                                                onClick={handleAddProduto} 
+                                                className='mt-3 bg-slate-200 p-2 w-56 rounded-xl'
+                                            >
+                                                Acrescentar
+                                            </button>
                                         </div>
                                     </Typography>
                                 </AccordionDetails>
