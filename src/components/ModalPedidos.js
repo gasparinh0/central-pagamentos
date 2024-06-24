@@ -24,10 +24,14 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
     const [produtoNome, setProdutoNome] = useState('');
     const [produtoPreco, setProdutoPreco] = useState('');
     const [total, setTotal] = useState(pedido?.total || 0);
+    const [produtos, setProdutos] = useState(pedido?.produtos || []);
+    const [historicoAbatimentos, setHistoricoAbatimentos] = useState(pedido?.historicoAbatimentos || []);
     const [valorAbater, setValorAbater] = useState('');
 
     useEffect(() => {
         setTotal(pedido?.total || 0);
+        setProdutos(pedido?.produtos || []);
+        setHistoricoAbatimentos(pedido?.historicoAbatimentos || []);
     }, [pedido]);
 
     if (!pedido) {
@@ -46,7 +50,7 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
             preco: precoNumerico
         };
 
-        const produtosAtualizados = [...pedido.produtos, novoProduto];
+        const produtosAtualizados = [...produtos, novoProduto];
         const totalAtualizado = total + precoNumerico;
         const dataAtualizada = new Date().toLocaleDateString();
 
@@ -60,7 +64,6 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
         atualizarPedido(pedidoAtualizado);
         setProdutoNome('');
         setProdutoPreco('');
-        setTotal(totalAtualizado);
     };
 
     const handleAbaterValor = () => {
@@ -73,21 +76,16 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
         const totalAtualizado = total - valorNumerico;
         const dataAtualizada = new Date().toLocaleDateString();
 
-        const historicoAbatimentos = pedido.historicoAbatimentos ? [...pedido.historicoAbatimentos] : [];
-        historicoAbatimentos.push({
-            valor: valorNumerico,
-            data: dataAtualizada
-        });
+        const historicoAtualizado = [...historicoAbatimentos, { valor: valorNumerico, data: dataAtualizada }];
 
         const pedidoAtualizado = {
             ...pedido,
             total: totalAtualizado,
-            historicoAbatimentos: historicoAbatimentos,
+            historicoAbatimentos: historicoAtualizado,
         };
 
         atualizarPedido(pedidoAtualizado);
         setValorAbater('');
-        setTotal(totalAtualizado);
     };
 
     const handleDeleteCliente = () => {
@@ -110,7 +108,7 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                     <div className='grid grid-cols-2'>
                         <div>
                             <div className='flex space-x-2 text-2xl'>
-                                <p>Total: R$ {(total*1).toFixed(2)}</p>
+                                <p>Total: R$ {(total * 1).toFixed(2)}</p>
                             </div>
                             <div className='flex space-x-2 text-2xl'>
                                 <p>Último pedido feito:</p>
@@ -118,17 +116,17 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                             </div>
                             <p className='mt-3'>Produtos obtidos:</p>
                             <ul className='list-disc list-inside ml-5'>
-                                {pedido.produtos.map((produto, index) => (
+                                {produtos.map((produto, index) => (
                                     <li key={index}>
-                                        {produto.nome} - R$ {(produto.preco*1).toFixed(2)}
+                                        {produto.nome} - R$ {(produto.preco * 1).toFixed(2)}
                                     </li>
                                 ))}
                             </ul>
                             <p className='mt-3'>Histórico de Abatimentos:</p>
                             <ul className='list-disc list-inside ml-5'>
-                                {pedido.historicoAbatimentos && pedido.historicoAbatimentos.map((abatimento, index) => (
+                                {historicoAbatimentos.map((abatimento, index) => (
                                     <li key={index}>
-                                        R$ {(abatimento.valor*1).toFixed(2)} - {abatimento.data}
+                                        R$ {(abatimento.valor * 1).toFixed(2)} - {abatimento.data}
                                     </li>
                                 ))}
                             </ul>

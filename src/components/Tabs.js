@@ -1,18 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import BasicModal from "./ModalPedidos";
 import ListaClientes from '../data/ListaClientes';
-import ListaPedidos from '../data/ListaPedidos';
+import ResumoPedido from '../data/ListaPedidos';  // Importa o ResumoPedido
 import Navbar from './Navbar';  // Importa a Navbar
 
 const Tabs = () => {
     const [activeTab, setActiveTab] = useState('clientes');
     const [modalPedidosOpen, setModalPedidosOpen] = useState(false);
     const [clientes, setClientes] = useState([]);
+    const [pedidos, setPedidos] = useState([]);
 
     useEffect(() => {
         const clientesArmazenados = JSON.parse(localStorage.getItem('clientes')) || [];
         setClientes(clientesArmazenados);
+
+        const pedidosArmazenados = JSON.parse(localStorage.getItem('pedidos')) || [];
+        setPedidos(pedidosArmazenados);
     }, []);
+
+    useEffect(() => {
+        if (activeTab === 'marcacoes') {
+            const pedidosArmazenados = JSON.parse(localStorage.getItem('pedidos')) || [];
+            setPedidos(pedidosArmazenados);
+        }
+    }, [activeTab]);
 
     const handleCloseModalPedidos = () => {
         setModalPedidosOpen(false);
@@ -22,6 +33,12 @@ const Tabs = () => {
         const clientesAtualizados = [...clientes, novoCliente];
         setClientes(clientesAtualizados);
         localStorage.setItem('clientes', JSON.stringify(clientesAtualizados));
+    };
+
+    const handlePedidoCadastrado = (novoPedido) => {
+        const pedidosAtualizados = [...pedidos, novoPedido];
+        setPedidos(pedidosAtualizados);
+        localStorage.setItem('pedidos', JSON.stringify(pedidosAtualizados));
     };
 
     const handleDeleteCliente = (index) => {
@@ -39,7 +56,7 @@ const Tabs = () => {
 
     return (
         <div>
-            <Navbar onClienteCadastrado={handleClienteCadastrado} />  {/* Passa a função para a Navbar */}
+             <Navbar onClienteCadastrado={handleClienteCadastrado} onPedidoCadastrado={handlePedidoCadastrado} />  {/* Passa as funções para a Navbar */}
             <div className="container mx-auto p-4">
                 <div className="relative flex justify-around text-3xl space-x-4 border-b">
                     <button
@@ -69,12 +86,11 @@ const Tabs = () => {
                         </div>
                     )}
                     {activeTab === 'marcacoes' && (
-                        <ListaPedidos />
+                        <ResumoPedido pedidosProp={pedidos} /> 
                     )}
                 </div>
                 <BasicModal open={modalPedidosOpen} handleClose={handleCloseModalPedidos} />
             </div>
-
         </div>
     );
 };

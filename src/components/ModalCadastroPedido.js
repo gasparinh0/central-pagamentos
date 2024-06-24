@@ -16,7 +16,7 @@ const style = {
     p: 4,
 };
 
-const ModalCadastroPedido = ({ open, handleClose }) => {
+const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
     const [nomeCliente, setNomeCliente] = useState('');
     const [dataPedido, setDataPedido] = useState('');
     const [produtos, setProdutos] = useState([{ nome: '', preco: 0 }]);
@@ -47,6 +47,7 @@ const ModalCadastroPedido = ({ open, handleClose }) => {
         const pedidosSalvos = JSON.parse(localStorage.getItem('pedidos')) || [];
         pedidosSalvos.push(pedido);
         localStorage.setItem('pedidos', JSON.stringify(pedidosSalvos));
+        onPedidoCadastrado(pedido); // Chama a função para atualizar a lista de pedidos
         handleClose();
     };
 

@@ -2,17 +2,21 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 import BasicModal from "../components/ModalPedidos";
 
-const ResumoPedido = () => {
-    const [pedidos, setPedidos] = useState([]);
+const ResumoPedido = ({ pedidosProp }) => {
+    const [pedidos, setPedidos] = useState(pedidosProp || []);
     const [modalPedidosOpen, setModalPedidosOpen] = useState(false);
     const [pedidoSelecionado, setPedidoSelecionado] = useState(null);
 
     useEffect(() => {
-        const savedPedidos = localStorage.getItem('pedidos');
-        if (savedPedidos) {
-            setPedidos(JSON.parse(savedPedidos));
+        if (pedidosProp) {
+            setPedidos(pedidosProp);
+        } else {
+            const savedPedidos = localStorage.getItem('pedidos');
+            if (savedPedidos) {
+                setPedidos(JSON.parse(savedPedidos));
+            }
         }
-    }, []);
+    }, [pedidosProp]);
 
     const handleOpenModalPedidos = (pedido) => {
         setPedidoSelecionado(pedido);
@@ -49,14 +53,14 @@ const ResumoPedido = () => {
                         <h1 className='text-3xl mb-5'>{pedido.nomeCliente}</h1>
                         <div className='flex space-x-2'>
                             <p>Total do pedido:</p>
-                            <p>R$ {(pedido.total*1).toFixed(2)}</p>
+                            <p>R$ {(pedido.total * 1).toFixed(2)}</p>
                         </div>
                         <div className='flex space-x-2'>
                             <p>Último pedido feito:</p>
                             <p>{pedido.dataPedido}</p>
                         </div>
-                        <button 
-                            onClick={() => handleOpenModalPedidos(pedido)} 
+                        <button
+                            onClick={() => handleOpenModalPedidos(pedido)}
                             className='bg-slate-400 mt-6 p-4 rounded-full text-2xl'
                         >
                             Visualizar
