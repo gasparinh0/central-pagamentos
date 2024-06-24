@@ -61,9 +61,11 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
             dataPedido: dataAtualizada
         };
 
-        atualizarPedido(pedidoAtualizado);
-        setProdutoNome('');
-        setProdutoPreco('');
+        atualizarPedido(pedidoAtualizado); // Atualiza o pedido no componente pai
+        setProdutos(produtosAtualizados); // Atualiza o estado local de produtos
+        setTotal(totalAtualizado); // Atualiza o estado local do total
+        setProdutoNome(''); // Limpa o campo de nome do produto
+        setProdutoPreco(''); // Limpa o campo de preço do produto
     };
 
     const handleAbaterValor = () => {
@@ -84,8 +86,10 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
             historicoAbatimentos: historicoAtualizado,
         };
 
-        atualizarPedido(pedidoAtualizado);
-        setValorAbater('');
+        atualizarPedido(pedidoAtualizado); // Atualiza o pedido no componente pai
+        setHistoricoAbatimentos(historicoAtualizado); // Atualiza o estado local do histórico de abatimentos
+        setTotal(totalAtualizado); // Atualiza o estado local do total
+        setValorAbater(''); // Limpa o campo de valor a abater
     };
 
     const handleDeleteCliente = () => {
