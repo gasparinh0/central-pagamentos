@@ -54,9 +54,15 @@ const Tabs = () => {
         localStorage.setItem('clientes', JSON.stringify(novosClientes));
     };
 
+    const handleDeletePedido = (index) => {
+        const novosPedidos = pedidos.filter((_, i) => i !== index);
+        setPedidos(novosPedidos);
+        localStorage.setItem('pedidos', JSON.stringify(novosPedidos));
+    };
+
     return (
         <div>
-             <Navbar onClienteCadastrado={handleClienteCadastrado} onPedidoCadastrado={handlePedidoCadastrado} />  {/* Passa as funções para a Navbar */}
+            <Navbar onClienteCadastrado={handleClienteCadastrado} onPedidoCadastrado={handlePedidoCadastrado} />
             <div className="container mx-auto p-4">
                 <div className="relative flex justify-around text-3xl space-x-4 border-b">
                     <button
@@ -86,7 +92,7 @@ const Tabs = () => {
                         </div>
                     )}
                     {activeTab === 'marcacoes' && (
-                        <ResumoPedido pedidosProp={pedidos} /> 
+                        <ResumoPedido pedidosProp={pedidos} onDelete={handleDeletePedido} /> 
                     )}
                 </div>
                 <BasicModal open={modalPedidosOpen} handleClose={handleCloseModalPedidos} />
@@ -96,3 +102,4 @@ const Tabs = () => {
 };
 
 export default Tabs;
+

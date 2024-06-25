@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 import BasicModal from "../components/ModalPedidos";
 
-const ResumoPedido = ({ pedidosProp }) => {
+const ResumoPedido = ({ pedidosProp, onDelete }) => {
     const [pedidos, setPedidos] = useState(pedidosProp || []);
     const [modalPedidosOpen, setModalPedidosOpen] = useState(false);
     const [pedidoSelecionado, setPedidoSelecionado] = useState(null);
@@ -34,10 +34,13 @@ const ResumoPedido = ({ pedidosProp }) => {
         localStorage.setItem('pedidos', JSON.stringify(pedidosAtualizados));
     };
 
-    const deletarPedido = (nomeCliente) => {
-        const pedidosAtualizados = pedidos.filter(p => p.nomeCliente !== nomeCliente);
+    const deletarPedido = (index) => {
+        const pedidosAtualizados = pedidos.filter((_, i) => i !== index);
         setPedidos(pedidosAtualizados);
         localStorage.setItem('pedidos', JSON.stringify(pedidosAtualizados));
+        if (onDelete) {
+            onDelete(index);
+        }
     };
 
     if (pedidos.length === 0) {
@@ -74,7 +77,7 @@ const ResumoPedido = ({ pedidosProp }) => {
                     handleClose={handleCloseModalPedidos}
                     pedido={pedidoSelecionado}
                     atualizarPedido={atualizarPedido}
-                    deletarPedido={deletarPedido}
+                    deletarPedido={() => deletarPedido(pedidos.indexOf(pedidoSelecionado))}
                 />
             )}
         </div>
