@@ -47,7 +47,7 @@ function Navbar({ onClienteCadastrado, onPedidoCadastrado }) {
                     Cadastrar Pedido
                 </button>
             </div>
-            <ModalCadastro open={modalCadastroOpen} handleClose={handleCloseModalCadastro} />
+            <ModalCadastro open={modalCadastroOpen} handleClose={handleCloseModalCadastro}  onClienteCadastrado={onClienteCadastrado}/>
             <ModalCadastroPedido
                 open={modalPedidoOpen}
                 handleClose={handleCloseModalPedido}

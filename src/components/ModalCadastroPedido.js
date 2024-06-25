@@ -48,6 +48,13 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
         pedidosSalvos.push(pedido);
         localStorage.setItem('pedidos', JSON.stringify(pedidosSalvos));
         onPedidoCadastrado(pedido); // Chama a função para atualizar a lista de pedidos
+
+        // Limpar os campos após salvar
+        setNomeCliente('');
+        setDataPedido('');
+        setProdutos([{ nome: '', preco: 0 }]);
+        setTotal(0);
+
         handleClose();
     };
 
