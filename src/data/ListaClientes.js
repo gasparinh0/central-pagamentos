@@ -2,6 +2,20 @@ import * as React from 'react';
 import { useState } from "react";
 import { BsPersonCircle } from "react-icons/bs";
 
+const formatPhoneNumber = (value) => {
+    if (!value) return value;
+    
+    // Remove any non-numeric characters
+    const phoneNumber = value.replace(/[^\d]/g, '');
+
+    // Format phone number according to (DDD) 99999-9999
+    const phoneNumberLength = phoneNumber.length;
+
+    if (phoneNumberLength < 3) return phoneNumber;
+    if (phoneNumberLength < 7) return `(${phoneNumber.slice(0, 2)}) ${phoneNumber.slice(2)}`;
+    return `(${phoneNumber.slice(0, 2)}) ${phoneNumber.slice(2, 7)}-${phoneNumber.slice(7, 11)}`;
+};
+
 const ListaClientes = ({ clientes, onDelete, onEdit }) => {
     const [editIndex, setEditIndex] = useState(null);
     const [editNome, setEditNome] = useState('');
@@ -18,6 +32,11 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
         setEditIndex(null);
         setEditNome('');
         setEditTelefone('');
+    };
+
+    const handleEditTelefoneChange = (e) => {
+        const formattedPhoneNumber = formatPhoneNumber(e.target.value);
+        setEditTelefone(formattedPhoneNumber);
     };
 
     return (
@@ -67,7 +86,7 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
                                             type="text"
                                             className='border-gray-950 bg-slate-200 w-48'
                                             value={editTelefone}
-                                            onChange={(e) => setEditTelefone(e.target.value)}
+                                            onChange={handleEditTelefoneChange}
                                         />
                                     </div>
                                     <button

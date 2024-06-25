@@ -201,7 +201,7 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                                 onClick={handleDeleteCliente} 
                                 className='bg-slate-400 mt-2 p-4 rounded-full text-2xl'
                             >
-                                Apagar
+                                Excluir
                             </button>
                         </div>
                     </div>

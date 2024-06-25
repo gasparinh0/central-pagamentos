@@ -40,7 +40,7 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
     const handleSave = () => {
         const pedido = {
             nomeCliente,
-            dataPedido,
+            dataPedido: formatarData(dataPedido),
             produtos,
             total,
         };
@@ -56,6 +56,14 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
         setTotal(0);
 
         handleClose();
+    };
+
+    const formatarData = (data) => {
+        if (data) {
+            const partesData = data.split('-');
+            return `${partesData[2]}/${partesData[1]}/${partesData[0]}`;
+        }
+        return '';
     };
 
     return (
@@ -80,7 +88,7 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
                         />
                         <p>Data do pedido:</p>
                         <input 
-                            type="text" 
+                            type="date" 
                             value={dataPedido} 
                             onChange={(e) => setDataPedido(e.target.value)} 
                             className='border-gray-950 bg-slate-200 w-48' 
@@ -97,7 +105,7 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
                                         className='border-gray-950 bg-slate-200 w-48'
                                     />
                                     <input
-                                        type="number"
+                                        type="text"
                                         placeholder="Preço"
                                         value={produto.preco}
                                         onChange={(e) => handleChangeProduto(index, 'preco', e.target.value)}

@@ -69,7 +69,7 @@ const Tabs = () => {
                         className={`py-2 px-4 transition-colors duration-300 ${activeTab === 'clientes' ? 'text-blue-500' : 'text-gray-500'}`}
                         onClick={() => setActiveTab('clientes')}
                     >
-                        Clientes autorizados
+                        Clientes
                     </button>
                     <button
                         className={`py-2 px-4 transition-colors duration-300 ${activeTab === 'marcacoes' ? 'text-blue-500' : 'text-gray-500'}`}

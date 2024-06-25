@@ -16,6 +16,20 @@ const style = {
     p: 4,
 };
 
+const formatPhoneNumber = (value) => {
+    if (!value) return value;
+    
+    // Remove any non-numeric characters
+    const phoneNumber = value.replace(/[^\d]/g, '');
+
+    // Format phone number according to (DDD) 99999-9999
+    const phoneNumberLength = phoneNumber.length;
+
+    if (phoneNumberLength < 3) return phoneNumber;
+    if (phoneNumberLength < 7) return `(${phoneNumber.slice(0, 2)}) ${phoneNumber.slice(2)}`;
+    return `(${phoneNumber.slice(0, 2)}) ${phoneNumber.slice(2, 7)}-${phoneNumber.slice(7, 11)}`;
+};
+
 const ModalCadastroCliente = ({ open, handleClose, onClienteCadastrado }) => {
     const [nome, setNome] = useState('');
     const [telefone, setTelefone] = useState('');
@@ -31,6 +45,11 @@ const ModalCadastroCliente = ({ open, handleClose, onClienteCadastrado }) => {
         if (onClienteCadastrado) {
             onClienteCadastrado(cliente);
         }
+    };
+
+    const handleTelefoneChange = (e) => {
+        const formattedPhoneNumber = formatPhoneNumber(e.target.value);
+        setTelefone(formattedPhoneNumber);
     };
 
     return (
@@ -58,7 +77,7 @@ const ModalCadastroCliente = ({ open, handleClose, onClienteCadastrado }) => {
                             type="text"
                             className='border-gray-950 bg-slate-200 w-48'
                             value={telefone}
-                            onChange={(e) => setTelefone(e.target.value)}
+                            onChange={handleTelefoneChange}
                         />
                         <button
                             className='mt-3 bg-slate-200 p-2 w-56 rounded-xl'
