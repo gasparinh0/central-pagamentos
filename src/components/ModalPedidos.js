@@ -27,6 +27,7 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
     const [produtos, setProdutos] = useState(pedido?.produtos || []);
     const [historicoAbatimentos, setHistoricoAbatimentos] = useState(pedido?.historicoAbatimentos || []);
     const [valorAbater, setValorAbater] = useState('');
+    const [confirmacaoExclusao, setConfirmacaoExclusao] = useState(false);
 
     useEffect(() => {
         setTotal(pedido?.total || 0);
@@ -61,11 +62,11 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
             dataPedido: dataAtualizada
         };
 
-        atualizarPedido(pedidoAtualizado); // Atualiza o pedido no componente pai
-        setProdutos(produtosAtualizados); // Atualiza o estado local de produtos
-        setTotal(totalAtualizado); // Atualiza o estado local do total
-        setProdutoNome(''); // Limpa o campo de nome do produto
-        setProdutoPreco(''); // Limpa o campo de preço do produto
+        atualizarPedido(pedidoAtualizado);
+        setProdutos(produtosAtualizados);
+        setTotal(totalAtualizado);
+        setProdutoNome('');
+        setProdutoPreco('');
     };
 
     const handleAbaterValor = () => {
@@ -86,15 +87,23 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
             historicoAbatimentos: historicoAtualizado,
         };
 
-        atualizarPedido(pedidoAtualizado); // Atualiza o pedido no componente pai
-        setHistoricoAbatimentos(historicoAtualizado); // Atualiza o estado local do histórico de abatimentos
-        setTotal(totalAtualizado); // Atualiza o estado local do total
-        setValorAbater(''); // Limpa o campo de valor a abater
+        atualizarPedido(pedidoAtualizado);
+        setHistoricoAbatimentos(historicoAtualizado);
+        setTotal(totalAtualizado);
+        setValorAbater('');
     };
 
     const handleDeleteCliente = () => {
         deletarPedido(pedido.nomeCliente);
         handleClose();
+    };
+
+    const toggleConfirmacaoExclusao = () => {
+        setConfirmacaoExclusao(!confirmacaoExclusao);
+    };
+
+    const cancelarExclusao = () => {
+        setConfirmacaoExclusao(false);
     };
 
     return (
@@ -197,12 +206,31 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                                     </Typography>
                                 </AccordionDetails>
                             </Accordion>
-                            <button 
-                                onClick={handleDeleteCliente} 
-                                className='bg-slate-400 mt-2 p-4 rounded-full text-2xl'
-                            >
-                                Excluir
-                            </button>
+                            {confirmacaoExclusao ? (
+                                <div>
+                                    <hr className='mt-4 mb-2'/>
+                                    <p className='text-xl'>Você tem certeza?</p>
+                                    <button 
+                                        onClick={handleDeleteCliente} 
+                                        className='bg-red-500 mt-2 p-4 rounded-full text-2xl'
+                                    >
+                                        Sim
+                                    </button>
+                                    <button 
+                                        onClick={cancelarExclusao} 
+                                        className='bg-gray-400 mt-2 p-4 rounded-full text-2xl'
+                                    >
+                                        Não
+                                    </button>
+                                </div>
+                            ) : (
+                                <button 
+                                    onClick={toggleConfirmacaoExclusao} 
+                                    className='bg-slate-400 mt-2 p-4 rounded-full text-2xl'
+                                >
+                                    Excluir
+                                </button>
+                            )}
                         </div>
                     </div>
                 </Typography>

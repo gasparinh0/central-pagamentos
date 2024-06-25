@@ -19,7 +19,7 @@ const style = {
 const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
     const [nomeCliente, setNomeCliente] = useState('');
     const [dataPedido, setDataPedido] = useState('');
-    const [produtos, setProdutos] = useState([{ nome: '', preco: 0 }]);
+    const [produtos, setProdutos] = useState([{ nome: '', preco: '' }]);
     const [total, setTotal] = useState(0);
 
     useEffect(() => {
