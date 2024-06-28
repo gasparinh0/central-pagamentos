@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
@@ -7,6 +7,7 @@ import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import { ReactToPrint } from 'react-to-print';
 
 const style = {
     position: 'absolute',
@@ -28,6 +29,8 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
     const [historicoAbatimentos, setHistoricoAbatimentos] = useState(pedido?.historicoAbatimentos || []);
     const [valorAbater, setValorAbater] = useState('');
     const [confirmacaoExclusao, setConfirmacaoExclusao] = useState(false);
+
+    const componentRef = useRef(null)
 
     useEffect(() => {
         setTotal(pedido?.total || 0);
@@ -119,7 +122,7 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                 </Typography>
                 <Typography id="modal-modal-description" sx={{ mt: 2 }}>
                     <div className='grid grid-cols-2'>
-                        <div>
+                        <div ref={componentRef}>
                             <div className='flex space-x-2 text-2xl'>
                                 <p>Total: R$ {(total * 1).toFixed(2)}</p>
                             </div>
@@ -157,21 +160,21 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                                     <Typography>
                                         <div className='flex flex-col justify-start'>
                                             <p>Nome do produto</p>
-                                            <input 
-                                                type="text" 
-                                                value={produtoNome} 
-                                                onChange={(e) => setProdutoNome(e.target.value)} 
-                                                className='border-gray-950 bg-slate-200' 
+                                            <input
+                                                type="text"
+                                                value={produtoNome}
+                                                onChange={(e) => setProdutoNome(e.target.value)}
+                                                className='border-gray-950 bg-slate-200'
                                             />
                                             <p>Preço</p>
-                                            <input 
-                                                type="text" 
-                                                value={produtoPreco} 
-                                                onChange={(e) => setProdutoPreco(e.target.value)} 
-                                                className='border-gray-950 bg-slate-200' 
+                                            <input
+                                                type="text"
+                                                value={produtoPreco}
+                                                onChange={(e) => setProdutoPreco(e.target.value)}
+                                                className='border-gray-950 bg-slate-200'
                                             />
-                                            <button 
-                                                onClick={handleAddProduto} 
+                                            <button
+                                                onClick={handleAddProduto}
                                                 className='mt-3 bg-slate-200 p-2 w-56 rounded-xl'
                                             >
                                                 Acrescentar
@@ -191,14 +194,14 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                                 <AccordionDetails>
                                     <Typography>
                                         <p>Valor para abater</p>
-                                        <input 
-                                            type="text" 
+                                        <input
+                                            type="text"
                                             value={valorAbater}
-                                            onChange={(e) => setValorAbater(e.target.value)} 
+                                            onChange={(e) => setValorAbater(e.target.value)}
                                             className='border-gray-950 bg-slate-200'
                                         />
-                                        <button 
-                                            onClick={handleAbaterValor} 
+                                        <button
+                                            onClick={handleAbaterValor}
                                             className='mt-3 bg-slate-200 p-2 w-56 rounded-xl'
                                         >
                                             Abater
@@ -208,29 +211,37 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                             </Accordion>
                             {confirmacaoExclusao ? (
                                 <div>
-                                    <hr className='mt-4 mb-2'/>
+                                    <hr className='mt-4 mb-2' />
                                     <p className='text-xl'>Você tem certeza?</p>
-                                    <button 
-                                        onClick={handleDeleteCliente} 
+                                    <button
+                                        onClick={handleDeleteCliente}
                                         className='bg-red-500 mt-2 p-4 rounded-full text-2xl'
                                     >
                                         Sim
                                     </button>
-                                    <button 
-                                        onClick={cancelarExclusao} 
+                                    <button
+                                        onClick={cancelarExclusao}
                                         className='bg-gray-400 mt-2 p-4 rounded-full text-2xl'
                                     >
                                         Não
                                     </button>
                                 </div>
                             ) : (
-                                <button 
-                                    onClick={toggleConfirmacaoExclusao} 
+                                <button
+                                    onClick={toggleConfirmacaoExclusao}
                                     className='bg-slate-400 mt-2 p-4 rounded-full text-2xl'
                                 >
                                     Excluir
                                 </button>
+
                             )}
+                            <ReactToPrint
+                                trigger={() => <button className='bg-slate-400 mt-2 p-4 rounded-full text-2xl'>Imprimir</button>}
+                                content={() => componentRef.current}
+                                pageStyle="print"
+                                documentTitle={pedido.nomeCliente}
+
+                            />
                         </div>
                     </div>
                 </Typography>
