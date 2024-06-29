@@ -180,10 +180,10 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
                         <div className='flex flex-col justify-center items-center space-y-3 mt-3'>
                             <h1>Nota do pedido</h1>
                             <div className='border border-black p-12'>
-                                <div ref={componentRef} className='flex flex-col items-start'>
+                                <div ref={componentRef} className='flex flex-col items-start font-bold'>
                                     <div className='flex flex-col items-start'>
                                         <h1>Autorização p/ faturamento</h1>
-                                        <p className='font-light'>Cliente: {nomeCliente}</p>
+                                        <p>Cliente: {nomeCliente}</p>
                                     </div>
                                     <div className='content-none bg-black w-96 h-0.5 mt-2 mb-2 opacity-50'></div>
                                     <p>Produtos:</p>
@@ -196,7 +196,7 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
                                         <p className='text-xl'>Valor total: R$ {total.toFixed(2)}</p>
                                     </div>
                                     <div className='w-72 flex flex-col items-start justify-center'>
-                                        <p className='mt-3'>Eu concordo que, ao assinar essa nota, me comprometo a pagar o valor citado em até 30 dias úteis.</p>
+                                        <p className='mt-3'>Eu concordo que, ao assinar essa nota, me comprometo a pagar o valor citado no prazo de 30 dias.</p>
                                         <div className='content-none bg-black w-48 h-0.5 mt-24 mb-2'></div>
                                         <p>Assinatura</p>
                                         <p className='mt-3'>Data do pedido: {formatarData(dataPedido)}</p>
