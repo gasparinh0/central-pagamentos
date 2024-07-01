@@ -1,11 +1,39 @@
-import { useState } from "react";
+import React, { useEffect, useState } from 'react';
 import { TbPigMoney } from "react-icons/tb";
 import ModalCadastro from "./ModalCadastroCliente";
 import ModalCadastroPedido from "./ModalCadastroPedido";
+import { saveAs } from 'file-saver';
+import schedule from 'node-schedule';
 
 function Navbar({ onClienteCadastrado, onPedidoCadastrado }) {
     const [modalCadastroOpen, setModalCadastroOpen] = useState(false);
     const [modalPedidoOpen, setModalPedidoOpen] = useState(false);
+
+    useEffect(() => {
+        const scheduleBackup = () => {
+            const exportData = () => {
+                const clients = JSON.parse(localStorage.getItem('clientes')) || [];
+                const orders = JSON.parse(localStorage.getItem('pedidos')) || [];
+
+                const data = {
+                    clients,
+                    orders
+                };
+
+                const currentDate = new Date().toISOString().slice(0, 10); // Get current date in YYYY-MM-DD format
+                const fileName = `backup_${currentDate}.json`;
+
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+                saveAs(blob, fileName);
+            };
+
+            // Schedule backup at 12:00 PM and 5:00 PM
+            schedule.scheduleJob('0 12 * * *', exportData);  // At 12:00 PM every day
+            schedule.scheduleJob('0 17 * * *', exportData);  // At 5:00 PM every day
+        };
+
+        scheduleBackup();
+    }, []);
 
     const handleOpenModalCadastro = () => {
         setModalCadastroOpen(true);
@@ -21,6 +49,35 @@ function Navbar({ onClienteCadastrado, onPedidoCadastrado }) {
 
     const handleCloseModalPedido = () => {
         setModalPedidoOpen(false);
+    };
+
+    const exportData = () => {
+        const clients = JSON.parse(localStorage.getItem('clientes')) || [];
+        const orders = JSON.parse(localStorage.getItem('pedidos')) || [];
+
+        const data = {
+            clients,
+            orders
+        };
+
+        const currentDate = new Date().toISOString().slice(0, 10); // Get current date in YYYY-MM-DD format
+        const fileName = `backup_${currentDate}.json`;
+
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+        saveAs(blob, fileName);
+    };
+
+    const importData = (event) => {
+        const fileReader = new FileReader();
+        fileReader.onload = (e) => {
+            const jsonData = JSON.parse(e.target.result);
+            localStorage.setItem('clientes', JSON.stringify(jsonData.clients));
+            localStorage.setItem('pedidos', JSON.stringify(jsonData.orders));
+            alert('Backup restaurado com sucesso!');
+            // Atualiza a página para refletir os dados importados
+            window.location.reload();
+        };
+        fileReader.readAsText(event.target.files[0]);
     };
 
     return (
@@ -46,8 +103,28 @@ function Navbar({ onClienteCadastrado, onPedidoCadastrado }) {
                 >
                     Cadastrar Pedido
                 </button>
+
+                <button
+                    onClick={exportData}
+                    className="bg-slate-400 mr-8 text-2xl p-3 rounded-full"
+                >
+                    Exportar Backup
+                </button>
+                <input
+                    type="file"
+                    accept=".json"
+                    onChange={importData}
+                    style={{ display: 'none' }}
+                    id="import-backup"
+                />
+                <label
+                    htmlFor="import-backup"
+                    className="bg-slate-400 text-2xl p-3 rounded-full cursor-pointer"
+                >
+                    Importar Backup
+                </label>
             </div>
-            <ModalCadastro open={modalCadastroOpen} handleClose={handleCloseModalCadastro}  onClienteCadastrado={onClienteCadastrado}/>
+            <ModalCadastro open={modalCadastroOpen} handleClose={handleCloseModalCadastro} onClienteCadastrado={onClienteCadastrado}/>
             <ModalCadastroPedido
                 open={modalPedidoOpen}
                 handleClose={handleCloseModalPedido}
