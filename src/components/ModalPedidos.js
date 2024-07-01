@@ -7,7 +7,7 @@ import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import { ReactToPrint } from 'react-to-print';
+import ReactToPrint from 'react-to-print';
 
 const style = {
     position: 'absolute',
@@ -21,6 +21,15 @@ const style = {
     p: 4,
 };
 
+const PrintComponent = React.forwardRef(({ pedido, total }, ref) => (
+    <div ref={ref} className='flex flex-col m-7'>
+        <h1 className='mb-3 font-bold'>Atualização de faturamento</h1>
+        <p>Nome do cliente: {pedido.nomeCliente}</p>
+        <p>Valor total: R$ {(total * 1).toFixed(2)}</p>
+        <p>Data do pedido: {pedido.dataPedido}</p>
+    </div>
+));
+
 const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido }) => {
     const [produtoNome, setProdutoNome] = useState('');
     const [produtoPreco, setProdutoPreco] = useState('');
@@ -30,7 +39,7 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
     const [valorAbater, setValorAbater] = useState('');
     const [confirmacaoExclusao, setConfirmacaoExclusao] = useState(false);
 
-    const componentRef = useRef(null)
+    const printRef = useRef();
 
     useEffect(() => {
         setTotal(pedido?.total || 0);
@@ -122,7 +131,7 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                 </Typography>
                 <Typography id="modal-modal-description" sx={{ mt: 2 }}>
                     <div className='grid grid-cols-2'>
-                        <div ref={componentRef}>
+                        <div>
                             <div className='flex space-x-2 text-2xl'>
                                 <p>Total: R$ {(total * 1).toFixed(2)}</p>
                             </div>
@@ -233,18 +242,17 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                                 >
                                     Excluir
                                 </button>
-
                             )}
                             <ReactToPrint
                                 trigger={() => <button className='bg-slate-400 mt-2 p-4 rounded-full text-2xl'>Imprimir</button>}
-                                content={() => componentRef.current}
-                                pageStyle="print"
-                                documentTitle={pedido.nomeCliente}
-
+                                content={() => printRef.current}
                             />
                         </div>
                     </div>
                 </Typography>
+                <div style={{ display: 'none' }}>
+                    <PrintComponent ref={printRef} pedido={pedido} total={total} />
+                </div>
             </Box>
         </Modal>
     );

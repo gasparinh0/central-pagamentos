@@ -183,6 +183,7 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
                                 <div ref={componentRef} className='flex flex-col items-start font-bold'>
                                     <div className='flex flex-col items-start'>
                                         <h1>Autorização p/ faturamento</h1>
+                                        <hr></hr>
                                         <p>Cliente: {nomeCliente}</p>
                                     </div>
                                     <div className='content-none bg-black w-96 h-0.5 mt-2 mb-2 opacity-50'></div>
