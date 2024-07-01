@@ -39,6 +39,19 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
         setEditTelefone(formattedPhoneNumber);
     };
 
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            const form = e.target.form;
+            const index = Array.prototype.indexOf.call(form, e.target);
+            if (form.elements[index + 1]) {
+                form.elements[index + 1].focus();
+                e.preventDefault();
+            } else {
+                handleSaveEdit();
+            }
+        }
+    };
+
     return (
         <div>
             <ul>
@@ -73,13 +86,14 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
                             </div>
                             {editIndex === index && (
                                 <div className='flex flex-col bg-slate-300 p-5 rounded-3xl mt-3'>
-                                    <div className='flex flex-col'>
+                                    <form className='flex flex-col'>
                                         <p>Nome do cliente</p>
                                         <input
                                             type="text"
                                             className='border-gray-950 bg-slate-200 w-48'
                                             value={editNome}
                                             onChange={(e) => setEditNome(e.target.value)}
+                                            onKeyDown={handleKeyDown}
                                         />
                                         <p>Telefone</p>
                                         <input
@@ -87,8 +101,9 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
                                             className='border-gray-950 bg-slate-200 w-48'
                                             value={editTelefone}
                                             onChange={handleEditTelefoneChange}
+                                            onKeyDown={handleKeyDown}
                                         />
-                                    </div>
+                                    </form>
                                     <button
                                         className='mt-3 bg-slate-400 p-2 w-56 rounded-xl'
                                         onClick={handleSaveEdit}

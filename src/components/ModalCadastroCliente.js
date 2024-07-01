@@ -52,6 +52,19 @@ const ModalCadastroCliente = ({ open, handleClose, onClienteCadastrado }) => {
         setTelefone(formattedPhoneNumber);
     };
 
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            const form = e.target.form;
+            const index = Array.prototype.indexOf.call(form, e.target);
+            if (form.elements[index + 1]) {
+                form.elements[index + 1].focus();
+                e.preventDefault();
+            } else {
+                handleCadastrar();
+            }
+        }
+    };
+
     return (
         <Modal
             open={open}
@@ -64,13 +77,14 @@ const ModalCadastroCliente = ({ open, handleClose, onClienteCadastrado }) => {
                     <h1 className='text-3xl'>Cadastrar Cliente</h1>
                 </Typography>
                 <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                    <div className='flex flex-col'>
+                    <form className='flex flex-col'>
                         <p>Nome do cliente</p>
                         <input
                             type="text"
                             className='border-gray-950 bg-slate-200 w-48'
                             value={nome}
                             onChange={(e) => setNome(e.target.value)}
+                            onKeyDown={handleKeyDown}
                         />
                         <p>Telefone</p>
                         <input
@@ -78,6 +92,7 @@ const ModalCadastroCliente = ({ open, handleClose, onClienteCadastrado }) => {
                             className='border-gray-950 bg-slate-200 w-48'
                             value={telefone}
                             onChange={handleTelefoneChange}
+                            onKeyDown={handleKeyDown}
                         />
                         <button
                             className='mt-3 bg-slate-200 p-2 w-56 rounded-xl'
@@ -85,7 +100,7 @@ const ModalCadastroCliente = ({ open, handleClose, onClienteCadastrado }) => {
                         >
                             Cadastrar
                         </button>
-                    </div>
+                    </form>
                 </Typography>
             </Box>
         </Modal>

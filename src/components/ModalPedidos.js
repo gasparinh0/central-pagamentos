@@ -118,6 +118,12 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
         setConfirmacaoExclusao(false);
     };
 
+    const handleKeyDown = (e, actionFunction) => {
+        if (e.key === 'Enter') {
+            actionFunction();
+        }
+    };
+
     return (
         <Modal
             open={open}
@@ -174,6 +180,7 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                                                 value={produtoNome}
                                                 onChange={(e) => setProdutoNome(e.target.value)}
                                                 className='border-gray-950 bg-slate-200'
+                                                onKeyDown={(e) => handleKeyDown(e, handleAddProduto)}
                                             />
                                             <p>Preço</p>
                                             <input
@@ -181,6 +188,7 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                                                 value={produtoPreco}
                                                 onChange={(e) => setProdutoPreco(e.target.value)}
                                                 className='border-gray-950 bg-slate-200'
+                                                onKeyDown={(e) => handleKeyDown(e, handleAddProduto)}
                                             />
                                             <button
                                                 onClick={handleAddProduto}
@@ -208,6 +216,7 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                                             value={valorAbater}
                                             onChange={(e) => setValorAbater(e.target.value)}
                                             className='border-gray-950 bg-slate-200'
+                                            onKeyDown={(e) => handleKeyDown(e, handleAbaterValor)}
                                         />
                                         <button
                                             onClick={handleAbaterValor}

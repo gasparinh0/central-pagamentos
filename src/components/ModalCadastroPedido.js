@@ -111,6 +111,23 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
         }, 3000);
     };
 
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            const form = e.target.form;
+            const index = Array.prototype.indexOf.call(form, e.target);
+            if (form.elements[index + 1]) {
+                form.elements[index + 1].focus();
+                e.preventDefault();
+            } else {
+                if (activeStep === steps.length - 1) {
+                    handleSave();
+                } else {
+                    handleNext();
+                }
+            }
+        }
+    };
+
     return (
         <Modal
             open={open}
@@ -131,13 +148,14 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
                 </Stepper>
                 <Typography id="modal-modal-description" sx={{ mt: 2 }}>
                     {activeStep === 0 && (
-                        <div className='flex flex-col'>
+                        <form className='flex flex-col'>
                             <p>Nome do cliente:</p>
                             <input
                                 type="text"
                                 value={nomeCliente}
                                 onChange={(e) => setNomeCliente(e.target.value)}
                                 className='border-gray-950 bg-slate-200 w-48'
+                                onKeyDown={handleKeyDown}
                             />
                             <p>Data do pedido:</p>
                             <input
@@ -145,11 +163,12 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
                                 value={dataPedido}
                                 onChange={handleDataPedidoChange}
                                 className='border-gray-950 bg-slate-200 w-48'
+                                onKeyDown={handleKeyDown}
                             />
-                        </div>
+                        </form>
                     )}
                     {activeStep === 1 && (
-                        <div className='flex flex-col space-y-3 mt-3'>
+                        <form className='flex flex-col space-y-3 mt-3'>
                             <p>Produtos e Preços:</p>
                             {produtos.map((produto, index) => (
                                 <div key={index} className='flex flex-row space-x-3'>
@@ -159,6 +178,7 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
                                         value={produto.nome}
                                         onChange={(e) => handleChangeProduto(index, 'nome', e.target.value)}
                                         className='border-gray-950 bg-slate-200 w-48'
+                                        onKeyDown={handleKeyDown}
                                     />
                                     <input
                                         type="text"
@@ -166,15 +186,20 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
                                         value={produto.preco}
                                         onChange={(e) => handleChangeProduto(index, 'preco', e.target.value)}
                                         className='border-gray-950 bg-slate-200 w-24'
+                                        onKeyDown={handleKeyDown}
                                     />
                                     {index === 0 && (
-                                        <button onClick={handleAddProduto} className='bg-slate-400 text-xs'>
+                                        <button 
+                                            type="button" 
+                                            onClick={handleAddProduto} 
+                                            className='bg-slate-400 text-xs'
+                                        >
                                             Adicionar produto
                                         </button>
                                     )}
                                 </div>
                             ))}
-                        </div>
+                        </form>
                     )}
                     {activeStep === 2 && (
                         <div className='flex flex-col justify-center items-center space-y-3 mt-3'>
