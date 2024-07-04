@@ -31,6 +31,7 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
     const [produtos, setProdutos] = useState([{ nome: '', preco: '' }]);
     const [total, setTotal] = useState(0);
     const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+    const [buttonHidden, setButtonHidden] = useState(false);
 
     useEffect(() => {
         const novoTotal = produtos.reduce((acc, produto) => acc + parseFloat(produto.preco || 0), 0);
@@ -40,12 +41,12 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
     const componentRef = useRef(null);
 
     const handleAddProduto = () => {
-        setProdutos([...produtos, { nome: '', preco: 0 }]);
+        setProdutos([...produtos, { nome: '', preco: '' }]);
     };
 
     const handleChangeProduto = (index, key, value) => {
         const newProdutos = [...produtos];
-        newProdutos[index][key] = value;
+        newProdutos[index][key] = value.replace(',', '.'); // Substitui vírgula por ponto
         setProdutos(newProdutos);
     };
 
@@ -99,7 +100,7 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
         // Limpar os campos após salvar
         setNomeCliente('');
         setDataPedido('');
-        setProdutos([{ nome: '', preco: 0 }]);
+        setProdutos([{ nome: '', preco: '' }]);
         setTotal(0);
 
         // Mostrar a mensagem de sucesso e fechar o modal após 3 segundos
@@ -108,7 +109,10 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
             setShowSuccessMessage(false);
             handleClose();
             handleReset();
+            setButtonHidden(false);  // Reset button visibility
         }, 3000);
+
+        setButtonHidden(true);  // Hide the button
     };
 
     const handleKeyDown = (e) => {
@@ -247,9 +251,11 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
                             Back
                         </Button>
                         <Box sx={{ flex: '1 1 auto' }} />
-                        <Button onClick={activeStep === steps.length - 1 ? handleSave : handleNext}>
-                            {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
-                        </Button>
+                        {!buttonHidden && (
+                            <Button onClick={activeStep === steps.length - 1 ? handleSave : handleNext}>
+                                {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+                            </Button>
+                        )}
                     </Box>
                 </Typography>
                 {showSuccessMessage && (
