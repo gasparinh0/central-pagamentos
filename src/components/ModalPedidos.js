@@ -52,7 +52,7 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
     }
 
     const handleAddProduto = () => {
-        const precoNumerico = parseFloat(produtoPreco);
+        const precoNumerico = parseFloat(produtoPreco.replace(',', '.')); // Substitui vírgula por ponto
         if (isNaN(precoNumerico)) {
             alert('Por favor, insira um valor numérico válido para o preço.');
             return;
@@ -82,7 +82,7 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
     };
 
     const handleAbaterValor = () => {
-        const valorNumerico = parseFloat(valorAbater);
+        const valorNumerico = parseFloat(valorAbater.replace(',', '.')); // Substitui vírgula por ponto
         if (isNaN(valorNumerico)) {
             alert('Por favor, insira um valor numérico válido para o valor a abater.');
             return;
@@ -186,7 +186,7 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                                             <input
                                                 type="text"
                                                 value={produtoPreco}
-                                                onChange={(e) => setProdutoPreco(e.target.value)}
+                                                onChange={(e) => setProdutoPreco(e.target.value.replace(',', '.'))} // Substitui vírgula por ponto
                                                 className='border-gray-950 bg-slate-200'
                                                 onKeyDown={(e) => handleKeyDown(e, handleAddProduto)}
                                             />
@@ -214,7 +214,7 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                                         <input
                                             type="text"
                                             value={valorAbater}
-                                            onChange={(e) => setValorAbater(e.target.value)}
+                                            onChange={(e) => setValorAbater(e.target.value.replace(',', '.'))} // Substitui vírgula por ponto
                                             className='border-gray-950 bg-slate-200'
                                             onKeyDown={(e) => handleKeyDown(e, handleAbaterValor)}
                                         />
