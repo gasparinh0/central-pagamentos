@@ -44,7 +44,7 @@ const ResumoPedido = ({ pedidosProp, onDelete }) => {
     };
 
     if (pedidos.length === 0) {
-        return <div>Nenhum pedido encontrado.</div>;
+        return <div className='flex justify-center items-center text-2xl mt-9'>Nenhum pedido encontrado.</div>;
     }
 
     return (

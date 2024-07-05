@@ -52,6 +52,10 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
         }
     };
 
+    if (clientes.length === 0) {
+        return <div className='flex justify-center items-center text-2xl mt-9'>Nenhum cliente encontrado.</div>;
+    }
+
     return (
         <div>
             <ul>
