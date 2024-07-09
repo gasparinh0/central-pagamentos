@@ -1,9 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { TbPigMoney } from "react-icons/tb";
 import ModalCadastro from "./ModalCadastroCliente";
 import ModalCadastroPedido from "./ModalCadastroPedido";
 import { saveAs } from 'file-saver';
 import schedule from 'node-schedule';
+import { FaRegQuestionCircle } from "react-icons/fa";
+import { IoPersonSharp } from "react-icons/io5";
+import { FaCartPlus } from "react-icons/fa";
+import { MdBackup } from "react-icons/md";
+import { FaArrowDownLong } from "react-icons/fa6";
+import { FaStar } from "react-icons/fa";
+import logo from '../assets/logo.png';
 
 function Navbar({ onClienteCadastrado, onPedidoCadastrado }) {
     const [modalCadastroOpen, setModalCadastroOpen] = useState(false);
@@ -81,34 +87,37 @@ function Navbar({ onClienteCadastrado, onPedidoCadastrado }) {
     };
 
     return (
-        <div className="flex p-8 bg-slate-200">
-            <div className="bg-slate-400 p-2 mr-3 content-none rounded-full">
-                <TbPigMoney size={60} />
+        <div className="flex justify-between bg-gray-200 shadow shadow-gray-300 p-7 items-center">
+            {/* Logo e texto */}
+            <div className='flex items-center'>
+                <img src={logo} alt="Logo" className="w-20 h-20" />
+                <div className='flex flex-col ml-3'>
+                    <h1 className='text-2xl'>Central do crediário</h1>
+                    <p className='text-xl font-light'>Bem vindo!</p>
+                </div>
             </div>
-            <div>
-                <h1 className="text-3xl">Central do fiado</h1>
-                <p className="text-2xl font-light">Bem vindo!</p>
-            </div>
-            <div className="flex ml-auto">
+
+            {/* Botões centralizados */}
+            <div className='flex space-x-8 mr-24'>
                 <button
                     onClick={handleOpenModalCadastro}
-                    className="bg-slate-400 mr-8 text-2xl p-3 rounded-full"
+                    className="bg-[#e7e7e7] border-[#3b82f6] border-2 text-2xl p-3 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-[#3b82f6] hover:text-white flex items-center"
                 >
-                    Cadastrar cliente
+                    <IoPersonSharp className="mr-2 hover:text-white"/> Cadastrar cliente
                 </button>
 
                 <button
                     onClick={handleOpenModalPedido}
-                    className="bg-slate-400 mr-8 text-2xl p-3 rounded-full"
+                    className="bg-[#e7e7e7] border-[#3b82f6] border-2 text-2xl p-3 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-[#3b82f6] hover:text-white flex items-center"
                 >
-                    Cadastrar Pedido
+                    <FaCartPlus className='mr-2  hover:text-white' /> Cadastrar Pedido
                 </button>
 
                 <button
                     onClick={exportData}
-                    className="bg-slate-400 mr-8 text-2xl p-3 rounded-full"
+                    className="bg-[#e7e7e7] border-[#3b82f6] border-2 text-2xl p-3 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-[#3b82f6]  hover:text-white flex items-center"
                 >
-                    Exportar Backup
+                    <MdBackup className='mr-2  hover:text-white' /> Exportar Backup
                 </button>
                 <input
                     type="file"
@@ -119,12 +128,29 @@ function Navbar({ onClienteCadastrado, onPedidoCadastrado }) {
                 />
                 <label
                     htmlFor="import-backup"
-                    className="bg-slate-400 text-2xl p-3 rounded-full cursor-pointer"
+                    className="bg-[#e7e7e7] border-[#3b82f6] border-2 text-2xl p-3 rounded-2xl transition-colors duration-300 shadow-lg cursor-pointer hover:bg-[#3b82f6]  hover:text-white flex items-center"
                 >
-                    Importar Backup
+                    <FaArrowDownLong className='mr-2  hover:text-white' /> Importar Backup
                 </label>
             </div>
-            <ModalCadastro open={modalCadastroOpen} handleClose={handleCloseModalCadastro} onClienteCadastrado={onClienteCadastrado}/>
+
+            {/* Ícones à direita */}
+            <div className='flex space-x-10'>
+                <div className='flex flex-col justify-center items-center transition-colors duration-300 hover:text-orange-600'>
+                    <a href='https://www.youtube.com/' className='flex flex-col justify-center items-center'>
+                        <FaRegQuestionCircle size='40' />
+                        <p className='text-xl'>Dúvidas</p>
+                    </a>
+                </div>
+                <div className='flex flex-col justify-center items-center'>
+                    <a href='https://www.youtube.com/' className='flex flex-col justify-center items-center transition-colors duration-300 hover:text-yellow-400'>
+                        <FaStar size='40' />
+                        <p className='text-xl'>Avalie</p>
+                    </a>
+                </div>
+            </div>
+
+            <ModalCadastro open={modalCadastroOpen} handleClose={handleCloseModalCadastro} onClienteCadastrado={onClienteCadastrado} />
             <ModalCadastroPedido
                 open={modalPedidoOpen}
                 handleClose={handleCloseModalPedido}
