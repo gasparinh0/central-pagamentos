@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { useState } from "react";
-import { BsPersonCircle } from "react-icons/bs";
+import { GoPersonFill } from "react-icons/go";
+import { MdModeEdit } from "react-icons/md";
+import { MdDelete } from "react-icons/md";
 
 const formatPhoneNumber = (value) => {
     if (!value) return value;
@@ -62,9 +64,9 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
                 {clientes.map((cliente, index) => (
                     <li key={index}>
                         <div>
-                            <div className='flex bg-slate-200 p-7 rounded-3xl gap-y-4 mt-5'>
-                                <div className='bg-slate-400 p-2 mr-3 content-none rounded-full'>
-                                    <BsPersonCircle size={60} />
+                            <div className='flex bg-[#e5e7eb] p-7 rounded-3xl gap-y-4 mt-5'>
+                                <div className='mr-3'>
+                                    <GoPersonFill size={72} />
                                 </div>
                                 <div>
                                     <h1 className='text-3xl'>{cliente.nome}</h1>
@@ -73,18 +75,18 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
                                         <p className='text-2xl font-light'>{cliente.telefone}</p>
                                     </div>
                                 </div>
-                                <div className='flex ml-auto'>
+                                <div className='flex ml-auto space-x-6'>
                                     <button
-                                        className='bg-slate-400 mr-8 text-2xl p-3 rounded-full'
+                                        className="bg-[#e7e7e7] border-[#3b82f6] border-2 text-2xl p-3 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-[#3b82f6] hover:text-white flex items-center"
                                         onClick={() => handleEdit(index)}
                                     >
-                                        Editar cliente
+                                        <MdModeEdit className="mr-2 hover:text-white"/> Editar cliente
                                     </button>
                                     <button
-                                        className='bg-slate-400 mr-8 text-2xl p-3 rounded-full'
+                                        className="bg-[#e7e7e7] border-red-600 border-2 text-2xl p-3 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-red-600 hover:text-white flex items-center"
                                         onClick={() => onDelete(index)}
                                     >
-                                        Excluir cliente
+                                        <MdDelete className="mr-2 hover:text-white"/> Excluir cliente
                                     </button>
                                 </div>
                             </div>
