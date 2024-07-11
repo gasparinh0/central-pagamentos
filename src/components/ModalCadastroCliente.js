@@ -9,9 +9,9 @@ const style = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 900,
+    width: 600,
     bgcolor: 'background.paper',
-    border: '2px solid #000',
+    borderRadius: '15px',
     boxShadow: 24,
     p: 4,
 };
@@ -81,21 +81,23 @@ const ModalCadastroCliente = ({ open, handleClose, onClienteCadastrado }) => {
                         <p>Nome do cliente</p>
                         <input
                             type="text"
-                            className='border-gray-950 bg-slate-200 w-48'
+                            className='w-56 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
                             value={nome}
+                            placeholder='Digite o nome'
                             onChange={(e) => setNome(e.target.value)}
                             onKeyDown={handleKeyDown}
                         />
-                        <p>Telefone</p>
+                        <p className='mt-3'>Telefone</p>
                         <input
                             type="text"
-                            className='border-gray-950 bg-slate-200 w-48'
+                            className='w-56 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
                             value={telefone}
+                            placeholder='Digite o telefone'
                             onChange={handleTelefoneChange}
                             onKeyDown={handleKeyDown}
                         />
                         <button
-                            className='mt-3 bg-slate-200 p-2 w-56 rounded-xl'
+                            className='bg-[#e7e7e7] border-green-500 border-2 text-lg p-3 mt-4 h-12 w-56 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-green-500 hover:text-white flex items-center justify-center'
                             onClick={handleCadastrar}
                         >
                             Cadastrar
