@@ -3,6 +3,7 @@ import { useState } from "react";
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
+import { IoIosCloseCircle } from "react-icons/io";
 
 const style = {
     position: 'absolute',
@@ -18,7 +19,7 @@ const style = {
 
 const formatPhoneNumber = (value) => {
     if (!value) return value;
-    
+
     // Remove any non-numeric characters
     const phoneNumber = value.replace(/[^\d]/g, '');
 
@@ -74,7 +75,10 @@ const ModalCadastroCliente = ({ open, handleClose, onClienteCadastrado }) => {
         >
             <Box sx={style}>
                 <Typography id="modal-modal-title" variant="h6" component="h2">
-                    <h1 className='text-3xl'>Cadastrar Cliente</h1>
+                    <div className='flex flex-row justify-between'>
+                        <h1 className='text-3xl'>Cadastrar Cliente</h1>
+                        <IoIosCloseCircle size="35" onClick={handleClose} style={{ cursor: 'pointer' }} color='#dc2626' />
+                    </div>
                 </Typography>
                 <Typography id="modal-modal-description" sx={{ mt: 2 }}>
                     <form className='flex flex-col'>
