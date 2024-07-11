@@ -8,6 +8,8 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Button from '@mui/material/Button';
 import { ReactToPrint } from 'react-to-print';
+import { MdKeyboardReturn } from "react-icons/md";
+import { IoIosCloseCircle } from "react-icons/io";
 
 const style = {
     position: 'absolute',
@@ -16,7 +18,7 @@ const style = {
     transform: 'translate(-50%, -50%)',
     width: 900,
     bgcolor: 'background.paper',
-    border: '2px solid #000',
+    borderRadius: '15px',
     boxShadow: 24,
     p: 4,
 };
@@ -141,7 +143,11 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
         >
             <Box sx={style}>
                 <Typography id="modal-modal-title" variant="h6" component="h2">
-                    <h1 className='text-3xl'>Cadastrar pedido</h1>
+                    <div className='flex justify-between'>
+                        <div className='content-none w-2'></div>
+                        <h1 className='text-3xl mb-6'>Cadastrar pedido</h1>
+                        <IoIosCloseCircle size="35" onClick={handleClose} style={{ cursor: 'pointer' }} color='#dc2626' />
+                    </div>
                 </Typography>
                 <Stepper activeStep={activeStep} alternativeLabel>
                     {steps.map((label, index) => (
@@ -158,15 +164,16 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
                                 type="text"
                                 value={nomeCliente}
                                 onChange={(e) => setNomeCliente(e.target.value)}
-                                className='border-gray-950 bg-slate-200 w-48'
+                                className='w-56 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
                                 onKeyDown={handleKeyDown}
+                                placeholder='Digite o nome do cliente'
                             />
-                            <p>Data do pedido:</p>
+                            <p className='mt-3'>Data do pedido:</p>
                             <input
                                 type="date"
                                 value={dataPedido}
                                 onChange={handleDataPedidoChange}
-                                className='border-gray-950 bg-slate-200 w-48'
+                                className='w-56 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
                                 onKeyDown={handleKeyDown}
                             />
                         </form>
@@ -181,7 +188,7 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
                                         placeholder="Produto"
                                         value={produto.nome}
                                         onChange={(e) => handleChangeProduto(index, 'nome', e.target.value)}
-                                        className='border-gray-950 bg-slate-200 w-48'
+                                        className='w-56 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
                                         onKeyDown={handleKeyDown}
                                     />
                                     <input
@@ -189,14 +196,14 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
                                         placeholder="Preço"
                                         value={produto.preco}
                                         onChange={(e) => handleChangeProduto(index, 'preco', e.target.value)}
-                                        className='border-gray-950 bg-slate-200 w-24'
+                                        className='w-28 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
                                         onKeyDown={handleKeyDown}
                                     />
                                     {index === 0 && (
-                                        <button 
-                                            type="button" 
-                                            onClick={handleAddProduto} 
-                                            className='bg-slate-400 text-xs'
+                                        <button
+                                            type="button"
+                                            onClick={handleAddProduto}
+                                            className='bg-[#e7e7e7] border-[#3b82f6] border-2 text-xs p-3 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-[#3b82f6] hover:text-white flex items-center'
                                         >
                                             Adicionar produto
                                         </button>
@@ -235,7 +242,7 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
                                 </div>
                             </div>
                             <ReactToPrint
-                                trigger={() => <button className='bg-slate-400 mt-2 p-4 rounded-full text-2xl'>Imprimir</button>}
+                                trigger={() => <button className='bg-[#e7e7e7] border-[#3b82f6] border-2 text-xl p-3 rounded-2xl w-40 transition-colors duration-300 shadow-lg hover:bg-[#3b82f6] hover:text-white flex items-center justify-center'>Imprimir</button>}
                                 content={() => componentRef.current}
                                 pageStyle="print"
                             />
@@ -248,19 +255,19 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
                             onClick={handleBack}
                             sx={{ mr: 1 }}
                         >
-                            Back
+                            <MdKeyboardReturn className='mr-2' /> Voltar
                         </Button>
                         <Box sx={{ flex: '1 1 auto' }} />
                         {!buttonHidden && (
                             <Button onClick={activeStep === steps.length - 1 ? handleSave : handleNext}>
-                                {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+                                {activeStep === steps.length - 1 ? 'Cadastrar' : 'Próximo'}
                             </Button>
                         )}
                     </Box>
                 </Typography>
                 {showSuccessMessage && (
                     <Typography sx={{ mt: 2, mb: 1 }}>
-                        Cadastro realizado com sucesso!
+                        <p className='text-green-500 text-xl flex justify-center'>Cadastro finalizado com sucesso!</p>
                     </Typography>
                 )}
             </Box>
