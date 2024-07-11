@@ -1,27 +1,41 @@
 import * as React from 'react';
-import { useState } from "react";
-import { GoPersonFill } from "react-icons/go";
+import { useState, useEffect } from "react";
 import { MdModeEdit } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
+import Avatar from '@mui/material/Avatar';
 
-const formatPhoneNumber = (value) => {
-    if (!value) return value;
-    
-    // Remove any non-numeric characters
-    const phoneNumber = value.replace(/[^\d]/g, '');
+import { formatToPhone } from 'brazilian-values';
 
-    // Format phone number according to (DDD) 99999-9999
-    const phoneNumberLength = phoneNumber.length;
+// const formatPhoneNumber = (value) => {
+//     if (!value) return value;
 
-    if (phoneNumberLength < 3) return phoneNumber;
-    if (phoneNumberLength < 7) return `(${phoneNumber.slice(0, 2)}) ${phoneNumber.slice(2)}`;
-    return `(${phoneNumber.slice(0, 2)}) ${phoneNumber.slice(2, 7)}-${phoneNumber.slice(7, 11)}`;
-};
+//     // Remove any non-numeric characters
+//     const phoneNumber = value.replace(/[^\d]/g, '');
+
+//     // Format phone number according to (DDD) 99999-9999
+//     const phoneNumberLength = phoneNumber.length;
+
+//     if (phoneNumberLength < 3) return phoneNumber;
+//     if (phoneNumberLength < 7) return `(${phoneNumber.slice(0, 2)}) ${phoneNumber.slice(2)}`;
+//     return `(${phoneNumber.slice(0, 2)}) ${phoneNumber.slice(2, 7)}-${phoneNumber.slice(7, 11)}`;
+// };
 
 const ListaClientes = ({ clientes, onDelete, onEdit }) => {
     const [editIndex, setEditIndex] = useState(null);
     const [editNome, setEditNome] = useState('');
     const [editTelefone, setEditTelefone] = useState('');
+    const [colors, setColors] = useState({});
+
+    useEffect(() => {
+        // Generate a color for each client name
+        const newColors = {};
+        clientes.forEach(cliente => {
+            if (!colors[cliente.nome]) {
+                newColors[cliente.nome] = stringToColor(cliente.nome);
+            }
+        });
+        setColors(prevColors => ({ ...prevColors, ...newColors }));
+    }, [clientes]);
 
     const handleEdit = (index) => {
         setEditIndex(index);
@@ -37,8 +51,7 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
     };
 
     const handleEditTelefoneChange = (e) => {
-        const formattedPhoneNumber = formatPhoneNumber(e.target.value);
-        setEditTelefone(formattedPhoneNumber);
+        setEditTelefone(e.target.value);
     };
 
     const handleKeyDown = (e) => {
@@ -58,6 +71,44 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
         return <div className='flex justify-center items-center text-2xl mt-9'>Nenhum cliente encontrado.</div>;
     }
 
+    function stringToColor(string) {
+        let hash = 0;
+        let i;
+
+        for (i = 0; i < string.length; i += 1) {
+            hash = string.charCodeAt(i) + ((hash << 5) - hash);
+        }
+
+        let color = '#';
+
+        for (i = 0; i < 3; i += 1) {
+            const value = (hash >> (i * 8)) & 0xff;
+            color += `00${value.toString(16)}`.slice(-2);
+        }
+
+        return color;
+    }
+
+    function stringAvatar(name, size = 56) {
+        const nameParts = name.split(' ');
+
+        let initials = nameParts[0][0];
+        if (nameParts.length >= 2) {
+            initials += nameParts[1][0];
+        }
+
+        return {
+            sx: {
+                bgcolor: colors[name] || stringToColor(name),
+                width: size,
+                height: size,
+                color: '#fff',
+                fontSize: size / 2,
+            },
+            children: initials,
+        };
+    }
+
     return (
         <div>
             <ul>
@@ -66,7 +117,7 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
                         <div>
                             <div className='flex bg-[#e5e7eb] p-7 rounded-3xl gap-y-4 mt-5'>
                                 <div className='mr-3'>
-                                    <GoPersonFill size={72} />
+                                    <Avatar {...stringAvatar(cliente.nome, 70)} />
                                 </div>
                                 <div>
                                     <h1 className='text-3xl'>{cliente.nome}</h1>
@@ -77,16 +128,16 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
                                 </div>
                                 <div className='flex ml-auto space-x-6'>
                                     <button
-                                        className="bg-[#e7e7e7] border-[#3b82f6] border-2 text-2xl p-3 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-[#3b82f6] hover:text-white flex items-center"
+                                        className="bg-[#e7e7e7] border-[#3b82f6] border-2 text-xl p-3 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-[#3b82f6] hover:text-white flex items-center"
                                         onClick={() => handleEdit(index)}
                                     >
-                                        <MdModeEdit className="mr-2 hover:text-white"/> Editar cliente
+                                        <MdModeEdit className="mr-2 hover:text-white" /> Editar cliente
                                     </button>
                                     <button
-                                        className="bg-[#e7e7e7] border-red-600 border-2 text-2xl p-3 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-red-600 hover:text-white flex items-center"
+                                        className="bg-[#e7e7e7] border-red-600 border-2 text-xl p-3 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-red-600 hover:text-white flex items-center"
                                         onClick={() => onDelete(index)}
                                     >
-                                        <MdDelete className="mr-2 hover:text-white"/> Excluir cliente
+                                        <MdDelete className="mr-2 hover:text-white" /> Excluir cliente
                                     </button>
                                 </div>
                             </div>
@@ -96,22 +147,25 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
                                         <p>Nome do cliente</p>
                                         <input
                                             type="text"
-                                            className='border-gray-950 bg-slate-200 w-48'
+                                            className='w-56 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
                                             value={editNome}
+                                            placeholder='Digite o nome'
                                             onChange={(e) => setEditNome(e.target.value)}
                                             onKeyDown={handleKeyDown}
                                         />
-                                        <p>Telefone</p>
+                                        <p className='mt-1'>Telefone</p>
                                         <input
                                             type="text"
-                                            className='border-gray-950 bg-slate-200 w-48'
-                                            value={editTelefone}
+                                            maxLength={15}
+                                            className='w-56 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
+                                            value={editTelefone && formatToPhone(editTelefone)}
+                                            placeholder='Digite o telefone'
                                             onChange={handleEditTelefoneChange}
                                             onKeyDown={handleKeyDown}
                                         />
                                     </form>
                                     <button
-                                        className='mt-3 bg-slate-400 p-2 w-56 rounded-xl'
+                                        className='bg-[#e7e7e7] border-green-500 border-2 text-lg p-2 mt-3 w-56 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-green-500 hover:text-white flex items-center justify-center'
                                         onClick={handleSaveEdit}
                                     >
                                         Salvar
