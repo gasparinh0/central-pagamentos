@@ -51,20 +51,20 @@ const ResumoPedido = ({ pedidosProp, onDelete }) => {
         <div>
             <div className='grid grid-cols-4 gap-x-4 gap-y-4 p-4'>
                 {pedidos.map((pedido, index) => (
-                    <div key={index} className='bg-slate-200 p-6 rounded-xl shadow-lg'>
-                        <p className='text-2xl'>Cliente:</p>
+                    <div key={index} className='bg-[#e5e7eb] p-6 rounded-xl shadow-lg'>
+                        <p className='text-xl font-light'>Cliente:</p>
                         <h1 className='text-3xl mb-5'>{pedido.nomeCliente}</h1>
                         <div className='flex space-x-2'>
                             <p>Total do pedido:</p>
-                            <p>R$ {(pedido.total * 1).toFixed(2)}</p>
+                            <p className='font-semibold'>R$ {(pedido.total * 1).toFixed(2)}</p>
                         </div>
                         <div className='flex space-x-2'>
                             <p>Último pedido feito:</p>
-                            <p>{pedido.dataPedido}</p>
+                            <p className='font-semibold'>{pedido.dataPedido}</p>
                         </div>
                         <button
                             onClick={() => handleOpenModalPedidos(pedido)}
-                            className='bg-slate-400 mt-6 p-4 rounded-full text-2xl'
+                            className="bg-[#e7e7e7] border-[#3b82f6] border-2 text-lg p-3 mt-3 h-12 w-40 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-[#3b82f6] hover:text-white flex items-center justify-center"
                         >
                             Visualizar
                         </button>
