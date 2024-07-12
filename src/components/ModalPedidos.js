@@ -14,9 +14,10 @@ const style = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 900,
+    width: 850,
     bgcolor: 'background.paper',
-    border: '2px solid #000',
+    borderRadius: '15px',
+    maxHeight: '90vh',
     boxShadow: 24,
     p: 4,
 };
@@ -38,6 +39,7 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
     const [historicoAbatimentos, setHistoricoAbatimentos] = useState(pedido?.historicoAbatimentos || []);
     const [valorAbater, setValorAbater] = useState('');
     const [confirmacaoExclusao, setConfirmacaoExclusao] = useState(false);
+    const [mostrarImprimir, setMostrarImprimir] = useState(true);
 
     const printRef = useRef();
 
@@ -112,10 +114,12 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
 
     const toggleConfirmacaoExclusao = () => {
         setConfirmacaoExclusao(!confirmacaoExclusao);
+        setMostrarImprimir(false);
     };
 
     const cancelarExclusao = () => {
         setConfirmacaoExclusao(false);
+        setMostrarImprimir(true);
     };
 
     const handleKeyDown = (e, actionFunction) => {
@@ -136,14 +140,14 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                     <h1 className='text-3xl'>{pedido.nomeCliente}</h1>
                 </Typography>
                 <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                    <div className='grid grid-cols-2'>
+                    <div className='flex flex-row justify-between'>
                         <div>
                             <div className='flex space-x-2 text-2xl'>
-                                <p>Total: R$ {(total * 1).toFixed(2)}</p>
+                                <p>Total: <span className='font-semibold'>R$ {(total * 1).toFixed(2)}</span></p>
                             </div>
                             <div className='flex space-x-2 text-2xl'>
                                 <p>Último pedido feito:</p>
-                                <p>{pedido.dataPedido}</p>
+                                <p className='font-semibold'>{pedido.dataPedido}</p>
                             </div>
                             <p className='mt-3'>Produtos obtidos:</p>
                             <ul className='list-disc list-inside ml-5'>
@@ -163,7 +167,7 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                             </ul>
                         </div>
                         <div>
-                            <Accordion>
+                            <Accordion className='mb-4 w-64'>
                                 <AccordionSummary
                                     expandIcon={<ArrowDownwardIcon />}
                                     aria-controls="panel1-content"
@@ -179,16 +183,18 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                                                 type="text"
                                                 value={produtoNome}
                                                 onChange={(e) => setProdutoNome(e.target.value)}
-                                                className='border-gray-950 bg-slate-200'
+                                                className='w-56 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
                                                 onKeyDown={(e) => handleKeyDown(e, handleAddProduto)}
+                                                placeholder='Digite o produto'
                                             />
                                             <p>Preço</p>
                                             <input
                                                 type="text"
                                                 value={produtoPreco}
                                                 onChange={(e) => setProdutoPreco(e.target.value.replace(',', '.'))} // Substitui vírgula por ponto
-                                                className='border-gray-950 bg-slate-200'
+                                                className='w-56 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
                                                 onKeyDown={(e) => handleKeyDown(e, handleAddProduto)}
+                                                placeholder='Digite o preço'
                                             />
                                             <button
                                                 onClick={handleAddProduto}
@@ -200,7 +206,7 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                                     </Typography>
                                 </AccordionDetails>
                             </Accordion>
-                            <Accordion>
+                            <Accordion className='mb-4  w-64'>
                                 <AccordionSummary
                                     expandIcon={<ArrowDownwardIcon />}
                                     aria-controls="panel1-content"
@@ -215,8 +221,9 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                                             type="text"
                                             value={valorAbater}
                                             onChange={(e) => setValorAbater(e.target.value.replace(',', '.'))} // Substitui vírgula por ponto
-                                            className='border-gray-950 bg-slate-200'
+                                            className='w-56 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
                                             onKeyDown={(e) => handleKeyDown(e, handleAbaterValor)}
+                                            placeholder='Digite o valor'
                                         />
                                         <button
                                             onClick={handleAbaterValor}
@@ -227,35 +234,41 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                                     </Typography>
                                 </AccordionDetails>
                             </Accordion>
-                            {confirmacaoExclusao ? (
-                                <div>
-                                    <hr className='mt-4 mb-2' />
-                                    <p className='text-xl'>Você tem certeza?</p>
+                            <div className='flex flex-row space-x-3 justify-center'>
+                                {confirmacaoExclusao ? (
+                                    <div className='flex flex-col justify-center items-center'>
+                                        <p className='text-xl'>Você tem certeza?</p>
+                                        <div className='content-none bg-slate-300 w-44 h-1 mt-1 mb-3 rounded-lg'></div>
+                                        <div className='flex flex-row justify-center space-x-2'>
+                                            <button
+                                                onClick={handleDeleteCliente}
+                                                className='bg-[#e7e7e7] border-red-600 border-2 text-xl w-24 p-3 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-red-600 hover:text-white flex justify-center items-center'
+                                            >
+                                                Sim
+                                            </button>
+                                            <button
+                                                onClick={cancelarExclusao}
+                                                className='bg-[#e7e7e7] border-[#3b82f6] border-2 text-xl w-24 p-3 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-[#3b82f6] hover:text-white flex justify-center items-center'
+                                            >
+                                                Não
+                                            </button>
+                                        </div>
+                                    </div>
+                                ) : (
                                     <button
-                                        onClick={handleDeleteCliente}
-                                        className='bg-red-500 mt-2 p-4 rounded-full text-2xl'
+                                        onClick={toggleConfirmacaoExclusao}
+                                        className='bg-[#e7e7e7] border-red-600 border-2 text-xl p-3 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-red-600 hover:text-white flex items-center'
                                     >
-                                        Sim
+                                        Excluir
                                     </button>
-                                    <button
-                                        onClick={cancelarExclusao}
-                                        className='bg-gray-400 mt-2 p-4 rounded-full text-2xl'
-                                    >
-                                        Não
-                                    </button>
-                                </div>
-                            ) : (
-                                <button
-                                    onClick={toggleConfirmacaoExclusao}
-                                    className='bg-slate-400 mt-2 p-4 rounded-full text-2xl'
-                                >
-                                    Excluir
-                                </button>
-                            )}
-                            <ReactToPrint
-                                trigger={() => <button className='bg-slate-400 mt-2 p-4 rounded-full text-2xl'>Imprimir</button>}
-                                content={() => printRef.current}
-                            />
+                                )}
+                                {mostrarImprimir && (
+                                    <ReactToPrint
+                                        trigger={() => <button className='bg-[#e7e7e7] border-[#3b82f6] border-2 text-xl p-3 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-[#3b82f6] hover:text-white flex items-center'>Imprimir</button>}
+                                        content={() => printRef.current}
+                                    />
+                                )}
+                            </div>
                         </div>
                     </div>
                 </Typography>

@@ -16,11 +16,13 @@ const style = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 900,
+    width: '40%',  // Ajuste a largura conforme necessário
+    maxHeight: '90vh',  // Define uma altura máxima para permitir o overflow
     bgcolor: 'background.paper',
     borderRadius: '15px',
     boxShadow: 24,
     p: 4,
+    overflowY: 'auto',  // Permite a rolagem vertical
 };
 
 const steps = ['Informações do Cliente', 'Produtos e Preços', 'Resumo do Pedido'];

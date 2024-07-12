@@ -90,6 +90,7 @@ const ModalCadastroCliente = ({ open, handleClose, onClienteCadastrado }) => {
                             placeholder='Digite o nome'
                             onChange={(e) => setNome(e.target.value)}
                             onKeyDown={handleKeyDown}
+                            maxLength='50'
                         />
                         <p className='mt-3'>Telefone</p>
                         <input
