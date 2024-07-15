@@ -33,6 +33,7 @@ const PrintComponent = React.forwardRef(({ pedido, total }, ref) => (
 
 const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido }) => {
     const [produtoNome, setProdutoNome] = useState('');
+    const [produtoQuantidade, setProdutoQuantidade] = useState('');
     const [produtoPreco, setProdutoPreco] = useState('');
     const [total, setTotal] = useState(pedido?.total || 0);
     const [produtos, setProdutos] = useState(pedido?.produtos || []);
@@ -55,18 +56,21 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
 
     const handleAddProduto = () => {
         const precoNumerico = parseFloat(produtoPreco.replace(',', '.')); // Substitui vírgula por ponto
-        if (isNaN(precoNumerico)) {
-            alert('Por favor, insira um valor numérico válido para o preço.');
+        const quantidadeNumerica = parseInt(produtoQuantidade, 10); // Converte para número inteiro
+
+        if (!produtoNome || isNaN(precoNumerico) || isNaN(quantidadeNumerica)) {
+            alert('Por favor, coloque as informações necessárias para adicionar o produto.');
             return;
         }
 
         const novoProduto = {
             nome: produtoNome,
+            quantidade: quantidadeNumerica,
             preco: precoNumerico
         };
 
         const produtosAtualizados = [...produtos, novoProduto];
-        const totalAtualizado = total + precoNumerico;
+        const totalAtualizado = total + (precoNumerico * quantidadeNumerica);
         const dataAtualizada = new Date().toLocaleDateString();
 
         const pedidoAtualizado = {
@@ -80,6 +84,7 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
         setProdutos(produtosAtualizados);
         setTotal(totalAtualizado);
         setProdutoNome('');
+        setProdutoQuantidade('');
         setProdutoPreco('');
     };
 
@@ -149,14 +154,27 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                                 <p>Último pedido feito:</p>
                                 <p className='font-semibold'>{pedido.dataPedido}</p>
                             </div>
-                            <p className='mt-3'>Produtos obtidos:</p>
-                            <ul className='list-disc list-inside ml-5'>
-                                {produtos.map((produto, index) => (
-                                    <li key={index}>
-                                        {produto.nome} - R$ {(produto.preco * 1).toFixed(2)}
-                                    </li>
-                                ))}
-                            </ul>
+                            <div className='flex flex-col items-start mt-3'>
+                                <div className='flex flex-row space-x-1'>
+                                    <p className='w-40'>Produto</p>
+                                    <p className='w-20'>Qtd</p>
+                                    <p className='w-20'>R$</p>
+                                </div>
+                                <div className='mt-2'>
+                                    {produtos.map((produto, index) => (
+                                        <div key={index} className='flex flex-row space-x-1'>
+                                            <div className='flex flex-col'>
+                                                <div className='flex flex-row space-x-1'>
+                                                    <p className='w-40'>{produto.nome}</p>
+                                                    <p className='w-20'>{produto.quantidade}</p>
+                                                    <p className='w-20'>{produto.preco}</p>
+                                                </div>
+                                                <div className=' w-full border-2 border-gray-200'></div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
                             <p className='mt-3'>Histórico de Abatimentos:</p>
                             <ul className='list-disc list-inside ml-5'>
                                 {historicoAbatimentos.map((abatimento, index) => (
@@ -177,7 +195,7 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                                 </AccordionSummary>
                                 <AccordionDetails>
                                     <Typography>
-                                        <div className='flex flex-col justify-start'>
+                                        <div className='flex flex-col justify-start space-y-2'>
                                             <p>Nome do produto</p>
                                             <input
                                                 type="text"
@@ -186,6 +204,16 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                                                 className='w-56 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
                                                 onKeyDown={(e) => handleKeyDown(e, handleAddProduto)}
                                                 placeholder='Digite o produto'
+                                                maxLength='75'
+                                            />
+                                            <p>Quantidade</p>
+                                            <input
+                                                type="number"
+                                                value={produtoQuantidade}
+                                                onChange={(e) => setProdutoQuantidade(e.target.value)}
+                                                className='w-56 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
+                                                onKeyDown={(e) => handleKeyDown(e, handleAddProduto)}
+                                                placeholder='Digite a quantidade'
                                             />
                                             <p>Preço</p>
                                             <input
@@ -195,6 +223,7 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                                                 className='w-56 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
                                                 onKeyDown={(e) => handleKeyDown(e, handleAddProduto)}
                                                 placeholder='Digite o preço'
+                                                maxLength='20'
                                             />
                                             <button
                                                 onClick={handleAddProduto}

@@ -16,13 +16,13 @@ const style = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: '40%',  // Ajuste a largura conforme necessário
-    maxHeight: '90vh',  // Define uma altura máxima para permitir o overflow
+    width: '40%',
+    maxHeight: '90vh',
     bgcolor: 'background.paper',
     borderRadius: '15px',
     boxShadow: 24,
     p: 4,
-    overflowY: 'auto',  // Permite a rolagem vertical
+    overflowY: 'auto',
 };
 
 const steps = ['Informações do Cliente', 'Produtos e Preços', 'Resumo do Pedido'];
@@ -32,30 +32,32 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
     const [nomeCliente, setNomeCliente] = useState('');
     const [dataPedido, setDataPedido] = useState('');
     const [dataVencimento, setDataVencimento] = useState('');
-    const [produtos, setProdutos] = useState([{ nome: '', preco: '' }]);
+    const [produtos, setProdutos] = useState([{ nome: '', preco: '', quantidade: '' }]);
     const [total, setTotal] = useState(0);
     const [showSuccessMessage, setShowSuccessMessage] = useState(false);
     const [buttonHidden, setButtonHidden] = useState(false);
 
     useEffect(() => {
-        const novoTotal = produtos.reduce((acc, produto) => acc + parseFloat(produto.preco || 0), 0);
+        const novoTotal = produtos.reduce((acc, produto) => acc + (parseFloat(produto.preco || 0) * parseInt(produto.quantidade || 0)), 0);
         setTotal(novoTotal);
     }, [produtos]);
 
     const componentRef = useRef(null);
 
     const handleAddProduto = () => {
-        setProdutos([...produtos, { nome: '', preco: '' }]);
+        setProdutos([...produtos, { nome: '', preco: '', quantidade: '' }]);
     };
 
     const handleChangeProduto = (index, key, value) => {
         const newProdutos = [...produtos];
-        newProdutos[index][key] = value.replace(',', '.'); // Substitui vírgula por ponto
+        newProdutos[index][key] = value.replace(',', '.');
         setProdutos(newProdutos);
     };
 
     const handleNext = () => {
-        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        if (validateInputs()) {
+            setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        }
     };
 
     const handleBack = () => {
@@ -101,22 +103,20 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
         localStorage.setItem('pedidos', JSON.stringify(pedidosSalvos));
         onPedidoCadastrado(pedido);
 
-        // Limpar os campos após salvar
         setNomeCliente('');
         setDataPedido('');
-        setProdutos([{ nome: '', preco: '' }]);
+        setProdutos([{ nome: '', preco: '', quantidade: '' }]);
         setTotal(0);
 
-        // Mostrar a mensagem de sucesso e fechar o modal após 3 segundos
         setShowSuccessMessage(true);
         setTimeout(() => {
             setShowSuccessMessage(false);
             handleClose();
             handleReset();
-            setButtonHidden(false);  // Reset button visibility
+            setButtonHidden(false);
         }, 3000);
 
-        setButtonHidden(true);  // Hide the button
+        setButtonHidden(true);
     };
 
     const handleKeyDown = (e) => {
@@ -134,6 +134,15 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
                 }
             }
         }
+    };
+
+    const validateInputs = () => {
+        if (activeStep === 0) {
+            return nomeCliente && dataPedido;
+        } else if (activeStep === 1) {
+            return produtos.every(produto => produto.nome && produto.preco && produto.quantidade);
+        }
+        return true;
     };
 
     return (
@@ -169,6 +178,7 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
                                 className='w-56 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
                                 onKeyDown={handleKeyDown}
                                 placeholder='Digite o nome do cliente'
+                                maxLength='75'
                             />
                             <p className='mt-3'>Data do pedido:</p>
                             <input
@@ -182,13 +192,14 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
                     )}
                     {activeStep === 1 && (
                         <form className='flex flex-col space-y-3 mt-3'>
-                            <p>Produtos e Preços:</p>
+                            <p>Produtos, Preço e Quantidade:</p>
                             {produtos.map((produto, index) => (
                                 <div key={index} className='flex flex-row space-x-3'>
                                     <input
                                         type="text"
                                         placeholder="Produto"
                                         value={produto.nome}
+                                        maxLength='50'
                                         onChange={(e) => handleChangeProduto(index, 'nome', e.target.value)}
                                         className='w-56 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
                                         onKeyDown={handleKeyDown}
@@ -196,9 +207,18 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
                                     <input
                                         type="text"
                                         placeholder="Preço"
+                                        maxLength='20'
                                         value={produto.preco}
                                         onChange={(e) => handleChangeProduto(index, 'preco', e.target.value)}
                                         className='w-28 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
+                                        onKeyDown={handleKeyDown}
+                                    />
+                                    <input
+                                        type="number"
+                                        placeholder="Quantidade"
+                                        value={produto.quantidade}
+                                        onChange={(e) => handleChangeProduto(index, 'quantidade', e.target.value)}
+                                        className='w-20 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
                                         onKeyDown={handleKeyDown}
                                     />
                                     {index === 0 && (
@@ -217,7 +237,7 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
                     {activeStep === 2 && (
                         <div className='flex flex-col justify-center items-center space-y-3 mt-3'>
                             <h1>Nota do pedido</h1>
-                            <div className='border border-black p-12'>
+                            <div className='border border-black p-8'>
                                 <div ref={componentRef} className='flex flex-col items-start font-bold'>
                                     <div className='flex flex-col items-start'>
                                         <h1>Autorização p/ faturamento</h1>
@@ -225,12 +245,23 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
                                         <p>Cliente: {nomeCliente}</p>
                                     </div>
                                     <div className='content-none bg-black w-96 h-0.5 mt-2 mb-2 opacity-50'></div>
-                                    <p>Produtos:</p>
-                                    {produtos.map((produto, index) => (
-                                        <div key={index}>
-                                            <p>{produto.nome} - R$ {produto.preco}</p>
+                                    <p className='mb-2'>Produtos adquiridos:</p>
+                                    <div className='flex flex-col items-start'>
+                                        <div className='flex flex-row space-x-1'>
+                                            <p className='w-40'>Produto</p>
+                                            <p className='w-20'>Qtd</p>
+                                            <p className='w-20'>R$</p>
                                         </div>
-                                    ))}
+                                        <div className='mt-2'>
+                                            {produtos.map((produto, index) => (
+                                                <div key={index} className='flex flex-row space-x-1'>
+                                                    <p className='w-40'>{produto.nome}</p>
+                                                    <p className='w-20'>{produto.quantidade}</p>
+                                                    <p className='w-20'>{produto.preco}</p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
                                     <div className='mt-3'>
                                         <p className='text-xl'>Valor total: R$ {total.toFixed(2)}</p>
                                     </div>

@@ -36,6 +36,11 @@ const ModalCadastroCliente = ({ open, handleClose, onClienteCadastrado }) => {
     const [telefone, setTelefone] = useState('');
 
     const handleCadastrar = () => {
+        if (!nome || !telefone) {
+            alert('Por favor, coloque as informações necessárias para cadastrar o cliente.');
+            return;
+        }
+
         const cliente = { nome, telefone };
         const clientes = JSON.parse(localStorage.getItem('clientes')) || [];
         clientes.push(cliente);
@@ -102,6 +107,7 @@ const ModalCadastroCliente = ({ open, handleClose, onClienteCadastrado }) => {
                             onKeyDown={handleKeyDown}
                         />
                         <button
+                            type="button"
                             className='bg-[#e7e7e7] border-green-500 border-2 text-lg p-3 mt-4 h-12 w-56 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-green-500 hover:text-white flex items-center justify-center'
                             onClick={handleCadastrar}
                         >
