@@ -8,6 +8,8 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ReactToPrint from 'react-to-print';
+import { MdDelete } from "react-icons/md";
+import { FaPrint } from "react-icons/fa";
 
 const style = {
     position: 'absolute',
@@ -227,7 +229,7 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                                             />
                                             <button
                                                 onClick={handleAddProduto}
-                                                className='mt-3 bg-slate-200 p-2 w-56 rounded-xl'
+                                                className='mt-3 p-2 w-56 bg-[#e7e7e7] border-[#3b82f6] border-2 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-[#3b82f6] hover:text-white flex justify-center items-center'
                                             >
                                                 Acrescentar
                                             </button>
@@ -256,7 +258,7 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                                         />
                                         <button
                                             onClick={handleAbaterValor}
-                                            className='mt-3 bg-slate-200 p-2 w-56 rounded-xl'
+                                            className='mt-3 p-2 w-56 bg-[#e7e7e7] border-[#3b82f6] border-2 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-[#3b82f6] hover:text-white flex justify-center items-center'
                                         >
                                             Abater
                                         </button>
@@ -288,12 +290,12 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                                         onClick={toggleConfirmacaoExclusao}
                                         className='bg-[#e7e7e7] border-red-600 border-2 text-xl p-3 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-red-600 hover:text-white flex items-center'
                                     >
-                                        Excluir
+                                        <MdDelete className="mr-2 hover:text-white" /> Excluir
                                     </button>
                                 )}
                                 {mostrarImprimir && (
                                     <ReactToPrint
-                                        trigger={() => <button className='bg-[#e7e7e7] border-[#3b82f6] border-2 text-xl p-3 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-[#3b82f6] hover:text-white flex items-center'>Imprimir</button>}
+                                        trigger={() => <button className='bg-[#e7e7e7] border-[#3b82f6] border-2 text-xl p-3 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-[#3b82f6] hover:text-white flex items-center'><FaPrint className="mr-2 hover:text-white"/>Imprimir</button>}
                                         content={() => printRef.current}
                                     />
                                 )}
