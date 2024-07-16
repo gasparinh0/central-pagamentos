@@ -11,18 +11,28 @@ import { ReactToPrint } from 'react-to-print';
 import { MdKeyboardReturn } from "react-icons/md";
 import { IoIosCloseCircle } from "react-icons/io";
 
-const style = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: '40%',
-    maxHeight: '90vh',
-    bgcolor: 'background.paper',
-    borderRadius: '15px',
-    boxShadow: 24,
-    p: 4,
-    overflowY: 'auto',
+const getModalWidth = (activeStep) => {
+    let widthCustom = '40%'; // Default minimum height
+    if (activeStep === 0) {
+        widthCustom = '20%'; // Altura mínima para o step 0
+    } else if (activeStep === 1) {
+        widthCustom = '30%'; // Altura mínima para o step 1
+    } else if (activeStep === 2) {
+        widthCustom = '30%'; // Altura mínima para o step 2
+    }
+    return {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: widthCustom,
+        maxHeight: '90vh',
+        bgcolor: 'background.paper',
+        borderRadius: '15px',
+        boxShadow: 24,
+        p: 4,
+        overflowY: 'auto',
+    };
 };
 
 const steps = ['Informações do Cliente', 'Produtos e Preços', 'Resumo do Pedido'];
@@ -152,7 +162,7 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
         >
-            <Box sx={style}>
+            <Box sx={getModalWidth(activeStep)}>
                 <Typography id="modal-modal-title" variant="h6" component="h2">
                     <div className='flex justify-between'>
                         <div className='content-none w-2'></div>
@@ -169,7 +179,7 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
                 </Stepper>
                 <Typography id="modal-modal-description" sx={{ mt: 2 }}>
                     {activeStep === 0 && (
-                        <form className='flex flex-col justify-center items-center'>
+                        <form className='flex flex-col'>
                             <p>Nome do cliente:</p>
                             <input
                                 type="text"
@@ -191,7 +201,7 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
                         </form>
                     )}
                     {activeStep === 1 && (
-                        <form className='flex flex-col space-y-3 mt-3 justify-center items-center'>
+                        <form className='flex flex-col space-y-3 mt-3'>
                             <p>Produtos, Preço e Quantidade:</p>
                             {produtos.map((produto, index) => (
                                 <div key={index} className='flex flex-row space-x-3'>

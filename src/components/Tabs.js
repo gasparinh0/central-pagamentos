@@ -92,7 +92,7 @@ const Tabs = () => {
                         </div>
                     )}
                     {activeTab === 'marcacoes' && (
-                        <ResumoPedido pedidosProp={pedidos} onDelete={handleDeletePedido} /> 
+                        <ResumoPedido pedidosProp={pedidos} onDelete={handleDeletePedido} />
                     )}
                 </div>
                 <BasicModal open={modalPedidosOpen} handleClose={handleCloseModalPedidos} />
