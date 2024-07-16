@@ -169,7 +169,7 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
                 </Stepper>
                 <Typography id="modal-modal-description" sx={{ mt: 2 }}>
                     {activeStep === 0 && (
-                        <form className='flex flex-col'>
+                        <form className='flex flex-col justify-center items-center'>
                             <p>Nome do cliente:</p>
                             <input
                                 type="text"
@@ -191,7 +191,7 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
                         </form>
                     )}
                     {activeStep === 1 && (
-                        <form className='flex flex-col space-y-3 mt-3'>
+                        <form className='flex flex-col space-y-3 mt-3 justify-center items-center'>
                             <p>Produtos, Preço e Quantidade:</p>
                             {produtos.map((produto, index) => (
                                 <div key={index} className='flex flex-row space-x-3'>
