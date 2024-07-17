@@ -6,26 +6,13 @@ import Avatar from '@mui/material/Avatar';
 
 import { formatToPhone } from 'brazilian-values';
 
-// const formatPhoneNumber = (value) => {
-//     if (!value) return value;
-
-//     // Remove any non-numeric characters
-//     const phoneNumber = value.replace(/[^\d]/g, '');
-
-//     // Format phone number according to (DDD) 99999-9999
-//     const phoneNumberLength = phoneNumber.length;
-
-//     if (phoneNumberLength < 3) return phoneNumber;
-//     if (phoneNumberLength < 7) return `(${phoneNumber.slice(0, 2)}) ${phoneNumber.slice(2)}`;
-//     return `(${phoneNumber.slice(0, 2)}) ${phoneNumber.slice(2, 7)}-${phoneNumber.slice(7, 11)}`;
-// };
-
 const ListaClientes = ({ clientes, onDelete, onEdit }) => {
     const [editIndex, setEditIndex] = useState(null);
     const [editNome, setEditNome] = useState('');
     const [editTelefone, setEditTelefone] = useState('');
     const [colors, setColors] = useState({});
-
+    const [confirmacaoExclusao, setConfirmacaoExclusao] = useState({});
+    
     useEffect(() => {
         // Generate a color for each client name
         const newColors = {};
@@ -109,6 +96,17 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
         };
     }
 
+    const toggleConfirmacaoExclusao = (index) => {
+        setConfirmacaoExclusao((prev) => ({
+            ...prev,
+            [index]: !prev[index]
+        }));
+    };
+
+    const cancelarExclusao = () => {
+        setConfirmacaoExclusao({});
+    };
+
     return (
         <div>
             <ul>
@@ -127,20 +125,49 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
                                     </div>
                                 </div>
                                 <div className='flex ml-auto space-x-6'>
-                                    <button
-                                        className="bg-[#e7e7e7] border-[#3b82f6] border-2 text-xl p-3 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-[#3b82f6] hover:text-white flex items-center"
-                                        onClick={() => handleEdit(index)}
-                                    >
-                                        <MdModeEdit className="mr-2 hover:text-white" /> Editar cliente
-                                    </button>
-                                    <button
-                                        className="bg-[#e7e7e7] border-red-600 border-2 text-xl p-3 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-red-600 hover:text-white flex items-center"
-                                        onClick={() => onDelete(index)}
-                                    >
-                                        <MdDelete className="mr-2 hover:text-white" /> Excluir cliente
-                                    </button>
+                                    {!confirmacaoExclusao[index] && (
+                                        <button
+                                            className="bg-[#e7e7e7] border-[#3b82f6] border-2 text-xl p-3 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-[#3b82f6] hover:text-white flex items-center"
+                                            onClick={() => handleEdit(index)}
+                                        >
+                                            <MdModeEdit className="mr-2 hover:text-white" /> Editar cliente
+                                        </button>
+                                    )}
+                                    {confirmacaoExclusao[index] ? (
+                                        <div className='flex flex-row justify-center items-center'>
+                                            <p className='text-xl mr-3'>Você tem certeza?</p>
+                                            <div className='flex flex-row justify-center space-x-2'>
+                                                <button
+                                                    onClick={() => {
+                                                        onDelete(index);
+                                                        setConfirmacaoExclusao((prev) => ({
+                                                            ...prev,
+                                                            [index]: false
+                                                        }));
+                                                    }}
+                                                    className='bg-[#e7e7e7] border-red-600 border-2 text-xl w-24 p-3 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-red-600 hover:text-white flex justify-center items-center'
+                                                >
+                                                    Sim
+                                                </button>
+                                                <button
+                                                    onClick={cancelarExclusao}
+                                                    className='bg-[#e7e7e7] border-[#3b82f6] border-2 text-xl w-24 p-3 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-[#3b82f6] hover:text-white flex justify-center items-center'
+                                                >
+                                                    Não
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <button
+                                            onClick={() => toggleConfirmacaoExclusao(index)}
+                                            className='bg-[#e7e7e7] border-red-600 border-2 text-xl p-3 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-red-600 hover:text-white flex items-center'
+                                        >
+                                            <MdDelete className="mr-2 hover:text-white" /> Excluir
+                                        </button>
+                                    )}
                                 </div>
                             </div>
+
                             {editIndex === index && (
                                 <div className='flex flex-col bg-slate-300 p-5 rounded-3xl mt-3'>
                                     <form className='flex flex-col'>
