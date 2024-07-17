@@ -10,6 +10,8 @@ import Button from '@mui/material/Button';
 import { ReactToPrint } from 'react-to-print';
 import { MdKeyboardReturn } from "react-icons/md";
 import { IoIosCloseCircle } from "react-icons/io";
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
 
 const getModalWidth = (activeStep) => {
     let widthCustom = '40%'; // Default minimum height
@@ -46,6 +48,12 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
     const [total, setTotal] = useState(0);
     const [showSuccessMessage, setShowSuccessMessage] = useState(false);
     const [buttonHidden, setButtonHidden] = useState(false);
+    const [clientes, setClientes] = useState([]);
+
+    useEffect(() => {
+        const storedClientes = JSON.parse(localStorage.getItem('clientes')) || [];
+        setClientes(storedClientes);
+    }, []);
 
     useEffect(() => {
         const novoTotal = produtos.reduce((acc, produto) => acc + (parseFloat(produto.preco || 0) * parseInt(produto.quantidade || 0)), 0);
@@ -181,14 +189,22 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
                     {activeStep === 0 && (
                         <form className='flex flex-col'>
                             <p>Nome do cliente:</p>
-                            <input
-                                type="text"
+                            <Autocomplete
+                                options={clientes.slice(0, 5).map(cliente => cliente.nome)}
+                                noOptionsText="Nenhum cliente encontrado"
                                 value={nomeCliente}
-                                onChange={(e) => setNomeCliente(e.target.value)}
-                                className='w-56 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
-                                onKeyDown={handleKeyDown}
-                                placeholder='Digite o nome do cliente'
-                                maxLength='75'
+                                onChange={(event, newValue) => {
+                                    setNomeCliente(newValue);
+                                }}
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        placeholder="Selecione o cliente"
+                                        className='w-56 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
+                                        onKeyDown={handleKeyDown}
+                                        style={{ width: '50%'}}
+                                    />
+                                )}
                             />
                             <p className='mt-3'>Data do pedido:</p>
                             <input
