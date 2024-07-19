@@ -4,6 +4,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import { IoIosCloseCircle } from "react-icons/io";
+import { notifySuccess } from './ui/Toast';
 
 const style = {
     position: 'absolute',
@@ -47,6 +48,7 @@ const ModalCadastroCliente = ({ open, handleClose, onClienteCadastrado }) => {
         localStorage.setItem('clientes', JSON.stringify(clientes));
         setNome('');
         setTelefone('');
+        notifySuccess("Cliente salvo com sucesso","",3000)
         handleClose();
         if (onClienteCadastrado) {
             onClienteCadastrado(cliente);

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './App.css'; // Import do CSS
 import Tabs from './components/Tabs'; // Imports de componentes
 import Welcome from './components/Welcome'; // Corrigido o caminho do import
+import { ToastContainer } from 'react-toastify';
 
 function App() {
   const [showWelcome, setShowWelcome] = useState(true);
@@ -24,6 +25,7 @@ function App() {
 
   return (
     <div className="App">
+      <ToastContainer />
       {showWelcome ? <Welcome fadeOut={fadeOut} /> : <Tabs />}
     </div>
   );

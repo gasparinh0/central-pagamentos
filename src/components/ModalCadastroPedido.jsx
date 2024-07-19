@@ -12,6 +12,7 @@ import { MdKeyboardReturn } from "react-icons/md";
 import { IoIosCloseCircle } from "react-icons/io";
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
+import { notifySuccess } from './ui/Toast';
 
 const getModalWidth = (activeStep) => {
     let widthCustom = '40%'; // Default minimum height
@@ -46,9 +47,9 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
     const [dataVencimento, setDataVencimento] = useState('');
     const [produtos, setProdutos] = useState([{ nome: '', preco: '', quantidade: '' }]);
     const [total, setTotal] = useState(0);
-    const [showSuccessMessage, setShowSuccessMessage] = useState(false);
     const [buttonHidden, setButtonHidden] = useState(false);
     const [clientes, setClientes] = useState([]);
+    const [clientesFiltrados, setClientesFiltrados] = useState([]);
 
     useEffect(() => {
         const storedClientes = JSON.parse(localStorage.getItem('clientes')) || [];
@@ -59,6 +60,11 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
         const novoTotal = produtos.reduce((acc, produto) => acc + (parseFloat(produto.preco || 0) * parseInt(produto.quantidade || 0)), 0);
         setTotal(novoTotal);
     }, [produtos]);
+
+    useEffect(() => {
+        const storedClientes = JSON.parse(localStorage.getItem('clientes')) || [];
+        setClientes(storedClientes);
+    }, [localStorage.getItem('clientes')]);
 
     const componentRef = useRef(null);
 
@@ -107,7 +113,9 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
         setDataVencimento(formatarData(novaData.toISOString().split('T')[0]));
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
+        setButtonHidden(true);
+
         const pedido = {
             nomeCliente,
             dataPedido: formatarData(dataPedido),
@@ -126,15 +134,14 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
         setProdutos([{ nome: '', preco: '', quantidade: '' }]);
         setTotal(0);
 
-        setShowSuccessMessage(true);
-        setTimeout(() => {
-            setShowSuccessMessage(false);
-            handleClose();
-            handleReset();
-            setButtonHidden(false);
-        }, 3000);
+   
 
-        setButtonHidden(true);
+        notifySuccess("Pedido salvo com sucesso","",3000)
+
+        handleClose();
+        handleReset();
+        setButtonHidden(false);
+    
     };
 
     const handleKeyDown = (e) => {
@@ -163,6 +170,17 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
         return true;
     };
 
+    const handleFilterClientes = (event) => {
+        const value = event.target.value.toLowerCase();
+        const filtered = clientes.filter(cliente => cliente.nome.toLowerCase().includes(value));
+        setClientesFiltrados(filtered);
+    };
+
+    useEffect(() => {
+        setClientesFiltrados(clientes.slice(0, 5));
+    }, [clientes]);
+
+
     return (
         <Modal
             open={open}
@@ -190,7 +208,7 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
                         <form className='flex flex-col'>
                             <p>Nome do cliente:</p>
                             <Autocomplete
-                                options={clientes.slice(0, 5).map(cliente => cliente.nome)}
+                                options={clientesFiltrados.map(cliente => cliente.nome)}
                                 noOptionsText="Nenhum cliente encontrado"
                                 value={nomeCliente}
                                 onChange={(event, newValue) => {
@@ -202,7 +220,8 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
                                         placeholder="Selecione o cliente"
                                         className='w-56 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
                                         onKeyDown={handleKeyDown}
-                                        style={{ width: '50%'}}
+                                        onChange={handleFilterClientes}
+                                        style={{ width: '70%' }}
                                     />
                                 )}
                             />
@@ -217,47 +236,44 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
                         </form>
                     )}
                     {activeStep === 1 && (
-                        <form className='flex flex-col space-y-3 mt-3'>
-                            <p>Produtos, Preço e Quantidade:</p>
+                        <form className='flex flex-col'>
                             {produtos.map((produto, index) => (
-                                <div key={index} className='flex flex-row space-x-3'>
-                                    <input
-                                        type="text"
-                                        placeholder="Produto"
-                                        value={produto.nome}
-                                        maxLength='50'
-                                        onChange={(e) => handleChangeProduto(index, 'nome', e.target.value)}
-                                        className='w-56 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
-                                        onKeyDown={handleKeyDown}
-                                    />
-                                    <input
-                                        type="text"
-                                        placeholder="Preço"
-                                        maxLength='20'
-                                        value={produto.preco}
-                                        onChange={(e) => handleChangeProduto(index, 'preco', e.target.value)}
-                                        className='w-28 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
-                                        onKeyDown={handleKeyDown}
-                                    />
-                                    <input
-                                        type="number"
-                                        placeholder="Quantidade"
-                                        value={produto.quantidade}
-                                        onChange={(e) => handleChangeProduto(index, 'quantidade', e.target.value)}
-                                        className='w-20 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
-                                        onKeyDown={handleKeyDown}
-                                    />
-                                    {index === 0 && (
-                                        <button
-                                            type="button"
-                                            onClick={handleAddProduto}
-                                            className='bg-[#e7e7e7] border-[#3b82f6] border-2 text-xs p-3 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-[#3b82f6] hover:text-white flex items-center'
-                                        >
-                                            Adicionar produto
-                                        </button>
-                                    )}
+                                <div key={index} className='flex space-x-2 mb-4'>
+                                    <div className='flex-1'>
+                                        <p>Produto:</p>
+                                        <input
+                                            type="text"
+                                            value={produto.nome}
+                                            onChange={(e) => handleChangeProduto(index, 'nome', e.target.value)}
+                                            className='w-full px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
+                                            onKeyDown={handleKeyDown}
+                                        />
+                                    </div>
+                                    <div className='flex-1'>
+                                        <p>Preço:</p>
+                                        <input
+                                            type="text"
+                                            value={produto.preco}
+                                            onChange={(e) => handleChangeProduto(index, 'preco', e.target.value)}
+                                            className='w-full px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
+                                            onKeyDown={handleKeyDown}
+                                        />
+                                    </div>
+                                    <div className='flex-1'>
+                                        <p>Quantidade:</p>
+                                        <input
+                                            type="text"
+                                            value={produto.quantidade}
+                                            onChange={(e) => handleChangeProduto(index, 'quantidade', e.target.value)}
+                                            className='w-full px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
+                                            onKeyDown={handleKeyDown}
+                                        />
+                                    </div>
                                 </div>
                             ))}
+                            <Button variant="contained" color="primary" onClick={handleAddProduto}>
+                                Adicionar Produto
+                            </Button>
                         </form>
                     )}
                     {activeStep === 2 && (
@@ -307,28 +323,21 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
                             />
                         </div>
                     )}
-                    <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-                        <Button
-                            color="inherit"
-                            disabled={activeStep === 0}
-                            onClick={handleBack}
-                            sx={{ mr: 1 }}
-                        >
+                    <div className="mt-4 flex justify-between">
+                        <Button disabled={activeStep === 0} onClick={handleBack}>
                             <MdKeyboardReturn className='mr-2' /> Voltar
                         </Button>
-                        <Box sx={{ flex: '1 1 auto' }} />
-                        {!buttonHidden && (
-                            <Button onClick={activeStep === steps.length - 1 ? handleSave : handleNext}>
-                                {activeStep === steps.length - 1 ? 'Cadastrar' : 'Próximo'}
+                        {activeStep === steps.length - 1 ? (
+                            <Button variant="contained" color="primary" onClick={handleSave} disabled={buttonHidden}>
+                                Salvar
+                            </Button>
+                        ) : (
+                            <Button variant="contained" color="primary" onClick={handleNext}>
+                                Próximo
                             </Button>
                         )}
-                    </Box>
+                    </div>
                 </Typography>
-                {showSuccessMessage && (
-                    <Typography sx={{ mt: 2, mb: 1 }}>
-                        <p className='text-green-500 text-xl flex justify-center'>Cadastro finalizado com sucesso!</p>
-                    </Typography>
-                )}
             </Box>
         </Modal>
     );

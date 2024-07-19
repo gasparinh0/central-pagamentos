@@ -10,6 +10,7 @@ import { MdBackup } from "react-icons/md";
 import { FaArrowDownLong } from "react-icons/fa6";
 import { FaStar } from "react-icons/fa";
 import logo from '../assets/logo.png';
+import { notifySuccess } from './ui/Toast';
 
 function Navbar({ onClienteCadastrado, onPedidoCadastrado }) {
     const [modalCadastroOpen, setModalCadastroOpen] = useState(false);
@@ -20,10 +21,12 @@ function Navbar({ onClienteCadastrado, onPedidoCadastrado }) {
             const exportData = () => {
                 const clients = JSON.parse(localStorage.getItem('clientes')) || [];
                 const orders = JSON.parse(localStorage.getItem('pedidos')) || [];
+                const paidOrders = JSON.parse(localStorage.getItem('paidOrders')) || [];
 
                 const data = {
                     clients,
-                    orders
+                    orders,
+                    paidOrders
                 };
 
                 const currentDate = new Date().toISOString().slice(0, 10); // Get current date in YYYY-MM-DD format
@@ -60,10 +63,12 @@ function Navbar({ onClienteCadastrado, onPedidoCadastrado }) {
     const exportData = () => {
         const clients = JSON.parse(localStorage.getItem('clientes')) || [];
         const orders = JSON.parse(localStorage.getItem('pedidos')) || [];
+        const paidOrders = JSON.parse(localStorage.getItem('paidOrders')) || [];
 
         const data = {
             clients,
-            orders
+            orders,
+            paidOrders
         };
 
         const currentDate = new Date().toISOString().slice(0, 10); // Get current date in YYYY-MM-DD format
@@ -71,6 +76,7 @@ function Navbar({ onClienteCadastrado, onPedidoCadastrado }) {
 
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
         saveAs(blob, fileName);
+        notifySuccess("Backup salvo com sucesso","",3000)
     };
 
     const importData = (event) => {
@@ -79,6 +85,7 @@ function Navbar({ onClienteCadastrado, onPedidoCadastrado }) {
             const jsonData = JSON.parse(e.target.result);
             localStorage.setItem('clientes', JSON.stringify(jsonData.clients));
             localStorage.setItem('pedidos', JSON.stringify(jsonData.orders));
+            localStorage.setItem('paidOrders', JSON.stringify(jsonData.paidOrders));
             alert('Backup restaurado com sucesso!');
             // Atualiza a página para refletir os dados importados
             window.location.reload();

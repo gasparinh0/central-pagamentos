@@ -4,6 +4,8 @@ import ListaClientes from '../data/ListaClientes';
 import ResumoPedido from '../data/ListaPedidos';  // Importa o ResumoPedido
 import Navbar from './Navbar';  // Importa a Navbar
 
+import { ToastContainer } from 'react-toastify';
+
 const Tabs = () => {
     const [activeTab, setActiveTab] = useState('clientes');
     const [modalPedidosOpen, setModalPedidosOpen] = useState(false);
@@ -61,6 +63,7 @@ const Tabs = () => {
     };
 
     return (
+        <>
         <div>
             <Navbar onClienteCadastrado={handleClienteCadastrado} onPedidoCadastrado={handlePedidoCadastrado} />
             <div className="container mx-auto p-4">
@@ -98,6 +101,9 @@ const Tabs = () => {
                 <BasicModal open={modalPedidosOpen} handleClose={handleCloseModalPedidos} />
             </div>
         </div>
+        <ToastContainer/>
+        </>
+
     );
 };
 
