@@ -1,15 +1,16 @@
 import * as React from 'react';
-import { useState, useEffect } from "react";
-import { MdModeEdit } from "react-icons/md";
-import { MdDelete } from "react-icons/md";
-import { MdFilterAlt } from "react-icons/md";
+import { useState, useEffect, useRef } from "react";
+import { MdModeEdit, MdDelete, MdFilterAlt } from "react-icons/md";
 import Switch from '@mui/material/Switch';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-
+import Pagination from '@mui/material/Pagination';
+import Stack from '@mui/material/Stack';
 import { formatToPhone } from 'brazilian-values';
+
+const ITEMS_PER_PAGE = 10;
 
 const ListaClientes = ({ clientes, onDelete, onEdit }) => {
     const [editIndex, setEditIndex] = useState(null);
@@ -20,9 +21,14 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredClientes, setFilteredClientes] = useState(clientes);
     const [isAlphabetical, setIsAlphabetical] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    
+    const [anchorEl, setAnchorEl] = useState(null); // Definido anchorEl
+    const open = Boolean(anchorEl); // Definido open
+
+    const listRef = useRef(null);
 
     useEffect(() => {
-        // Generate a color for each client name
         const newColors = {};
         clientes.forEach(cliente => {
             if (!colors[cliente.nome]) {
@@ -40,18 +46,29 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
             );
         }
         if (isAlphabetical) {
-            displayedClientes = [...displayedClientes].sort((a, b) => 
+            displayedClientes = [...displayedClientes].sort((a, b) =>
                 a.nome.localeCompare(b.nome)
             );
         }
         setFilteredClientes(displayedClientes);
     }, [searchTerm, isAlphabetical, clientes]);
 
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const open = Boolean(anchorEl);
+    const handlePageChange = (event, value) => {
+        setCurrentPage(value);
+        listRef.current.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    const paginatedClientes = filteredClientes.slice(
+        (currentPage - 1) * ITEMS_PER_PAGE,
+        currentPage * ITEMS_PER_PAGE
+    );
+
+    const pageCount = Math.ceil(filteredClientes.length / ITEMS_PER_PAGE);
+
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
+
     const handleClose = () => {
         setAnchorEl(null);
     };
@@ -146,7 +163,7 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
     };
 
     return (
-        <div>
+        <div ref={listRef}>
             <div className='flex flex-row justify-between'>
                 <input
                     type="text"
@@ -162,7 +179,7 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
                     aria-expanded={open ? 'true' : undefined}
                     onClick={handleClick}
                 >
-                    <MdFilterAlt size='40'/> Filtros
+                    <MdFilterAlt size='40' /> Filtros
                 </Button>
                 <Menu
                     id="basic-menu"
@@ -179,8 +196,8 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
                 </Menu>
             </div>
             <ul>
-                {filteredClientes.length > 0 ? (
-                    filteredClientes.map((cliente, index) => (
+                {paginatedClientes.length > 0 ? (
+                    paginatedClientes.map((cliente, index) => (
                         <li key={index}>
                             <div>
                                 <div className='flex bg-[#e5e7eb] p-7 rounded-3xl gap-y-4 mt-5'>
@@ -237,7 +254,6 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
                                         )}
                                     </div>
                                 </div>
-
                                 {editIndex === index && (
                                     <div className='flex flex-col bg-slate-300 p-5 rounded-3xl mt-3'>
                                         <form className='flex flex-col'>
@@ -276,6 +292,15 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
                     <div className='flex justify-center items-center text-2xl mt-9'>Nenhum resultado encontrado.</div>
                 )}
             </ul>
+            <div className='flex justify-center mt-8'>
+                <Stack spacing={2}>
+                    <Pagination
+                        count={pageCount}
+                        page={currentPage}
+                        onChange={handlePageChange}
+                    />
+                </Stack>
+            </div>
         </div>
     );
 };
