@@ -8,8 +8,9 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ReactToPrint from 'react-to-print';
-import { MdDelete } from "react-icons/md";
+import { BiSave } from "react-icons/bi";
 import { FaPrint } from "react-icons/fa";
+import { IoIosCloseCircle } from "react-icons/io";
 
 const style = {
     position: 'absolute',
@@ -144,7 +145,10 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
         >
             <Box sx={style}>
                 <Typography id="modal-modal-title" variant="h6" component="h2">
-                    <h1 className='text-3xl'>{pedido.nomeCliente}</h1>
+                    <div className='flex flex-row justify-between'>
+                        <h1 className='text-3xl'>{pedido.nomeCliente}</h1>
+                        <IoIosCloseCircle size="35" onClick={handleClose} style={{ cursor: 'pointer' }} color='#dc2626' />
+                    </div>
                 </Typography>
                 <Typography id="modal-modal-description" sx={{ mt: 2 }}>
                     <div className='flex flex-row justify-between'>
@@ -290,12 +294,12 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                                         onClick={toggleConfirmacaoExclusao}
                                         className='bg-[#e7e7e7] border-red-600 border-2 text-xl p-3 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-red-600 hover:text-white flex items-center'
                                     >
-                                        <MdDelete className="mr-2 hover:text-white" /> Excluir
+                                        <BiSave className="mr-2 hover:text-white" /> Arquivar
                                     </button>
                                 )}
                                 {mostrarImprimir && (
                                     <ReactToPrint
-                                        trigger={() => <button className='bg-[#e7e7e7] border-[#3b82f6] border-2 text-xl p-3 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-[#3b82f6] hover:text-white flex items-center'><FaPrint className="mr-2 hover:text-white"/>Imprimir</button>}
+                                        trigger={() => <button className='bg-[#e7e7e7] border-[#3b82f6] border-2 text-xl p-3 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-[#3b82f6] hover:text-white flex items-center'><FaPrint className="mr-2 hover:text-white" />Imprimir</button>}
                                         content={() => printRef.current}
                                     />
                                 )}

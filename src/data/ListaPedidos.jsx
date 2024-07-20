@@ -1,11 +1,15 @@
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import BasicModal from "../components/ModalPedidos";
 import { MdFilterAlt } from "react-icons/md";
 import Switch from '@mui/material/Switch';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import Pagination from '@mui/material/Pagination';
+import Stack from '@mui/material/Stack';
+
+const ITEMS_PER_PAGE = 12;
 
 const ResumoPedido = ({ pedidosProp, onDelete }) => {
     const [pedidos, setPedidos] = useState(pedidosProp || []);
@@ -17,6 +21,10 @@ const ResumoPedido = ({ pedidosProp, onDelete }) => {
     const [isMostRecent, setIsMostRecent] = useState(false);
     const [isOldest, setIsOldest] = useState(false);
     const [isPaid, setIsPaid] = useState(false);
+    const [anchorEl, setAnchorEl] = useState(null);
+    const open = Boolean(anchorEl);
+    const [currentPage, setCurrentPage] = useState(1);
+    const listRef = useRef(null);
 
     useEffect(() => {
         if (pedidosProp) {
@@ -36,11 +44,10 @@ const ResumoPedido = ({ pedidosProp, onDelete }) => {
         }
     }, []);
 
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const open = Boolean(anchorEl);
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
+
     const handleClose = () => {
         setAnchorEl(null);
     };
@@ -125,10 +132,22 @@ const ResumoPedido = ({ pedidosProp, onDelete }) => {
 
     const displayPedidos = isPaid ? JSON.parse(localStorage.getItem('paidOrders')) : filterAndSortPedidos();
 
+    const handlePageChange = (event, value) => {
+        setCurrentPage(value);
+        listRef.current.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    const paginatedPedidos = displayPedidos.slice(
+        (currentPage - 1) * ITEMS_PER_PAGE,
+        currentPage * ITEMS_PER_PAGE
+    );
+
+    const pageCount = Math.ceil(displayPedidos.length / ITEMS_PER_PAGE);
+
     const label = { inputProps: { 'aria-label': 'Switch demo' } };
 
     return (
-        <div>
+        <div ref={listRef}>
             <div className='flex flex-row justify-between'>
                 <input
                     type="text"
@@ -189,7 +208,7 @@ const ResumoPedido = ({ pedidosProp, onDelete }) => {
                 <div className='flex justify-center items-center text-2xl mt-9'>Nenhum pedido encontrado.</div>
             ) : (
                 <div className='grid grid-cols-4 gap-x-4 gap-y-4 p-4'>
-                    {displayPedidos.map((pedido, index) => (
+                    {paginatedPedidos.map((pedido, index) => (
                         <div key={index} className='bg-[#e5e7eb] p-6 rounded-xl shadow-lg'>
                             <p className='text-xl font-light'>Cliente:</p>
                             <h1 className='text-3xl mb-5'>{pedido.nomeCliente}</h1>
@@ -224,6 +243,15 @@ const ResumoPedido = ({ pedidosProp, onDelete }) => {
                     deletarPedido={() => deletarPedido(pedidoIndexSelecionado)} // Utilize o índice do estado ao deletar
                 />
             )}
+            <div className='flex justify-center mt-8'>
+                <Stack spacing={2}>
+                    <Pagination
+                        count={pageCount}
+                        page={currentPage}
+                        onChange={handlePageChange}
+                    />
+                </Stack>
+            </div>
         </div>
     );
 };
