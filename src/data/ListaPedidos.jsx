@@ -11,6 +11,7 @@ const ResumoPedido = ({ pedidosProp, onDelete }) => {
     const [pedidos, setPedidos] = useState(pedidosProp || []);
     const [modalPedidosOpen, setModalPedidosOpen] = useState(false);
     const [pedidoSelecionado, setPedidoSelecionado] = useState(null);
+    const [pedidoIndexSelecionado, setPedidoIndexSelecionado] = useState(null); // Novo estado para armazenar o índice do pedido selecionado
     const [searchTerm, setSearchTerm] = useState('');
     const [isAlphabetical, setIsAlphabetical] = useState(false);
     const [isMostRecent, setIsMostRecent] = useState(false);
@@ -44,14 +45,16 @@ const ResumoPedido = ({ pedidosProp, onDelete }) => {
         setAnchorEl(null);
     };
 
-    const handleOpenModalPedidos = (pedido) => {
+    const handleOpenModalPedidos = (pedido, index) => {
         setPedidoSelecionado(pedido);
+        setPedidoIndexSelecionado(index); // Armazene o índice do pedido selecionado
         setModalPedidosOpen(true);
     };
 
     const handleCloseModalPedidos = () => {
         setModalPedidosOpen(false);
         setPedidoSelecionado(null);
+        setPedidoIndexSelecionado(null); // Limpe o índice do pedido selecionado
     };
 
     const atualizarPedido = (pedidoAtualizado) => {
@@ -202,7 +205,7 @@ const ResumoPedido = ({ pedidosProp, onDelete }) => {
                                 <div className='text-green-500 text-lg mt-4'>Já pago</div>
                             ) : (
                                 <button
-                                    onClick={() => handleOpenModalPedidos(pedido)}
+                                    onClick={() => handleOpenModalPedidos(pedido, index)} // Passe o índice ao abrir o modal
                                     className="bg-[#e7e7e7] border-[#3b82f6] border-2 text-lg p-3 mt-3 h-12 w-40 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-[#3b82f6] hover:text-white flex items-center justify-center"
                                 >
                                     Visualizar
@@ -218,7 +221,7 @@ const ResumoPedido = ({ pedidosProp, onDelete }) => {
                     handleClose={handleCloseModalPedidos}
                     pedido={pedidoSelecionado}
                     atualizarPedido={atualizarPedido}
-                    deletarPedido={() => deletarPedido(pedidos.indexOf(pedidoSelecionado))}
+                    deletarPedido={() => deletarPedido(pedidoIndexSelecionado)} // Utilize o índice do estado ao deletar
                 />
             )}
         </div>
