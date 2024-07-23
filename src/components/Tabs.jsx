@@ -66,7 +66,7 @@ const Tabs = () => {
         <>
         <div>
             <Navbar onClienteCadastrado={handleClienteCadastrado} onPedidoCadastrado={handlePedidoCadastrado} />
-            <div className="container mx-auto p-4">
+            <div className="container mx-auto p-8 bg-white mt-6 rounded-xl shadow-xl">
                 <div className="relative flex justify-around text-3xl space-x-4 border-b">
                     <button
                         className={`py-2 px-4 transition-colors duration-300 ${activeTab === 'clientes' ? 'text-blue-500' : 'text-gray-500'}`}

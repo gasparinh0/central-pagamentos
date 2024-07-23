@@ -3,8 +3,8 @@ import { useState, useEffect, useRef } from "react";
 import { MdModeEdit, MdDelete, MdFilterAlt } from "react-icons/md";
 import Switch from '@mui/material/Switch';
 import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
+import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
@@ -172,15 +172,16 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
-                <Button
+                <button
                     id="basic-button"
                     aria-controls={open ? 'basic-menu' : undefined}
                     aria-haspopup="true"
                     aria-expanded={open ? 'true' : undefined}
                     onClick={handleClick}
+                    className='flex items-center'
                 >
                     <MdFilterAlt size='40' /> Filtros
-                </Button>
+                </button>
                 <Menu
                     id="basic-menu"
                     anchorEl={anchorEl}
@@ -200,7 +201,7 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
                     paginatedClientes.map((cliente, index) => (
                         <li key={index}>
                             <div>
-                                <div className='flex bg-[#e5e7eb] p-7 rounded-3xl gap-y-4 mt-5'>
+                                <div className='flex bg-gray-100 p-7 rounded-3xl gap-y-4 mt-5 shadow-md'>
                                     <div className='mr-3'>
                                         <Avatar {...stringAvatar(cliente.nome, 70)} />
                                     </div>
@@ -211,14 +212,17 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
                                             <p className='text-2xl font-light'>{cliente.telefone}</p>
                                         </div>
                                     </div>
-                                    <div className='flex ml-auto space-x-6'>
+                                    <div className='flex ml-auto items-center space-x-6'>
                                         {!confirmacaoExclusao[index] && (
+                                            <Tooltip title="Editar">
                                             <button
-                                                className="bg-[#e7e7e7] border-[#3b82f6] border-2 text-xl p-3 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-[#3b82f6] hover:text-white flex items-center"
+                                                className="text-xl bg-slate-200 w-14 h-12 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:bg-[#3b82f6] hover:text-white"
                                                 onClick={() => handleEdit(index)}
                                             >
-                                                <MdModeEdit className="mr-2 hover:text-white" /> Editar cliente
+                                                {/* Editar */}
+                                                <MdModeEdit />
                                             </button>
+                                            </Tooltip>
                                         )}
                                         {confirmacaoExclusao[index] ? (
                                             <div className='flex flex-row justify-center items-center'>
@@ -232,25 +236,28 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
                                                                 [index]: false
                                                             }));
                                                         }}
-                                                        className='bg-[#e7e7e7] border-red-600 border-2 text-xl w-24 p-3 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-red-600 hover:text-white flex justify-center items-center'
+                                                        className='text-xl bg-red-600 w-24 h-12 text-white rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:shadow-2xl hover:bg-red-400'
                                                     >
                                                         Sim
                                                     </button>
                                                     <button
                                                         onClick={cancelarExclusao}
-                                                        className='bg-[#e7e7e7] border-[#3b82f6] border-2 text-xl w-24 p-3 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-[#3b82f6] hover:text-white flex justify-center items-center'
+                                                        className='text-xl bg-[#3b82f6] w-24 h-12 text-white rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:shadow-2xl hover:bg-[#769aff]'
                                                     >
                                                         Não
                                                     </button>
                                                 </div>
                                             </div>
                                         ) : (
+                                            <Tooltip title="Excluir">
                                             <button
                                                 onClick={() => toggleConfirmacaoExclusao(index)}
-                                                className='bg-[#e7e7e7] border-red-600 border-2 text-xl p-3 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-red-600 hover:text-white flex items-center'
+                                                className='text-xl bg-slate-200 w-14 h-12 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:bg-red-600 hover:text-white'
                                             >
-                                                <MdDelete className="mr-2 hover:text-white" /> Excluir
+                                                {/* Excluir */}
+                                                <MdDelete />
                                             </button>
+                                            </Tooltip>
                                         )}
                                     </div>
                                 </div>
@@ -278,7 +285,7 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
                                             />
                                         </form>
                                         <button
-                                            className='bg-[#e7e7e7] border-green-500 border-2 text-lg p-2 mt-3 w-56 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-green-500 hover:text-white flex items-center justify-center'
+                                            className='text-lg bg-slate-200 w-44 mt-3 h-10 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:bg-slate-100'
                                             onClick={handleSaveEdit}
                                         >
                                             Salvar

@@ -135,7 +135,7 @@ function Navbar({ onClienteCadastrado, onPedidoCadastrado }) {
                     aria-haspopup="true"
                     aria-expanded={openNovo ? 'true' : undefined}
                     onClick={handleClickNovo}
-                    className='text-xl bg-slate-200 w-40 h-12 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:bg-[#3b82f6] hover:text-white'
+                    className='text-xl bg-slate-200 w-40 h-12 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:bg-[#3b82f6] hover:text-white hover:w-44 hover:h-14'
                 >
                     <FiPlusCircle className='mr-2'/>Novo
                 </button>
@@ -167,7 +167,7 @@ function Navbar({ onClienteCadastrado, onPedidoCadastrado }) {
                     aria-haspopup="true"
                     aria-expanded={openBackup ? 'true' : undefined}
                     onClick={handleClickBackup}
-                    className='text-xl bg-slate-200 w-40 h-12 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:bg-[#3b82f6] hover:text-white'
+                    className='text-xl bg-slate-200 w-40 h-12 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:bg-[#3b82f6] hover:text-white hover:w-44 hover:h-14'
                 >
                     <MdBackup className='mr-2'/>Backup
                 </button>
