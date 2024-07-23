@@ -3,11 +3,13 @@ import { useEffect, useState, useRef } from 'react';
 import BasicModal from "../components/ModalPedidos";
 import { MdFilterAlt } from "react-icons/md";
 import Switch from '@mui/material/Switch';
-import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
+import { FaEye } from "react-icons/fa";
+import Tooltip from '@mui/material/Tooltip';
+import { FaCheck } from "react-icons/fa6";
 
 const ITEMS_PER_PAGE = 12;
 
@@ -156,15 +158,16 @@ const ResumoPedido = ({ pedidosProp, onDelete }) => {
                     value={searchTerm}
                     onChange={handleSearchChange}
                 />
-                <Button
+                <button
                     id="basic-button"
                     aria-controls={open ? 'basic-menu' : undefined}
                     aria-haspopup="true"
                     aria-expanded={open ? 'true' : undefined}
                     onClick={handleClick}
+                    className='text-xl bg-slate-200 w-40 h-12 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 text-neutral-800 hover:bg-slate-100'
                 >
                     <MdFilterAlt size='40' /> Filtros
-                </Button>
+                </button>
                 <Menu
                     id="basic-menu"
                     anchorEl={anchorEl}
@@ -209,8 +212,22 @@ const ResumoPedido = ({ pedidosProp, onDelete }) => {
             ) : (
                 <div className='grid grid-cols-4 gap-x-4 gap-y-4 p-4'>
                     {paginatedPedidos.map((pedido, index) => (
-                        <div key={index} className='bg-[#e5e7eb] p-6 rounded-xl shadow-lg'>
-                            <p className='text-xl font-light'>Cliente:</p>
+                        <div key={index} className='bg-gray-100 p-6 rounded-xl shadow-lg'>
+                            <div className='flex justify-between'>
+                                <p className='text-xl font-light'>Cliente:</p>
+                                {isPaid ? (
+                                    <div className='text-green-500 text-lg flex flex-row'><FaCheck size="28" className="text-green-500 mr-2"/>Já pago</div>
+                                ) : (
+                                    <Tooltip title="Visualizar pedido">
+                                    <button
+                                        onClick={() => handleOpenModalPedidos(pedido, index)} // Passe o índice ao abrir o modal
+                                        className="text-xl bg-slate-200 w-10 h-8 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 text-neutral-800 hover:bg-[#3b82f6] hover:text-white"
+                                    >
+                                        <FaEye />
+                                    </button>
+                                    </Tooltip>
+                                )}
+                            </div>
                             <h1 className='text-3xl mb-5'>{pedido.nomeCliente}</h1>
                             <div className='flex space-x-2'>
                                 <p>Total do pedido:</p>
@@ -220,16 +237,6 @@ const ResumoPedido = ({ pedidosProp, onDelete }) => {
                                 <p>Último pedido feito:</p>
                                 <p className='font-semibold'>{pedido.dataPedido}</p>
                             </div>
-                            {isPaid ? (
-                                <div className='text-green-500 text-lg mt-4'>Já pago</div>
-                            ) : (
-                                <button
-                                    onClick={() => handleOpenModalPedidos(pedido, index)} // Passe o índice ao abrir o modal
-                                    className="bg-[#e7e7e7] border-[#3b82f6] border-2 text-lg p-3 mt-3 h-12 w-40 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-[#3b82f6] hover:text-white flex items-center justify-center"
-                                >
-                                    Visualizar
-                                </button>
-                            )}
                         </div>
                     ))}
                 </div>
