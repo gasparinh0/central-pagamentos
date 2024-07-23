@@ -178,7 +178,7 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
                     aria-haspopup="true"
                     aria-expanded={open ? 'true' : undefined}
                     onClick={handleClick}
-                    className='flex items-center'
+                    className='text-xl bg-slate-200 w-40 h-12 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 text-neutral-800 hover:bg-slate-100'
                 >
                     <MdFilterAlt size='40' /> Filtros
                 </button>
@@ -216,7 +216,7 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
                                         {!confirmacaoExclusao[index] && (
                                             <Tooltip title="Editar">
                                             <button
-                                                className="text-xl bg-slate-200 w-14 h-12 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:bg-[#3b82f6] hover:text-white"
+                                                className="text-xl bg-slate-200 text-neutral-800 w-14 h-12 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:bg-[#3b82f6] hover:text-white"
                                                 onClick={() => handleEdit(index)}
                                             >
                                                 {/* Editar */}
@@ -252,7 +252,7 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
                                             <Tooltip title="Excluir">
                                             <button
                                                 onClick={() => toggleConfirmacaoExclusao(index)}
-                                                className='text-xl bg-slate-200 w-14 h-12 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:bg-red-600 hover:text-white'
+                                                className='text-xl bg-slate-200 text-neutral-800 w-14 h-12 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:bg-red-600 hover:text-white'
                                             >
                                                 {/* Excluir */}
                                                 <MdDelete />
