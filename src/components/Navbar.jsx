@@ -7,14 +7,19 @@ import { FaRegQuestionCircle } from "react-icons/fa";
 import { IoPersonSharp } from "react-icons/io5";
 import { FaCartPlus } from "react-icons/fa";
 import { MdBackup } from "react-icons/md";
+import { FiPlusCircle } from "react-icons/fi";
 import { FaArrowDownLong } from "react-icons/fa6";
 import { FaStar } from "react-icons/fa";
 import logo from '../assets/logo.png';
 import { notifySuccess } from './ui/Toast';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 
 function Navbar({ onClienteCadastrado, onPedidoCadastrado }) {
     const [modalCadastroOpen, setModalCadastroOpen] = useState(false);
     const [modalPedidoOpen, setModalPedidoOpen] = useState(false);
+    const [anchorElNovo, setAnchorElNovo] = React.useState(null);
+    const [anchorElBackup, setAnchorElBackup] = React.useState(null);
 
     useEffect(() => {
         const scheduleBackup = () => {
@@ -43,6 +48,25 @@ function Navbar({ onClienteCadastrado, onPedidoCadastrado }) {
 
         scheduleBackup();
     }, []);
+
+    const openNovo = Boolean(anchorElNovo);
+    const openBackup = Boolean(anchorElBackup);
+
+    const handleClickNovo = (event) => {
+        setAnchorElNovo(event.currentTarget);
+    };
+
+    const handleCloseNovo = () => {
+        setAnchorElNovo(null);
+    };
+
+    const handleClickBackup = (event) => {
+        setAnchorElBackup(event.currentTarget);
+    };
+
+    const handleCloseBackup = () => {
+        setAnchorElBackup(null);
+    };
 
     const handleOpenModalCadastro = () => {
         setModalCadastroOpen(true);
@@ -76,7 +100,7 @@ function Navbar({ onClienteCadastrado, onPedidoCadastrado }) {
 
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
         saveAs(blob, fileName);
-        notifySuccess("Backup salvo com sucesso","",3000)
+        notifySuccess("Backup salvo com sucesso", "", 3000)
     };
 
     const importData = (event) => {
@@ -94,65 +118,100 @@ function Navbar({ onClienteCadastrado, onPedidoCadastrado }) {
     };
 
     return (
-        <div className="flex justify-between bg-gray-200 shadow shadow-gray-300 p-7 items-center">
+        <div className="flex justify-between bg-white shadow shadow-gray-300 p-3 items-center">
             {/* Logo e texto */}
             <div className='flex items-center'>
-                <img src={logo} alt="Logo" className="w-20 h-20" />
+                <img src={logo} alt="Logo" className="w-16 h-16" />
                 <div className='flex flex-col ml-3'>
-                    <h1 className='text-2xl'>Central do crediário</h1>
-                    <p className='text-xl font-light'>Bem vindo!</p>
+                    <h1 className='text-xl'>Central do crediário</h1>
                 </div>
             </div>
 
             {/* Botões centralizados */}
-            <div className='flex space-x-8 mr-24'>
+            <div className='flex space-x-8 mr-24 items-center'>
                 <button
-                    onClick={handleOpenModalCadastro}
-                    className="bg-[#e7e7e7] border-[#3b82f6] border-2 text-2xl p-3 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-[#3b82f6] hover:text-white flex items-center"
+                    id="novo-button"
+                    aria-controls={openNovo ? 'novo-menu' : undefined}
+                    aria-haspopup="true"
+                    aria-expanded={openNovo ? 'true' : undefined}
+                    onClick={handleClickNovo}
+                    className='text-xl bg-slate-200 w-40 h-12 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:bg-[#3b82f6] hover:text-white'
                 >
-                    <IoPersonSharp className="mr-2 hover:text-white"/> Cadastrar cliente
+                    <FiPlusCircle className='mr-2'/>Novo
                 </button>
+                <Menu
+                    id="novo-menu"
+                    anchorEl={anchorElNovo}
+                    open={openNovo}
+                    onClose={handleCloseNovo}
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'center',
+                    }}
+                    transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'center',
+                    }}
+                    MenuListProps={{
+                        'aria-labelledby': 'novo-button',
+                    }}
+                    className='mt-2 flex justify-center items-center'
+                >
+                    <MenuItem onClick={handleOpenModalCadastro}><IoPersonSharp className='mr-3' />Cliente</MenuItem>
+                    <MenuItem onClick={handleOpenModalPedido}><FaCartPlus className='mr-3' />Pedido</MenuItem>
+                </Menu>
 
                 <button
-                    onClick={handleOpenModalPedido}
-                    className="bg-[#e7e7e7] border-[#3b82f6] border-2 text-2xl p-3 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-[#3b82f6] hover:text-white flex items-center"
+                    id="backup-button"
+                    aria-controls={openBackup ? 'backup-menu' : undefined}
+                    aria-haspopup="true"
+                    aria-expanded={openBackup ? 'true' : undefined}
+                    onClick={handleClickBackup}
+                    className='text-xl bg-slate-200 w-40 h-12 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:bg-[#3b82f6] hover:text-white'
                 >
-                    <FaCartPlus className='mr-2  hover:text-white' /> Cadastrar Pedido
+                    <MdBackup className='mr-2'/>Backup
                 </button>
-
-                <button
-                    onClick={exportData}
-                    className="bg-[#e7e7e7] border-[#3b82f6] border-2 text-2xl p-3 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-[#3b82f6]  hover:text-white flex items-center"
+                <Menu
+                    id="backup-menu"
+                    anchorEl={anchorElBackup}
+                    open={openBackup}
+                    onClose={handleCloseBackup}
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'center',
+                    }}
+                    transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'center',
+                    }}
+                    MenuListProps={{
+                        'aria-labelledby': 'backup-button',
+                    }}
+                    className='mt-2 flex justify-center items-center'
                 >
-                    <MdBackup className='mr-2  hover:text-white' /> Exportar Backup
-                </button>
-                <input
-                    type="file"
-                    accept=".json"
-                    onChange={importData}
-                    style={{ display: 'none' }}
-                    id="import-backup"
-                />
-                <label
-                    htmlFor="import-backup"
-                    className="bg-[#e7e7e7] border-[#3b82f6] border-2 text-2xl p-3 rounded-2xl transition-colors duration-300 shadow-lg cursor-pointer hover:bg-[#3b82f6]  hover:text-white flex items-center"
-                >
-                    <FaArrowDownLong className='mr-2  hover:text-white' /> Importar Backup
-                </label>
+                    <MenuItem>
+                        <label htmlFor="import-backup" className="flex items-center cursor-pointer">
+                            <MdBackup className='mr-3' />
+                            Importar backup
+                            <input
+                                type="file"
+                                accept=".json"
+                                id="import-backup"
+                                onChange={importData}
+                                style={{ display: 'none' }}
+                            />
+                        </label>
+                    </MenuItem>
+                    <MenuItem onClick={exportData}><FaArrowDownLong className='mr-3' />Exportar backup</MenuItem>
+                </Menu>
             </div>
 
             {/* Ícones à direita */}
-            <div className='flex space-x-10'>
+            <div className='flex space-x-9 mr-8'>
                 <div className='flex flex-col justify-center items-center transition-colors duration-300 hover:text-orange-600'>
                     <a href='https://www.youtube.com/' className='flex flex-col justify-center items-center'>
-                        <FaRegQuestionCircle size='40' />
+                        <FaRegQuestionCircle size='30' />
                         <p className='text-xl'>Dúvidas</p>
-                    </a>
-                </div>
-                <div className='flex flex-col justify-center items-center'>
-                    <a href='https://www.youtube.com/' className='flex flex-col justify-center items-center transition-colors duration-300 hover:text-yellow-400'>
-                        <FaStar size='40' />
-                        <p className='text-xl'>Avalie</p>
                     </a>
                 </div>
             </div>
