@@ -11,6 +11,7 @@ import ReactToPrint from 'react-to-print';
 import { BiSave } from "react-icons/bi";
 import { FaPrint } from "react-icons/fa";
 import { IoIosCloseCircle } from "react-icons/io";
+import Tooltip from '@mui/material/Tooltip';
 
 const style = {
     position: 'absolute',
@@ -147,7 +148,54 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                 <Typography id="modal-modal-title" variant="h6" component="h2">
                     <div className='flex flex-row justify-between'>
                         <h1 className='text-3xl'>{pedido.nomeCliente}</h1>
-                        <IoIosCloseCircle size="35" onClick={handleClose} style={{ cursor: 'pointer' }} color='#dc2626' />
+                        <div className='flex flex-row space-x-5 items-center mb-3'>
+                            {confirmacaoExclusao ? (
+                                <div className='flex flex-row justify-center items-center'>
+                                    <p className='text-lg mr-2'>Você tem certeza?</p>
+                                    <div className='flex flex-row justify-center space-x-2'>
+                                        <button
+                                            onClick={handleDeleteCliente}
+                                            className='text-lg bg-red-600 w-20 h-10 text-white rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:shadow-2xl hover:bg-red-400'
+                                        >
+                                            Sim
+                                        </button>
+                                        <button
+                                            onClick={cancelarExclusao}
+                                            className='text-lg bg-slate-200 w-20 h-10 text-neutral-700 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:shadow-2xl hover:bg-slate-100'
+                                        >
+                                            Não
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <Tooltip title="Arquivar pedido">
+                                    <button
+                                        onClick={toggleConfirmacaoExclusao}
+                                        className='text-xl text-neutral-700 flex justify-center items-center transition-all duration-300'
+                                    >
+                                        {/* Excluir */}
+                                        <BiSave size='30' className='transition-all duration-300 hover:text-neutral-500' />
+                                    </button>
+                                </Tooltip>
+                            )}
+                            {mostrarImprimir && (
+                                <Tooltip title="Imprimir pedido">
+                                    <div>
+                                        <ReactToPrint
+                                            trigger={() => <button className='text-xl text-neutral-700 flex justify-center items-center transition-all duration-300'><FaPrint size='26' className='transition-all duration-300 hover:text-neutral-500' /></button>}
+                                            content={() => printRef.current}
+                                        />
+                                    </div>
+                                </Tooltip>
+                            )}
+                            <div>
+                                <Tooltip title="Fechar">
+                                    <div>
+                                        <IoIosCloseCircle size="30" onClick={handleClose} style={{ cursor: 'pointer' }} color='#dc2626' />
+                                    </div>
+                                </Tooltip>
+                            </div>
+                        </div>
                     </div>
                 </Typography>
                 <Typography id="modal-modal-description" sx={{ mt: 2 }}>
@@ -175,7 +223,7 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                                                     <p className='w-20'>{produto.quantidade}</p>
                                                     <p className='w-20'>{produto.preco}</p>
                                                 </div>
-                                                <div className=' w-full border-2 border-gray-200'></div>
+                                                <div className=' w-72 border-2 border-gray-200'></div>
                                             </div>
                                         </div>
                                     ))}
@@ -233,7 +281,7 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                                             />
                                             <button
                                                 onClick={handleAddProduto}
-                                                className='mt-3 p-2 w-56 bg-[#e7e7e7] border-[#3b82f6] border-2 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-[#3b82f6] hover:text-white flex justify-center items-center'
+                                                className='text-lg bg-slate-200 mt-3 w-56 h-9 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 text-neutral-700 hover:bg-slate-100'
                                             >
                                                 Acrescentar
                                             </button>
@@ -262,48 +310,13 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                                         />
                                         <button
                                             onClick={handleAbaterValor}
-                                            className='mt-3 p-2 w-56 bg-[#e7e7e7] border-[#3b82f6] border-2 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-[#3b82f6] hover:text-white flex justify-center items-center'
+                                            className='text-lg bg-slate-200 mt-3 w-56 h-9 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 text-neutral-700 hover:bg-slate-100'
                                         >
                                             Abater
                                         </button>
                                     </Typography>
                                 </AccordionDetails>
                             </Accordion>
-                            <div className='flex flex-row space-x-3 justify-center'>
-                                {confirmacaoExclusao ? (
-                                    <div className='flex flex-col justify-center items-center'>
-                                        <p className='text-xl'>Você tem certeza?</p>
-                                        <div className='content-none bg-slate-300 w-44 h-1 mt-1 mb-3 rounded-lg'></div>
-                                        <div className='flex flex-row justify-center space-x-2'>
-                                            <button
-                                                onClick={handleDeleteCliente}
-                                                className='bg-[#e7e7e7] border-red-600 border-2 text-xl w-24 p-3 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-red-600 hover:text-white flex justify-center items-center'
-                                            >
-                                                Sim
-                                            </button>
-                                            <button
-                                                onClick={cancelarExclusao}
-                                                className='bg-[#e7e7e7] border-[#3b82f6] border-2 text-xl w-24 p-3 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-[#3b82f6] hover:text-white flex justify-center items-center'
-                                            >
-                                                Não
-                                            </button>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <button
-                                        onClick={toggleConfirmacaoExclusao}
-                                        className='bg-[#e7e7e7] border-red-600 border-2 text-xl p-3 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-red-600 hover:text-white flex items-center'
-                                    >
-                                        <BiSave className="mr-2 hover:text-white" /> Arquivar
-                                    </button>
-                                )}
-                                {mostrarImprimir && (
-                                    <ReactToPrint
-                                        trigger={() => <button className='bg-[#e7e7e7] border-[#3b82f6] border-2 text-xl p-3 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-[#3b82f6] hover:text-white flex items-center'><FaPrint className="mr-2 hover:text-white" />Imprimir</button>}
-                                        content={() => printRef.current}
-                                    />
-                                )}
-                            </div>
                         </div>
                     </div>
                 </Typography>
