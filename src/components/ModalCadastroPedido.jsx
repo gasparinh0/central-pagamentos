@@ -317,7 +317,7 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
                                 </div>
                             </div>
                             <ReactToPrint
-                                trigger={() => <button className='bg-[#e7e7e7] border-[#3b82f6] border-2 text-xl p-3 rounded-2xl w-40 transition-colors duration-300 shadow-lg hover:bg-[#3b82f6] hover:text-white flex items-center justify-center'>Imprimir</button>}
+                                trigger={() => <button className='text-xl bg-slate-200 mt-3 w-40 h-10 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 text-neutral-700 hover:bg-slate-100'>Imprimir</button>}
                                 content={() => componentRef.current}
                                 pageStyle="print"
                             />

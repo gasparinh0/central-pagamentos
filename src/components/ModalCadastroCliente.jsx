@@ -110,7 +110,7 @@ const ModalCadastroCliente = ({ open, handleClose, onClienteCadastrado }) => {
                         />
                         <button
                             type="button"
-                            className='bg-[#e7e7e7] border-green-500 border-2 text-lg p-3 mt-4 h-12 w-56 rounded-2xl transition-colors duration-300 shadow-lg hover:bg-green-500 hover:text-white flex items-center justify-center'
+                            className='text-xl bg-slate-200 mt-3 w-40 h-10 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 text-neutral-700 hover:bg-slate-100'
                             onClick={handleCadastrar}
                         >
                             Cadastrar
