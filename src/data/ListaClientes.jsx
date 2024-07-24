@@ -9,6 +9,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
 import { formatToPhone } from 'brazilian-values';
+import { motion } from "framer-motion"
 
 const ITEMS_PER_PAGE = 10;
 
@@ -22,7 +23,7 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
     const [filteredClientes, setFilteredClientes] = useState(clientes);
     const [isAlphabetical, setIsAlphabetical] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
-    
+
     const [anchorEl, setAnchorEl] = useState(null); // Definido anchorEl
     const open = Boolean(anchorEl); // Definido open
 
@@ -215,48 +216,54 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
                                     <div className='flex ml-auto items-center space-x-6'>
                                         {!confirmacaoExclusao[index] && (
                                             <Tooltip title="Editar">
-                                            <button
-                                                className="text-xl bg-slate-200 text-neutral-700 w-14 h-12 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:bg-[#3b82f6] hover:text-white"
-                                                onClick={() => handleEdit(index)}
-                                            >
-                                                {/* Editar */}
-                                                <MdModeEdit />
-                                            </button>
+                                                <button
+                                                    className="text-xl bg-slate-200 text-neutral-700 w-14 h-12 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:bg-[#3b82f6] hover:text-white"
+                                                    onClick={() => handleEdit(index)}
+                                                >
+                                                    {/* Editar */}
+                                                    <MdModeEdit />
+                                                </button>
                                             </Tooltip>
                                         )}
                                         {confirmacaoExclusao[index] ? (
-                                            <div className='flex flex-row justify-center items-center'>
-                                                <p className='text-xl mr-3'>Você tem certeza?</p>
-                                                <div className='flex flex-row justify-center space-x-2'>
-                                                    <button
-                                                        onClick={() => {
-                                                            onDelete(index);
-                                                            setConfirmacaoExclusao((prev) => ({
-                                                                ...prev,
-                                                                [index]: false
-                                                            }));
-                                                        }}
-                                                        className='text-xl bg-red-600 w-24 h-12 text-white rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:shadow-2xl hover:bg-red-400'
-                                                    >
-                                                        Sim
-                                                    </button>
-                                                    <button
-                                                        onClick={cancelarExclusao}
-                                                        className='text-xl bg-[#3b82f6] w-24 h-12 text-white rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:shadow-2xl hover:bg-[#769aff]'
-                                                    >
-                                                        Não
-                                                    </button>
+                                            <motion.div
+                                                initial={{ opacity: 0, scale: 0.95 }}
+                                                animate={{ opacity: 1, scale: 1 }}
+                                                transition={{ duration: 0.5 }}
+                                            >
+                                                <div className='flex flex-row justify-center items-center'>
+                                                    <p className='text-xl mr-3'>Você tem certeza?</p>
+                                                    <div className='flex flex-row justify-center space-x-2'>
+                                                        <button
+                                                            onClick={() => {
+                                                                onDelete(index);
+                                                                setConfirmacaoExclusao((prev) => ({
+                                                                    ...prev,
+                                                                    [index]: false
+                                                                }));
+                                                            }}
+                                                            className='text-xl bg-red-600 w-24 h-12 text-white rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:shadow-2xl hover:bg-red-400'
+                                                        >
+                                                            Sim
+                                                        </button>
+                                                        <button
+                                                            onClick={cancelarExclusao}
+                                                            className='text-xl bg-[#3b82f6] w-24 h-12 text-white rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:shadow-2xl hover:bg-[#769aff]'
+                                                        >
+                                                            Não
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            </motion.div>
                                         ) : (
                                             <Tooltip title="Excluir">
-                                            <button
-                                                onClick={() => toggleConfirmacaoExclusao(index)}
-                                                className='text-xl bg-slate-200 text-neutral-700 w-14 h-12 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:bg-red-600 hover:text-white'
-                                            >
-                                                {/* Excluir */}
-                                                <MdDelete />
-                                            </button>
+                                                <button
+                                                    onClick={() => toggleConfirmacaoExclusao(index)}
+                                                    className='text-xl bg-slate-200 text-neutral-700 w-14 h-12 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:bg-red-600 hover:text-white'
+                                                >
+                                                    {/* Excluir */}
+                                                    <MdDelete />
+                                                </button>
                                             </Tooltip>
                                         )}
                                     </div>

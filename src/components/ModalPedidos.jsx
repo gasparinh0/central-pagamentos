@@ -12,6 +12,7 @@ import { BiSave } from "react-icons/bi";
 import { FaPrint } from "react-icons/fa";
 import { IoIosCloseCircle } from "react-icons/io";
 import Tooltip from '@mui/material/Tooltip';
+import { motion } from "framer-motion"
 
 const style = {
     position: 'absolute',
@@ -150,23 +151,29 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                         <h1 className='text-3xl'>{pedido.nomeCliente}</h1>
                         <div className='flex flex-row space-x-5 items-center mb-3'>
                             {confirmacaoExclusao ? (
-                                <div className='flex flex-row justify-center items-center'>
-                                    <p className='text-lg mr-2'>Você tem certeza?</p>
-                                    <div className='flex flex-row justify-center space-x-2'>
-                                        <button
-                                            onClick={handleDeleteCliente}
-                                            className='text-lg bg-red-600 w-20 h-10 text-white rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:shadow-2xl hover:bg-red-400'
-                                        >
-                                            Sim
-                                        </button>
-                                        <button
-                                            onClick={cancelarExclusao}
-                                            className='text-lg bg-slate-200 w-20 h-10 text-neutral-700 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:shadow-2xl hover:bg-slate-100'
-                                        >
-                                            Não
-                                        </button>
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    transition={{ duration: 0.5 }}
+                                >
+                                    <div className='flex flex-row justify-center items-center'>
+                                        <p className='text-lg mr-2'>Você tem certeza?</p>
+                                        <div className='flex flex-row justify-center space-x-2'>
+                                            <button
+                                                onClick={handleDeleteCliente}
+                                                className='text-lg bg-red-600 w-20 h-10 text-white rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:shadow-2xl hover:bg-red-400'
+                                            >
+                                                Sim
+                                            </button>
+                                            <button
+                                                onClick={cancelarExclusao}
+                                                className='text-lg bg-slate-200 w-20 h-10 text-neutral-700 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:shadow-2xl hover:bg-slate-100'
+                                            >
+                                                Não
+                                            </button>
+                                        </div>
                                     </div>
-                                </div>
+                                </motion.div>
                             ) : (
                                 <Tooltip title="Arquivar pedido">
                                     <button

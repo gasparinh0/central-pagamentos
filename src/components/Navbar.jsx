@@ -41,6 +41,7 @@ function Navbar({ onClienteCadastrado, onPedidoCadastrado }) {
 
                 const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
                 saveAs(blob, fileName);
+                notifySuccess("Backup automático realizado com sucesso.","",3000)
             };
 
             // Schedule backup at 12:00 PM and 5:00 PM
@@ -91,6 +92,21 @@ function Navbar({ onClienteCadastrado, onPedidoCadastrado }) {
     const handleCloseModalPedido = () => {
         setModalPedidoOpen(false);
     };
+
+    const handleClickCliente = () => {
+        handleCloseNovo()
+        handleOpenModalCadastro()
+    }
+
+    const handleClickPedido = () => {
+        handleCloseNovo()
+        handleOpenModalPedido()
+    }
+
+    const handleClickExport = () => {
+        handleCloseBackup()
+        exportData()
+    }
 
     const exportData = () => {
         const clients = JSON.parse(localStorage.getItem('clientes')) || [];
@@ -193,8 +209,8 @@ function Navbar({ onClienteCadastrado, onPedidoCadastrado }) {
                             }}
                             className='mt-2 flex justify-center items-center'
                         >
-                            <MenuItem onClick={handleOpenModalCadastro}><IoPersonSharp className='mr-3' />Cliente</MenuItem>
-                            <MenuItem onClick={handleOpenModalPedido}><FaCartPlus className='mr-3' />Pedido</MenuItem>
+                            <MenuItem onClick={handleClickCliente}><IoPersonSharp className='mr-3' />Cliente</MenuItem>
+                            <MenuItem onClick={handleClickPedido}><FaCartPlus className='mr-3' />Pedido</MenuItem>
                         </Menu>
 
                         <button
@@ -238,7 +254,7 @@ function Navbar({ onClienteCadastrado, onPedidoCadastrado }) {
                                     />
                                 </label>
                             </MenuItem>
-                            <MenuItem onClick={exportData}><MdBackup className='mr-3' />Exportar backup</MenuItem>
+                            <MenuItem onClick={handleClickExport}><MdBackup className='mr-3' />Exportar backup</MenuItem>
                         </Menu>
                     </div>
                       {/* Ícones à direita */}
@@ -246,7 +262,7 @@ function Navbar({ onClienteCadastrado, onPedidoCadastrado }) {
                             {isLoading ? (
                                 <Skeleton variant="rectangular" width={100} height={50} className="rounded-2xl" />
                             ) : (
-                                <div className='flex flex-col justify-center items-center transition-colors duration-300 hover:text-orange-600'>
+                                <div className='flex flex-col justify-center text-neutral-700 items-center transition-colors duration-300 hover:text-orange-600'>
                                     <a href='https://www.youtube.com/' className='flex flex-col justify-center items-center'>
                                         <FaRegQuestionCircle size='30' />
                                         <p className='text-xl'>Dúvidas</p>
