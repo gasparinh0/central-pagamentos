@@ -3,21 +3,29 @@ import BasicModal from "./ModalPedidos";
 import ListaClientes from '../data/ListaClientes';
 import ResumoPedido from '../data/ListaPedidos';  // Importa o ResumoPedido
 import Navbar from './Navbar';  // Importa a Navbar
-
 import { ToastContainer } from 'react-toastify';
+import Skeleton from '@mui/material/Skeleton';
+import { motion } from "framer-motion"
 
 const Tabs = () => {
     const [activeTab, setActiveTab] = useState('clientes');
     const [modalPedidosOpen, setModalPedidosOpen] = useState(false);
     const [clientes, setClientes] = useState([]);
     const [pedidos, setPedidos] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const clientesArmazenados = JSON.parse(localStorage.getItem('clientes')) || [];
-        setClientes(clientesArmazenados);
-
         const pedidosArmazenados = JSON.parse(localStorage.getItem('pedidos')) || [];
+
+        setClientes(clientesArmazenados);
         setPedidos(pedidosArmazenados);
+
+        const timer = setTimeout(() => {
+            setIsLoading(false);
+        }, 1000);
+
+        return () => clearTimeout(timer);
     }, []);
 
     useEffect(() => {
@@ -64,48 +72,71 @@ const Tabs = () => {
 
     return (
         <>
-        <div>
-            <Navbar onClienteCadastrado={handleClienteCadastrado} onPedidoCadastrado={handlePedidoCadastrado} />
-            <div className="container mx-auto p-8 bg-white mt-6 rounded-xl shadow-xl">
-                <div className="relative flex justify-around text-3xl space-x-4 border-b">
-                    <button
-                        className={`py-2 px-4 transition-colors duration-300 ${activeTab === 'clientes' ? 'text-blue-500' : 'text-gray-500'}`}
-                        onClick={() => setActiveTab('clientes')}
-                    >
-                        Clientes
-                    </button>
-                    <button
-                        className={`py-2 px-4 transition-colors duration-300 ${activeTab === 'marcacoes' ? 'text-blue-500' : 'text-gray-500'}`}
-                        onClick={() => setActiveTab('marcacoes')}
-                    >
-                        Pedidos
-                    </button>
-                    <span
-                        className={`absolute bottom-0 left-0 w-1/2 h-1 bg-blue-500 transition-transform duration-300 transform ${activeTab === 'clientes' ? 'translate-x-0' : 'translate-x-full'}`}
-                    />
-                </div>
-                <div className="mt-4">
-                    {activeTab === 'clientes' && (
-                        <div>
-                            <ListaClientes
-                                clientes={clientes}
-                                onDelete={handleDeleteCliente}
-                                onEdit={handleEditCliente}
+            <div>
+                <Navbar onClienteCadastrado={handleClienteCadastrado} onPedidoCadastrado={handlePedidoCadastrado} />
+                <div className="container mx-auto p-8 bg-white mt-6 rounded-xl shadow-xl">
+                    <div className="relative flex justify-around text-3xl space-x-4 border-b">
+                        {isLoading ? (
+                            <>
+                                <Skeleton variant="text" width={100} height={40} />
+                                <Skeleton variant="text" width={100} height={40} />
+                            </>
+                        ) : (
+                            <>
+                                <button
+                                    className={`py-2 px-4 transition-colors duration-300 ${activeTab === 'clientes' ? 'text-blue-500' : 'text-gray-500'}`}
+                                    onClick={() => setActiveTab('clientes')}
+                                >
+                                    Clientes
+                                </button>
+                                <button
+                                    className={`py-2 px-4 transition-colors duration-300 ${activeTab === 'marcacoes' ? 'text-blue-500' : 'text-gray-500'}`}
+                                    onClick={() => setActiveTab('marcacoes')}
+                                >
+                                    Pedidos
+                                </button>
+                            </>
+                        )}
+                        {!isLoading && (
+                            <span
+                                className={`absolute bottom-0 left-0 w-1/2 h-1 bg-blue-500 transition-transform duration-300 transform ${activeTab === 'clientes' ? 'translate-x-0' : 'translate-x-full'}`}
                             />
-                        </div>
-                    )}
-                    {activeTab === 'marcacoes' && (
-                        <ResumoPedido pedidosProp={pedidos} onDelete={handleDeletePedido} />
-                    )}
+                        )}
+                    </div>
+                    <div className="mt-4">
+                        {isLoading ? (
+                            <>
+                                <Skeleton variant="rectangular" width="100%" height={400} />
+                            </>
+                        ) : (
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ duration: 0.5 }}
+                            >
+                                {activeTab === 'clientes' && (
+                                    <div>
+                                        <ListaClientes
+                                            clientes={clientes}
+                                            onDelete={handleDeleteCliente}
+                                            onEdit={handleEditCliente}
+                                        />
+                                    </div>
+                                )}
+                                {activeTab === 'marcacoes' && (
+                                    <div>
+                                        <ResumoPedido pedidosProp={pedidos} onDelete={handleDeletePedido} />
+                                    </div>
+                                )}
+                            </motion.div>
+                        )}
+                    </div>
+                    <BasicModal open={modalPedidosOpen} handleClose={handleCloseModalPedidos} />
                 </div>
-                <BasicModal open={modalPedidosOpen} handleClose={handleCloseModalPedidos} />
             </div>
-        </div>
-        <ToastContainer/>
+            <ToastContainer/>
         </>
-
     );
 };
 
 export default Tabs;
-
