@@ -13,6 +13,7 @@ import { IoIosCloseCircle } from "react-icons/io";
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import { notifySuccess } from './ui/Toast';
+import { formatToBRL } from "brazilian-values"
 
 const getModalWidth = (activeStep) => {
     let widthCustom = '40%'; // Default minimum height
@@ -134,14 +135,14 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
         setProdutos([{ nome: '', preco: '', quantidade: '' }]);
         setTotal(0);
 
-   
 
-        notifySuccess("Pedido salvo com sucesso","",3000)
+
+        notifySuccess("Pedido salvo com sucesso", "", 3000)
 
         handleClose();
         handleReset();
         setButtonHidden(false);
-    
+
     };
 
     const handleKeyDown = (e) => {
@@ -179,6 +180,20 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
     useEffect(() => {
         setClientesFiltrados(clientes.slice(0, 5));
     }, [clientes]);
+
+    const handleRemoveProduto = (index) => {
+        const newProdutos = [...produtos];
+        newProdutos.splice(index, 1);
+        setProdutos(newProdutos);
+    };
+
+    function formatPriceWithoutCurrency(value) {
+        // Remove "R$" da string formatada
+        const formattedValue = formatToBRL(value);
+        const valueWithoutCurrency = formattedValue.replace('R$', '').trim();
+        
+        return valueWithoutCurrency;
+      }
 
 
     return (
@@ -238,37 +253,52 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
                     {activeStep === 1 && (
                         <form className='flex flex-col'>
                             {produtos.map((produto, index) => (
-                                <div key={index} className='flex space-x-2 mb-4'>
-                                    <div className='flex-1'>
+                                <div key={index} className='flex space-x-2 mb-4 items-center justify-start'>
+                                    <div className=''>
                                         <p>Produto:</p>
                                         <input
                                             type="text"
                                             value={produto.nome}
                                             onChange={(e) => handleChangeProduto(index, 'nome', e.target.value)}
-                                            className='w-full px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
+                                            className='w-52 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
                                             onKeyDown={handleKeyDown}
                                         />
                                     </div>
-                                    <div className='flex-1'>
+                                    <div className=''>
                                         <p>Preço:</p>
                                         <input
                                             type="text"
                                             value={produto.preco}
                                             onChange={(e) => handleChangeProduto(index, 'preco', e.target.value)}
-                                            className='w-full px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
+                                            className='w-20 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
                                             onKeyDown={handleKeyDown}
                                         />
                                     </div>
-                                    <div className='flex-1'>
-                                        <p>Quantidade:</p>
+                                    <div className=''>
+                                        <p>Qtd:</p>
                                         <input
                                             type="text"
                                             value={produto.quantidade}
                                             onChange={(e) => handleChangeProduto(index, 'quantidade', e.target.value)}
-                                            className='w-full px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
+                                            className='w-14 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
                                             onKeyDown={handleKeyDown}
                                         />
                                     </div>
+                                    <div className=''>
+                                        <p>Subtotal</p>
+                                        <div className='w-auto px-3 py-1.5 text-base font-normal leading-6 flex justify-center items-center text-gray-900 bg-white border border-gray-300 rounded-md'>
+                                            <p>{produto.quantidade * produto.preco}</p>
+                                        </div>
+                                    </div>
+                                    {index > 0 && (
+                                        <div className='text-neutral-700 transition-all duration-300 hover:text-red-500'>
+                                            <IoIosCloseCircle
+                                                size="25"
+                                                onClick={() => handleRemoveProduto(index)}
+                                                style={{ cursor: 'pointer' }}
+                                            />
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                             <Button variant="contained" color="primary" onClick={handleAddProduto}>
@@ -290,16 +320,18 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
                                     <p className='mb-2'>Produtos adquiridos:</p>
                                     <div className='flex flex-col items-start'>
                                         <div className='flex flex-row space-x-1'>
-                                            <p className='w-40'>Produto</p>
-                                            <p className='w-20'>Qtd</p>
-                                            <p className='w-20'>R$</p>
+                                            <p className='w-28'>Produto</p>
+                                            <p className='w-10'>Qtd</p>
+                                            <p className='w-16'>R$</p>
+                                            <p>Subtotal</p>
                                         </div>
                                         <div className='mt-2'>
                                             {produtos.map((produto, index) => (
                                                 <div key={index} className='flex flex-row space-x-1'>
-                                                    <p className='w-40'>{produto.nome}</p>
-                                                    <p className='w-20'>{produto.quantidade}</p>
-                                                    <p className='w-20'>{produto.preco}</p>
+                                                    <p className='w-28'>{produto.nome}</p>
+                                                    <p className='w-10'>{produto.quantidade}</p>
+                                                    <p className='w-16'>{formatPriceWithoutCurrency(produto.preco)}</p>
+                                                    <p>{formatPriceWithoutCurrency(produto.quantidade * produto.preco)}</p>
                                                 </div>
                                             ))}
                                         </div>
