@@ -13,6 +13,7 @@ import { FaPrint } from "react-icons/fa";
 import { IoIosCloseCircle } from "react-icons/io";
 import Tooltip from '@mui/material/Tooltip';
 import { motion } from "framer-motion"
+import { formatToBRL } from "brazilian-values"
 
 const style = {
     position: 'absolute',
@@ -138,6 +139,14 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
         }
     };
 
+    function formatPriceWithoutCurrency(value) {
+        // Remove "R$" da string formatada
+        const formattedValue = formatToBRL(value);
+        const valueWithoutCurrency = formattedValue.replace('R$', '').trim();
+        
+        return valueWithoutCurrency;
+      }
+
     return (
         <Modal
             open={open}
@@ -220,6 +229,7 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                                     <p className='w-40'>Produto</p>
                                     <p className='w-20'>Qtd</p>
                                     <p className='w-20'>R$</p>
+                                    <p>Subtotal</p>
                                 </div>
                                 <div className='mt-2'>
                                     {produtos.map((produto, index) => (
@@ -228,9 +238,10 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                                                 <div className='flex flex-row space-x-1'>
                                                     <p className='w-40'>{produto.nome}</p>
                                                     <p className='w-20'>{produto.quantidade}</p>
-                                                    <p className='w-20'>{produto.preco}</p>
+                                                    <p className='w-20'>{formatPriceWithoutCurrency(produto.preco)}</p>
+                                                    <p>{formatPriceWithoutCurrency(produto.quantidade * produto.preco)}</p>
                                                 </div>
-                                                <div className=' w-72 border-2 border-gray-200'></div>
+                                                <div className=' w-[390px] border-2 border-gray-200'></div>
                                             </div>
                                         </div>
                                     ))}
