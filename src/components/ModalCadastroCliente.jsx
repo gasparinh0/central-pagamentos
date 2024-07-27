@@ -1,11 +1,17 @@
+//Imports do React
 import * as React from 'react';
 import { useState } from "react";
+
+//Imports do material UI
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
+
+//Imports do React-icons
 import { IoIosCloseCircle } from "react-icons/io";
 import { notifySuccess } from './ui/Toast';
 
+//Estilo do modal
 const style = {
     position: 'absolute',
     top: '50%',
@@ -18,6 +24,7 @@ const style = {
     p: 4,
 };
 
+//Código para formatar número de telefone
 const formatPhoneNumber = (value) => {
     if (!value) return value;
 
@@ -36,6 +43,7 @@ const ModalCadastroCliente = ({ open, handleClose, onClienteCadastrado }) => {
     const [nome, setNome] = useState('');
     const [telefone, setTelefone] = useState('');
 
+    //Handle para cadastro
     const handleCadastrar = () => {
         if (!nome || !telefone) {
             alert('Por favor, coloque as informações necessárias para cadastrar o cliente.');
@@ -55,11 +63,13 @@ const ModalCadastroCliente = ({ open, handleClose, onClienteCadastrado }) => {
         }
     };
 
+    //Handle para formatar telefone na tela de editar
     const handleTelefoneChange = (e) => {
         const formattedPhoneNumber = formatPhoneNumber(e.target.value);
         setTelefone(formattedPhoneNumber);
     };
 
+    //Handle para apertar enter e prosseguir
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
             const form = e.target.form;

@@ -1,5 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
+
+//Imports do material-ui
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
@@ -7,14 +9,23 @@ import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Button from '@mui/material/Button';
-import { ReactToPrint } from 'react-to-print';
-import { MdKeyboardReturn } from "react-icons/md";
-import { IoIosCloseCircle } from "react-icons/io";
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
+
+//Imports do react-icons
+import { MdKeyboardReturn } from "react-icons/md";
+import { IoIosCloseCircle } from "react-icons/io";
+
+//Imports do React-Print (imprimir tela)
+import { ReactToPrint } from 'react-to-print';
+
+//Imports do React-Toastify (notificação de sucesso)
 import { notifySuccess } from './ui/Toast';
+
+//Imports do brazilian-values (formatação de números)
 import { formatToBRL } from "brazilian-values"
 
+//Código para determinar o width do modal a partir dos steps
 const getModalWidth = (activeStep) => {
     let widthCustom = '40%'; // Default minimum height
     if (activeStep === 0) {
@@ -39,6 +50,7 @@ const getModalWidth = (activeStep) => {
     };
 };
 
+//Steps do modal
 const steps = ['Informações do Cliente', 'Produtos e Preços', 'Resumo do Pedido'];
 
 const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
@@ -52,53 +64,64 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
     const [clientes, setClientes] = useState([]);
     const [clientesFiltrados, setClientesFiltrados] = useState([]);
 
+    //Código para obter a lista de clientes
     useEffect(() => {
         const storedClientes = JSON.parse(localStorage.getItem('clientes')) || [];
         setClientes(storedClientes);
     }, []);
 
+    //Código para determinar o total do pedido
     useEffect(() => {
         const novoTotal = produtos.reduce((acc, produto) => acc + (parseFloat(produto.preco || 0) * parseInt(produto.quantidade || 0)), 0);
         setTotal(novoTotal);
     }, [produtos]);
 
+    //Código para obter a lista de clientes
     useEffect(() => {
         const storedClientes = JSON.parse(localStorage.getItem('clientes')) || [];
         setClientes(storedClientes);
     }, [localStorage.getItem('clientes')]);
 
+    //Código para funcionamento do React-Print
     const componentRef = useRef(null);
 
+    //Handle para adicionar produtos
     const handleAddProduto = () => {
         setProdutos([...produtos, { nome: '', preco: '', quantidade: '' }]);
     };
 
+    //Handle para mudar a virgula para ponto (facilitar a conta)
     const handleChangeProduto = (index, key, value) => {
         const newProdutos = [...produtos];
         newProdutos[index][key] = value.replace(',', '.');
         setProdutos(newProdutos);
     };
 
+    //Handle para prosseguir no modal
     const handleNext = () => {
         if (validateInputs()) {
             setActiveStep((prevActiveStep) => prevActiveStep + 1);
         }
     };
 
+    //Handle para voltar no Modal
     const handleBack = () => {
         setActiveStep((prevActiveStep) => prevActiveStep - 1);
     };
 
+    //Handle para resetar o modal
     const handleReset = () => {
         setActiveStep(0);
     };
 
+    //Handle para determinar a data de validade do pedido
     const addDays = (date, days) => {
         const result = new Date(date);
         result.setDate(result.getDate() + days);
         return result;
     };
 
+    //Handle para formatar dados
     const formatarData = (data) => {
         if (data) {
             const partesData = data.split('-');
@@ -107,6 +130,7 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
         return '';
     };
 
+    //Handle para data
     const handleDataPedidoChange = (e) => {
         const data = e.target.value;
         setDataPedido(data);
@@ -114,6 +138,7 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
         setDataVencimento(formatarData(novaData.toISOString().split('T')[0]));
     };
 
+    //Handle para salvar o pedido
     const handleSave = async () => {
         setButtonHidden(true);
 
@@ -145,6 +170,7 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
 
     };
 
+    //Handle para prosseguir com o enter
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
             const form = e.target.form;
@@ -162,6 +188,7 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
         }
     };
 
+    //Validação de inputs
     const validateInputs = () => {
         if (activeStep === 0) {
             return nomeCliente && dataPedido;
@@ -171,22 +198,26 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
         return true;
     };
 
+    //Limitar o Autocomplete de mostrar todos os clientes e apenas os 5 primeiros
     const handleFilterClientes = (event) => {
         const value = event.target.value.toLowerCase();
         const filtered = clientes.filter(cliente => cliente.nome.toLowerCase().includes(value));
         setClientesFiltrados(filtered);
     };
 
+    //Código que complementa o código acima
     useEffect(() => {
         setClientesFiltrados(clientes.slice(0, 5));
     }, [clientes]);
 
+    //Handle para remover o produto na hora de adicionar
     const handleRemoveProduto = (index) => {
         const newProdutos = [...produtos];
         newProdutos.splice(index, 1);
         setProdutos(newProdutos);
     };
 
+    //Handle para tirar o R$ do valor formatado
     function formatPriceWithoutCurrency(value) {
         // Remove "R$" da string formatada
         const formattedValue = formatToBRL(value);

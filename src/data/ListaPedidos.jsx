@@ -1,16 +1,25 @@
 import * as React from 'react';
+
+//Imports do React
 import { useEffect, useState, useRef } from 'react';
+
+//Imports de componentes
 import BasicModal from "../components/ModalPedidos";
+
+//Imports do react-icons
 import { MdFilterAlt } from "react-icons/md";
+import { FaCheck } from "react-icons/fa6";
+import { FaEye } from "react-icons/fa";
+
+//Imports do material-ui
 import Switch from '@mui/material/Switch';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
-import { FaEye } from "react-icons/fa";
 import Tooltip from '@mui/material/Tooltip';
-import { FaCheck } from "react-icons/fa6";
 
+//Variável que determina a quantidade de pedidos por página
 const ITEMS_PER_PAGE = 12;
 
 const ResumoPedido = ({ pedidosProp, onDelete }) => {
@@ -28,6 +37,7 @@ const ResumoPedido = ({ pedidosProp, onDelete }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const listRef = useRef(null);
 
+    //Atualizar a lista de pedidos
     useEffect(() => {
         if (pedidosProp) {
             setPedidos(pedidosProp);
@@ -39,6 +49,7 @@ const ResumoPedido = ({ pedidosProp, onDelete }) => {
         }
     }, [pedidosProp]);
 
+    //Atualizar a lista de pedidos pagos
     useEffect(() => {
         const savedPaidOrders = localStorage.getItem('paidOrders');
         if (!savedPaidOrders) {
@@ -46,32 +57,38 @@ const ResumoPedido = ({ pedidosProp, onDelete }) => {
         }
     }, []);
 
+    //Abrir botão de filtros
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
 
+    //Fechar botão de filtros
     const handleClose = () => {
         setAnchorEl(null);
     };
 
+    //Abrir modal para visualização do pedido
     const handleOpenModalPedidos = (pedido, index) => {
         setPedidoSelecionado(pedido);
         setPedidoIndexSelecionado(index); // Armazene o índice do pedido selecionado
         setModalPedidosOpen(true);
     };
 
+    //Fechar modal para visualização do pedido
     const handleCloseModalPedidos = () => {
         setModalPedidosOpen(false);
         setPedidoSelecionado(null);
         setPedidoIndexSelecionado(null); // Limpe o índice do pedido selecionado
     };
 
+    //Função para atualizar o pedido
     const atualizarPedido = (pedidoAtualizado) => {
         const pedidosAtualizados = pedidos.map(p => p.nomeCliente === pedidoAtualizado.nomeCliente ? pedidoAtualizado : p);
         setPedidos(pedidosAtualizados);
         localStorage.setItem('pedidos', JSON.stringify(pedidosAtualizados));
     };
 
+    //Função para deletar o pedido
     const deletarPedido = (index) => {
         const pedidosAtualizados = pedidos.filter((_, i) => i !== index);
         const pedidoRemovido = pedidos[index];
@@ -87,28 +104,35 @@ const ResumoPedido = ({ pedidosProp, onDelete }) => {
         }
     };
 
+    //Função de pesquisa
     const handleSearchChange = (e) => {
         setSearchTerm(e.target.value);
     };
 
+    //Filtros
     const handleSwitchChange = (filter) => {
+        //Ordem Alfabética
         if (filter === 'alphabetical') {
             setIsAlphabetical(!isAlphabetical);
             setIsMostRecent(false);
             setIsOldest(false);
+        //Mais recente
         } else if (filter === 'mostRecent') {
             setIsMostRecent(!isMostRecent);
             setIsAlphabetical(false);
             setIsOldest(false);
+        //Mais velho
         } else if (filter === 'oldest') {
             setIsOldest(!isOldest);
             setIsAlphabetical(false);
             setIsMostRecent(false);
+        //Já pago
         } else if (filter === 'paid') {
             setIsPaid(!isPaid);
         }
     };
 
+    //Função para funcionamento dos filtros
     const filterAndSortPedidos = () => {
         let filteredPedidos = pedidos.filter(pedido =>
             pedido.nomeCliente.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -132,18 +156,22 @@ const ResumoPedido = ({ pedidosProp, onDelete }) => {
         return filteredPedidos;
     };
 
+    //Função para os pedidos já pagos
     const displayPedidos = isPaid ? JSON.parse(localStorage.getItem('paidOrders')) : filterAndSortPedidos();
 
+    //Função para mudar de página
     const handlePageChange = (event, value) => {
         setCurrentPage(value);
         listRef.current.scrollIntoView({ behavior: 'smooth' });
     };
 
+    //Função para paginação dos pedidos
     const paginatedPedidos = displayPedidos.slice(
         (currentPage - 1) * ITEMS_PER_PAGE,
         currentPage * ITEMS_PER_PAGE
     );
 
+    //Função que determina a quantidade de páginas
     const pageCount = Math.ceil(displayPedidos.length / ITEMS_PER_PAGE);
 
     const label = { inputProps: { 'aria-label': 'Switch demo' } };

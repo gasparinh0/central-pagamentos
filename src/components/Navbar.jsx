@@ -1,19 +1,33 @@
 import React, { useEffect, useState } from 'react';
+
+//Imports de componentes
 import ModalCadastro from "./ModalCadastroCliente";
 import ModalCadastroPedido from "./ModalCadastroPedido";
+
+//Imports para funcionamento do backup
 import { saveAs } from 'file-saver';
 import schedule from 'node-schedule';
+
+//Imports do react-icons
 import { FaRegQuestionCircle } from "react-icons/fa";
 import { IoPersonSharp } from "react-icons/io5";
 import { FaCartPlus } from "react-icons/fa";
 import { MdBackup } from "react-icons/md";
 import { FiPlusCircle } from "react-icons/fi";
 import { FaArrowDownLong } from "react-icons/fa6";
+
+//Import da logo
 import logo from '../assets/logo.png';
+
+//Imports do react-toastify
 import { notifySuccess } from './ui/Toast';
+
+//Imports do material-ui
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Skeleton from '@mui/material/Skeleton';
+
+//Imports do framer-motion (animação)
 import { motion } from "framer-motion";
 
 function Navbar({ onClienteCadastrado, onPedidoCadastrado }) {
@@ -23,6 +37,7 @@ function Navbar({ onClienteCadastrado, onPedidoCadastrado }) {
     const [anchorElBackup, setAnchorElBackup] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
+    //Função para importar backup
     useEffect(() => {
         const scheduleBackup = () => {
             const exportData = () => {
@@ -58,56 +73,69 @@ function Navbar({ onClienteCadastrado, onPedidoCadastrado }) {
         return () => clearTimeout(timer);
     }, []);
 
+    //Variáveis para abrir conteúdo dos botões
     const openNovo = Boolean(anchorElNovo);
     const openBackup = Boolean(anchorElBackup);
 
+    //Handle para abrir conteúdo dos botões
     const handleClickNovo = (event) => {
         setAnchorElNovo(event.currentTarget);
     };
 
+    //Handle para fechar conteúdo dos botões
     const handleCloseNovo = () => {
         setAnchorElNovo(null);
     };
 
+    //Handle para abrir conteúdo dos botões
     const handleClickBackup = (event) => {
         setAnchorElBackup(event.currentTarget);
     };
 
+    //Handle para fechar conteúdo dos botões
     const handleCloseBackup = () => {
         setAnchorElBackup(null);
     };
 
+    //Variável para abrir modal de cadastro
     const handleOpenModalCadastro = () => {
         setModalCadastroOpen(true);
     };
 
+    //Handle para fechar modal de cadastro
     const handleCloseModalCadastro = () => {
         setModalCadastroOpen(false);
     };
 
+    //Handle para abrir modal de pedidos
     const handleOpenModalPedido = () => {
         setModalPedidoOpen(true);
     };
 
+    //Handle para fechar modal de pedidos
     const handleCloseModalPedido = () => {
         setModalPedidoOpen(false);
     };
 
+    //Handle para abrir o modal e fechar a aba do botão de clientes
     const handleClickCliente = () => {
         handleCloseNovo()
         handleOpenModalCadastro()
     }
 
+    //Handle para abrir o modal e fechar a aba do botão de pedidos
     const handleClickPedido = () => {
         handleCloseNovo()
         handleOpenModalPedido()
     }
 
+    //Handle para abrir o export e fechar a aba de botão do backup
     const handleClickExport = () => {
         handleCloseBackup()
         exportData()
     }
 
+    //função para exportar backup
     const exportData = () => {
         const clients = JSON.parse(localStorage.getItem('clientes')) || [];
         const orders = JSON.parse(localStorage.getItem('pedidos')) || [];
@@ -127,6 +155,7 @@ function Navbar({ onClienteCadastrado, onPedidoCadastrado }) {
         notifySuccess("Backup salvo com sucesso", "", 3000);
     };
 
+    //Função para importar backup
     const importData = (event) => {
         const fileReader = new FileReader();
         fileReader.onload = (e) => {

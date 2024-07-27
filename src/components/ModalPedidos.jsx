@@ -1,5 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
+
+//Imports do Material-UI
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
@@ -7,14 +9,23 @@ import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+
+//Imports do React-to-print (função imprimir)
 import ReactToPrint from 'react-to-print';
+
+//Imports do react-icons
 import { BiSave } from "react-icons/bi";
 import { FaPrint } from "react-icons/fa";
 import { IoIosCloseCircle } from "react-icons/io";
 import Tooltip from '@mui/material/Tooltip';
+
+//Imports do framer-motion (animações)
 import { motion } from "framer-motion"
+
+//Imports do brazilian-values (formatação)
 import { formatToBRL } from "brazilian-values"
 
+//Estilo do modal
 const style = {
     position: 'absolute',
     top: '50%',
@@ -28,6 +39,7 @@ const style = {
     p: 4,
 };
 
+//Função para imprimir só uma parte do conteúdo do modal
 const PrintComponent = React.forwardRef(({ pedido, total }, ref) => (
     <div ref={ref} className='flex flex-col m-7'>
         <h1 className='mb-3 font-bold'>Atualização de faturamento</h1>
@@ -48,6 +60,7 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
     const [confirmacaoExclusao, setConfirmacaoExclusao] = useState(false);
     const [mostrarImprimir, setMostrarImprimir] = useState(true);
 
+    //variável para o funcionamento da impressão
     const printRef = useRef();
 
     useEffect(() => {
@@ -60,6 +73,7 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
         return null;
     }
 
+    //Handle para adicionar produto
     const handleAddProduto = () => {
         const precoNumerico = parseFloat(produtoPreco.replace(',', '.')); // Substitui vírgula por ponto
         const quantidadeNumerica = parseInt(produtoQuantidade, 10); // Converte para número inteiro
@@ -94,6 +108,7 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
         setProdutoPreco('');
     };
 
+    //Handle para abater valor
     const handleAbaterValor = () => {
         const valorNumerico = parseFloat(valorAbater.replace(',', '.')); // Substitui vírgula por ponto
         if (isNaN(valorNumerico)) {
@@ -118,27 +133,32 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
         setValorAbater('');
     };
 
+    //Handle para deletar o cliente
     const handleDeleteCliente = () => {
         deletarPedido(pedido.nomeCliente);
         handleClose();
     };
 
+    //Toggle para confirmar a exclusão
     const toggleConfirmacaoExclusao = () => {
         setConfirmacaoExclusao(!confirmacaoExclusao);
         setMostrarImprimir(false);
     };
 
+    //Toggle para cancelar a exclusão
     const cancelarExclusao = () => {
         setConfirmacaoExclusao(false);
         setMostrarImprimir(true);
     };
 
+    //Handle para prosseguir com o enter
     const handleKeyDown = (e, actionFunction) => {
         if (e.key === 'Enter') {
             actionFunction();
         }
     };
 
+    //Função para tirar o R$ da formatação
     function formatPriceWithoutCurrency(value) {
         // Remove "R$" da string formatada
         const formattedValue = formatToBRL(value);

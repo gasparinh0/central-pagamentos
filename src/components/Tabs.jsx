@@ -1,10 +1,18 @@
 import React, { useState, useEffect } from 'react';
+
+//Imports de componentes
 import BasicModal from "./ModalPedidos";
 import ListaClientes from '../data/ListaClientes';
 import ResumoPedido from '../data/ListaPedidos';  // Importa o ResumoPedido
 import Navbar from './Navbar';  // Importa a Navbar
+
+//Imports do react-toastify
 import { ToastContainer } from 'react-toastify';
+
+//Imports do material ui
 import Skeleton from '@mui/material/Skeleton';
+
+//Import do framer-motion
 import { motion } from "framer-motion"
 
 const Tabs = () => {
@@ -14,6 +22,7 @@ const Tabs = () => {
     const [pedidos, setPedidos] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
+    //UseEffect para atualizar as listas
     useEffect(() => {
         const clientesArmazenados = JSON.parse(localStorage.getItem('clientes')) || [];
         const pedidosArmazenados = JSON.parse(localStorage.getItem('pedidos')) || [];
@@ -35,28 +44,33 @@ const Tabs = () => {
         }
     }, [activeTab]);
 
+    //Handle para fechar o modal
     const handleCloseModalPedidos = () => {
         setModalPedidosOpen(false);
     };
 
+    //Handle para cliente
     const handleClienteCadastrado = (novoCliente) => {
         const clientesAtualizados = [...clientes, novoCliente];
         setClientes(clientesAtualizados);
         localStorage.setItem('clientes', JSON.stringify(clientesAtualizados));
     };
 
+    //Handle para pedido
     const handlePedidoCadastrado = (novoPedido) => {
         const pedidosAtualizados = [...pedidos, novoPedido];
         setPedidos(pedidosAtualizados);
         localStorage.setItem('pedidos', JSON.stringify(pedidosAtualizados));
     };
 
+    //Handle para deletar cliente
     const handleDeleteCliente = (index) => {
         const novosClientes = clientes.filter((_, i) => i !== index);
         setClientes(novosClientes);
         localStorage.setItem('clientes', JSON.stringify(novosClientes));
     };
 
+    //Handle para editar cliente
     const handleEditCliente = (index, clienteAtualizado) => {
         const novosClientes = [...clientes];
         novosClientes[index] = clienteAtualizado;
@@ -64,6 +78,7 @@ const Tabs = () => {
         localStorage.setItem('clientes', JSON.stringify(novosClientes));
     };
 
+    //Handle para deletar pedido
     const handleDeletePedido = (index) => {
         const novosPedidos = pedidos.filter((_, i) => i !== index);
         setPedidos(novosPedidos);

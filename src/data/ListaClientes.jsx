@@ -1,6 +1,10 @@
 import * as React from 'react';
 import { useState, useEffect, useRef } from "react";
+
+//Imports do react-icons
 import { MdModeEdit, MdDelete, MdFilterAlt } from "react-icons/md";
+
+//Imports do material-ui
 import Switch from '@mui/material/Switch';
 import Avatar from '@mui/material/Avatar';
 import Menu from '@mui/material/Menu';
@@ -8,9 +12,14 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
+
+//Imports para formatação
 import { formatToPhone } from 'brazilian-values';
+
+//Imports do framer-motion
 import { motion } from "framer-motion"
 
+//Variável para determinar a quantidade de clientes por página
 const ITEMS_PER_PAGE = 10;
 
 const ListaClientes = ({ clientes, onDelete, onEdit }) => {
@@ -24,11 +33,13 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
     const [isAlphabetical, setIsAlphabetical] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
 
+    //Variável de âncora
     const [anchorEl, setAnchorEl] = useState(null); // Definido anchorEl
     const open = Boolean(anchorEl); // Definido open
 
     const listRef = useRef(null);
 
+    //Variável para determinar cores para os avatares
     useEffect(() => {
         const newColors = {};
         clientes.forEach(cliente => {
@@ -39,6 +50,7 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
         setColors(prevColors => ({ ...prevColors, ...newColors }));
     }, [clientes]);
 
+    //Variável para determinar as abreviações dos clientes
     useEffect(() => {
         let displayedClientes = clientes;
         if (searchTerm !== '') {
@@ -54,38 +66,46 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
         setFilteredClientes(displayedClientes);
     }, [searchTerm, isAlphabetical, clientes]);
 
+    //Handle para trocar de página
     const handlePageChange = (event, value) => {
         setCurrentPage(value);
         listRef.current.scrollIntoView({ behavior: 'smooth' });
     };
 
+    //Função para paginação
     const paginatedClientes = filteredClientes.slice(
         (currentPage - 1) * ITEMS_PER_PAGE,
         currentPage * ITEMS_PER_PAGE
     );
 
+    //Função para determinar as páginas
     const pageCount = Math.ceil(filteredClientes.length / ITEMS_PER_PAGE);
 
+    //Handle para âncora
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
 
+    //Handle para âncora
     const handleClose = () => {
         setAnchorEl(null);
     };
 
+    //Handle para filtro em ordem alfabética
     const handleSwitchChange = (event) => {
         setIsAlphabetical(event.target.checked);
     };
 
     const label = { inputProps: { 'aria-label': 'Switch demo' } };
 
+    //Handle para editar cliente
     const handleEdit = (index) => {
         setEditIndex(index);
         setEditNome(clientes[index].nome);
         setEditTelefone(clientes[index].telefone);
     };
 
+    //Handle para salvar a edição
     const handleSaveEdit = () => {
         onEdit(editIndex, { nome: editNome, telefone: editTelefone });
         setEditIndex(null);
@@ -93,10 +113,12 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
         setEditTelefone('');
     };
 
+    //Handle da seção editar do campo telefone
     const handleEditTelefoneChange = (e) => {
         setEditTelefone(e.target.value);
     };
 
+    //Handle para prosseguir com o enter
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
             const form = e.target.form;
@@ -110,10 +132,12 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
         }
     };
 
+    //Condição que detecta se não há nenhum cliente na lista
     if (clientes.length === 0) {
         return <div className='flex justify-center items-center text-2xl mt-9'>Nenhum cliente encontrado.</div>;
     }
 
+    //Função para as cores do avatar do cliente
     function stringToColor(string) {
         let hash = 0;
         let i;
@@ -132,6 +156,7 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
         return color;
     }
 
+    //Função para o avatar do cliente
     function stringAvatar(name, size = 56) {
         const nameParts = name.split(' ');
 
@@ -152,6 +177,7 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
         };
     }
 
+    //Função para confirmar exclusão
     const toggleConfirmacaoExclusao = (index) => {
         setConfirmacaoExclusao((prev) => ({
             ...prev,
@@ -159,6 +185,7 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
         }));
     };
 
+    //Função para cancelar exclusão
     const cancelarExclusao = () => {
         setConfirmacaoExclusao({});
     };
