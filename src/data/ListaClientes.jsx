@@ -100,9 +100,10 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
 
     //Handle para editar cliente
     const handleEdit = (index) => {
-        setEditIndex(index);
-        setEditNome(clientes[index].nome);
-        setEditTelefone(clientes[index].telefone);
+        const globalIndex = (currentPage - 1) * ITEMS_PER_PAGE + index;
+        setEditIndex(globalIndex);
+        setEditNome(filteredClientes[globalIndex].nome);
+        setEditTelefone(filteredClientes[globalIndex].telefone);
     };
 
     //Handle para salvar a edição
@@ -226,111 +227,123 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
             </div>
             <ul>
                 {paginatedClientes.length > 0 ? (
-                    paginatedClientes.map((cliente, index) => (
-                        <li key={index}>
-                            <div>
-                                <div className='flex bg-gray-100 p-7 rounded-3xl gap-y-4 mt-5 shadow-md'>
-                                    <div className='mr-3'>
-                                        <Avatar {...stringAvatar(cliente.nome, 70)} />
-                                    </div>
-                                    <div>
-                                        <h1 className='text-3xl'>{cliente.nome}</h1>
-                                        <div className='flex space-x-2'>
-                                            <p className='text-2xl'>Telefone:</p>
-                                            <p className='text-2xl font-light'>{cliente.telefone}</p>
+                    paginatedClientes.map((cliente, index) => {
+                        const globalIndex = (currentPage - 1) * ITEMS_PER_PAGE + index;
+                        return (
+                            <li key={index}>
+                                <div>
+                                    <div className='flex bg-gray-100 p-7 rounded-3xl gap-y-4 mt-5 shadow-md'>
+                                        <div className='mr-3'>
+                                            <Avatar {...stringAvatar(cliente.nome, 70)} />
+                                        </div>
+                                        <div>
+                                            <h1 className='text-3xl'>{cliente.nome}</h1>
+                                            <div className='flex space-x-2'>
+                                                <p className='text-2xl'>Telefone:</p>
+                                                <p className='text-2xl font-light'>{cliente.telefone}</p>
+                                            </div>
+                                        </div>
+                                        <div className='flex ml-auto items-center space-x-6'>
+                                            {!confirmacaoExclusao[index] && (
+                                                <Tooltip title="Editar">
+                                                    <button
+                                                        className="text-xl bg-slate-200 text-neutral-700 w-14 h-12 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:bg-[#3b82f6] hover:text-white"
+                                                        onClick={() => handleEdit(index)}
+                                                    >
+                                                        {/* Editar */}
+                                                        <MdModeEdit />
+                                                    </button>
+                                                </Tooltip>
+                                            )}
+                                            {!confirmacaoExclusao[index] && (
+                                                <Tooltip title="Excluir">
+                                                    <button
+                                                        onClick={() => toggleConfirmacaoExclusao(index)}
+                                                        className='text-xl bg-slate-200 text-neutral-700 w-14 h-12 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:bg-red-600 hover:text-white'
+                                                    >
+                                                        {/* Excluir */}
+                                                        <MdDelete />
+                                                    </button>
+                                                </Tooltip>
+                                            )}
+                                            {confirmacaoExclusao[index] && (
+                                                <motion.div
+                                                    initial={{ opacity: 0, scale: 0.95 }}
+                                                    animate={{ opacity: 1, scale: 1 }}
+                                                    transition={{ duration: 0.5 }}
+                                                >
+                                                    <div className='flex flex-row justify-center items-center'>
+                                                        <p className='text-xl mr-3'>Você tem certeza?</p>
+                                                        <div className='flex flex-row justify-center space-x-2'>
+                                                            <button
+                                                                onClick={() => {
+                                                                    onDelete(globalIndex);
+                                                                    setConfirmacaoExclusao((prev) => ({
+                                                                        ...prev,
+                                                                        [index]: false
+                                                                    }));
+                                                                }}
+                                                                className='text-xl bg-red-600 w-24 h-12 text-white rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:shadow-2xl hover:bg-red-400'
+                                                            >
+                                                                Sim
+                                                            </button>
+                                                            <button
+                                                                onClick={cancelarExclusao}
+                                                                className='text-xl bg-[#3b82f6] w-24 h-12 text-white rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:shadow-2xl hover:bg-[#769aff]'
+                                                            >
+                                                                Não
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </motion.div>
+                                            )}
                                         </div>
                                     </div>
-                                    <div className='flex ml-auto items-center space-x-6'>
-                                        {!confirmacaoExclusao[index] && (
-                                            <Tooltip title="Editar">
-                                                <button
-                                                    className="text-xl bg-slate-200 text-neutral-700 w-14 h-12 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:bg-[#3b82f6] hover:text-white"
-                                                    onClick={() => handleEdit(index)}
-                                                >
-                                                    {/* Editar */}
-                                                    <MdModeEdit />
-                                                </button>
-                                            </Tooltip>
-                                        )}
-                                        {confirmacaoExclusao[index] ? (
-                                            <motion.div
-                                                initial={{ opacity: 0, scale: 0.95 }}
-                                                animate={{ opacity: 1, scale: 1 }}
-                                                transition={{ duration: 0.5 }}
-                                            >
-                                                <div className='flex flex-row justify-center items-center'>
-                                                    <p className='text-xl mr-3'>Você tem certeza?</p>
-                                                    <div className='flex flex-row justify-center space-x-2'>
-                                                        <button
-                                                            onClick={() => {
-                                                                onDelete(index);
-                                                                setConfirmacaoExclusao((prev) => ({
-                                                                    ...prev,
-                                                                    [index]: false
-                                                                }));
-                                                            }}
-                                                            className='text-xl bg-red-600 w-24 h-12 text-white rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:shadow-2xl hover:bg-red-400'
-                                                        >
-                                                            Sim
-                                                        </button>
-                                                        <button
-                                                            onClick={cancelarExclusao}
-                                                            className='text-xl bg-[#3b82f6] w-24 h-12 text-white rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:shadow-2xl hover:bg-[#769aff]'
-                                                        >
-                                                            Não
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </motion.div>
-                                        ) : (
-                                            <Tooltip title="Excluir">
-                                                <button
-                                                    onClick={() => toggleConfirmacaoExclusao(index)}
-                                                    className='text-xl bg-slate-200 text-neutral-700 w-14 h-12 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:bg-red-600 hover:text-white'
-                                                >
-                                                    {/* Excluir */}
-                                                    <MdDelete />
-                                                </button>
-                                            </Tooltip>
-                                        )}
-                                    </div>
-                                </div>
-                                {editIndex === index && (
-                                    <div className='flex flex-col bg-slate-300 p-5 rounded-3xl mt-3'>
-                                        <form className='flex flex-col'>
-                                            <p>Nome do cliente</p>
-                                            <input
-                                                type="text"
-                                                className='w-56 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
-                                                value={editNome}
-                                                placeholder='Digite o nome'
-                                                onChange={(e) => setEditNome(e.target.value)}
-                                                onKeyDown={handleKeyDown}
-                                            />
-                                            <p className='mt-1'>Telefone</p>
-                                            <input
-                                                type="text"
-                                                maxLength={15}
-                                                className='w-56 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
-                                                value={editTelefone && formatToPhone(editTelefone)}
-                                                placeholder='Digite o telefone'
-                                                onChange={handleEditTelefoneChange}
-                                                onKeyDown={handleKeyDown}
-                                            />
-                                        </form>
-                                        <button
-                                            className='text-lg bg-slate-200 w-44 mt-3 h-10 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:bg-slate-100'
-                                            onClick={handleSaveEdit}
+                                    {editIndex === globalIndex && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: -20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ duration: 0.5 }}
                                         >
-                                            Salvar
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-                        </li>
-                    ))
+                                            <div className='flex flex-col bg-gray-200 p-5 rounded-3xl mt-3'>
+                                                <form className='flex flex-col'>
+                                                    <p>Nome do cliente</p>
+                                                    <input
+                                                        type="text"
+                                                        className='w-56 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
+                                                        value={editNome}
+                                                        placeholder='Digite o nome'
+                                                        onChange={(e) => setEditNome(e.target.value)}
+                                                        onKeyDown={handleKeyDown}
+                                                    />
+                                                    <p className='mt-1'>Telefone</p>
+                                                    <input
+                                                        type="text"
+                                                        maxLength={15}
+                                                        className='w-56 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
+                                                        value={editTelefone && formatToPhone(editTelefone)}
+                                                        placeholder='Digite o telefone'
+                                                        onChange={handleEditTelefoneChange}
+                                                        onKeyDown={handleKeyDown}
+                                                    />
+                                                </form>
+                                                <button
+                                                    className='text-lg bg-slate-200 w-44 mt-3 h-10 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:bg-slate-100'
+                                                    onClick={handleSaveEdit}
+                                                >
+                                                    Salvar
+                                                </button>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </div>
+                            </li>
+                        );
+                    })
                 ) : (
-                    <div className='flex justify-center items-center text-2xl mt-9'>Nenhum resultado encontrado.</div>
+                    <li className='flex justify-center items-center text-2xl mt-9'>
+                        Nenhum cliente encontrado.
+                    </li>
                 )}
             </ul>
             <div className='flex justify-center mt-8'>
