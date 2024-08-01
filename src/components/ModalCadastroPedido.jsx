@@ -31,7 +31,7 @@ const getModalWidth = (activeStep) => {
     if (activeStep === 0) {
         widthCustom = '20%'; // Altura mínima para o step 0
     } else if (activeStep === 1) {
-        widthCustom = '20%'; // Altura mínima para o step 1
+        widthCustom = '28%'; // Altura mínima para o step 1
     } else if (activeStep === 2) {
         widthCustom = '30%'; // Altura mínima para o step 2
     }
