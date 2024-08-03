@@ -27,13 +27,13 @@ import { formatToBRL } from "brazilian-values"
 
 //Código para determinar o width do modal a partir dos steps
 const getModalWidth = (activeStep) => {
-    let widthCustom = '40%'; // Default minimum height
+    let widthCustom = '50%'; // Default minimum height
     if (activeStep === 0) {
-        widthCustom = '20%'; // Altura mínima para o step 0
+        widthCustom = 'auto'; // Altura mínima para o step 0
     } else if (activeStep === 1) {
-        widthCustom = '30%'; // Altura mínima para o step 1
+        widthCustom = 'auto'; // Altura mínima para o step 1
     } else if (activeStep === 2) {
-        widthCustom = '30%'; // Altura mínima para o step 2
+        widthCustom = 'auto'; // Altura mínima para o step 2
     }
     return {
         position: 'absolute',
