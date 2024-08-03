@@ -31,7 +31,7 @@ const getModalWidth = (activeStep) => {
     if (activeStep === 0) {
         widthCustom = '20%'; // Altura mínima para o step 0
     } else if (activeStep === 1) {
-        widthCustom = '28%'; // Altura mínima para o step 1
+        widthCustom = '25%'; // Altura mínima para o step 1
     } else if (activeStep === 2) {
         widthCustom = '30%'; // Altura mínima para o step 2
     }
@@ -134,8 +134,13 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
     const handleDataPedidoChange = (e) => {
         const data = e.target.value;
         setDataPedido(data);
-        const novaData = addDays(data, 30);
-        setDataVencimento(formatarData(novaData.toISOString().split('T')[0]));
+    
+        if (data) {
+            const novaData = addDays(data, 30);
+            setDataVencimento(formatarData(novaData.toISOString().split('T')[0]));
+        } else {
+            setDataVencimento('');
+        }
     };
 
     //Handle para salvar o pedido
