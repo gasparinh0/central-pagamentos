@@ -41,7 +41,7 @@ const style = {
 
 //Função para imprimir só uma parte do conteúdo do modal
 const PrintComponent = React.forwardRef(({ pedido, total }, ref) => (
-    <div ref={ref} className='flex flex-col m-7'>
+    <div ref={ref} className='flex flex-col m-7 printableContent'>
         <h1 className='mb-3 font-bold'>Atualização de faturamento</h1>
         <p>Nome do cliente: {pedido.nomeCliente}</p>
         <p>Valor total: R$ {(total * 1).toFixed(2)}</p>

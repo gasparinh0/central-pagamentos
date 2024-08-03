@@ -341,7 +341,7 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
                         <div className='flex flex-col justify-center items-center space-y-3 mt-3'>
                             <h1>Nota do pedido</h1>
                             <div className='border border-black p-8'>
-                                <div ref={componentRef} className='flex flex-col items-start font-bold'>
+                                <div ref={componentRef} className='flex flex-col items-start font-bold printableContent'>
                                     <div className='flex flex-col items-start'>
                                         <h1>Autorização p/ faturamento</h1>
                                         <hr></hr>

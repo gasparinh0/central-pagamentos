@@ -6,3 +6,18 @@ body {
     background-color: #fbf7f7; /* Caso a cor exata seja necessária */
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
   }
+
+  @media print {
+    /* Defina o tamanho da página de acordo com as especificações da impressora fiscal */
+    @page {
+      size: 80mm 200mm; /* ajuste conforme necessário */
+      margin: 0;
+    }
+  
+    /* Ajuste os estilos do conteúdo para se adequar ao tamanho da página */
+    .printableContent {
+      width: 100%;
+      font-size: 12px; /* ajuste conforme necessário */
+    }
+
+  }
