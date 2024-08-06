@@ -1,37 +1,36 @@
 import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
 
-//Imports do Material-UI
+// Imports do Material-UI
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import Tooltip from '@mui/material/Tooltip';
 
-//Imports do React-to-print (função imprimir)
+// Imports do React-to-print (função imprimir)
 import ReactToPrint from 'react-to-print';
 
-//Imports do react-icons
+// Imports do react-icons
 import { BiSave } from "react-icons/bi";
 import { FaPrint } from "react-icons/fa";
 import { IoIosCloseCircle } from "react-icons/io";
-import Tooltip from '@mui/material/Tooltip';
+import { IoMdAddCircleOutline } from "react-icons/io";
+import { MdMoneyOff } from "react-icons/md";
+import { IoIosReturnLeft } from "react-icons/io";
 
-//Imports do framer-motion (animações)
+// Imports do framer-motion (animações)
 import { motion } from "framer-motion"
 
-//Imports do brazilian-values (formatação)
+// Imports do brazilian-values (formatação)
 import { formatToBRL } from "brazilian-values"
 
-//Estilo do modal
+// Estilo do modal
 const style = {
     position: 'absolute',
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 850,
+    width: 700,
     bgcolor: 'background.paper',
     borderRadius: '15px',
     maxHeight: '90vh',
@@ -59,21 +58,25 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
     const [valorAbater, setValorAbater] = useState('');
     const [confirmacaoExclusao, setConfirmacaoExclusao] = useState(false);
     const [mostrarImprimir, setMostrarImprimir] = useState(true);
+    const [dataInicialPedido, setDataInicialPedido] = useState(pedido?.dataPedido || '');
+    const [showForm, setShowForm] = useState(false);
+    const [showAbater, setShowAbater] = useState(false);
 
-    //variável para o funcionamento da impressão
+    // Variável para o funcionamento da impressão
     const printRef = useRef();
 
     useEffect(() => {
         setTotal(pedido?.total || 0);
         setProdutos(pedido?.produtos || []);
         setHistoricoAbatimentos(pedido?.historicoAbatimentos || []);
+        setDataInicialPedido(pedido?.dataPedido || '');
     }, [pedido]);
 
     if (!pedido) {
         return null;
     }
 
-    //Handle para adicionar produto
+    // Handle para adicionar produto
     const handleAddProduto = () => {
         const precoNumerico = parseFloat(produtoPreco.replace(',', '.')); // Substitui vírgula por ponto
         const quantidadeNumerica = parseInt(produtoQuantidade, 10); // Converte para número inteiro
@@ -83,22 +86,27 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
             return;
         }
 
+        const dataAtual = new Date().toLocaleDateString();
         const novoProduto = {
             nome: produtoNome,
             quantidade: quantidadeNumerica,
-            preco: precoNumerico
+            preco: precoNumerico,
+            data: produtos.length === 0 ? dataInicialPedido : dataAtual // Data inicial para o primeiro produto, data atual para os outros
         };
 
         const produtosAtualizados = [...produtos, novoProduto];
         const totalAtualizado = total + (precoNumerico * quantidadeNumerica);
-        const dataAtualizada = new Date().toLocaleDateString();
 
         const pedidoAtualizado = {
             ...pedido,
             produtos: produtosAtualizados,
             total: totalAtualizado,
-            dataPedido: dataAtualizada
+            dataPedido: dataInicialPedido || dataAtual
         };
+
+        if (!dataInicialPedido) {
+            setDataInicialPedido(dataAtual);
+        }
 
         atualizarPedido(pedidoAtualizado);
         setProdutos(produtosAtualizados);
@@ -108,7 +116,12 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
         setProdutoPreco('');
     };
 
-    //Handle para abater valor
+    const handleClickAdd = () => {
+        handleAddProduto()
+        setShowForm(false)
+    }
+
+    // Handle para abater valor
     const handleAbaterValor = () => {
         const valorNumerico = parseFloat(valorAbater.replace(',', '.')); // Substitui vírgula por ponto
         if (isNaN(valorNumerico)) {
@@ -133,39 +146,211 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
         setValorAbater('');
     };
 
-    //Handle para deletar o cliente
+    const handleAbaterClick = () => {
+        handleAbaterValor()
+        setShowAbater(false);
+    }
+
+    // Handle para deletar o cliente
     const handleDeleteCliente = () => {
         deletarPedido(pedido.nomeCliente);
         handleClose();
     };
 
-    //Toggle para confirmar a exclusão
+    // Toggle para confirmar a exclusão
     const toggleConfirmacaoExclusao = () => {
         setConfirmacaoExclusao(!confirmacaoExclusao);
         setMostrarImprimir(false);
     };
 
-    //Toggle para cancelar a exclusão
+    // Toggle para cancelar a exclusão
     const cancelarExclusao = () => {
         setConfirmacaoExclusao(false);
         setMostrarImprimir(true);
     };
 
-    //Handle para prosseguir com o enter
+    // Handle para prosseguir com o enter
     const handleKeyDown = (e, actionFunction) => {
         if (e.key === 'Enter') {
             actionFunction();
         }
     };
 
-    //Função para tirar o R$ da formatação
+    // Função para tirar o R$ da formatação
     function formatPriceWithoutCurrency(value) {
         // Remove "R$" da string formatada
         const formattedValue = formatToBRL(value);
         const valueWithoutCurrency = formattedValue.replace('R$', '').trim();
-        
+
         return valueWithoutCurrency;
-      }
+    }
+
+    const checkEdit = () => {
+        // Verifique o estado `showForm` em vez de `setShowForm`
+        if (showForm === false) {
+            return (
+                <div className='flex flex-col'>
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.5 }}
+                        key={showForm ? "form" : "list"}
+                    >
+                        <p className='mt-3'>Histórico de Abatimentos:</p>
+                        <ul className='list-disc list-inside ml-5'>
+                            {historicoAbatimentos.length === 0 ? (
+                                <p className='text-gray-500'>Nenhum abatimento registrado.</p>
+                            ) : (
+                                historicoAbatimentos.map((abatimento, index) => (
+                                    <li key={index}>
+                                        R$ {(abatimento.valor * 1).toFixed(2)} - {abatimento.data}
+                                    </li>
+                                ))
+                            )}
+                        </ul>
+                        <div className='mt-5'>
+                            <div className='flex flex-row space-x-2 items-center'>
+                                <h1 className='text-lg font-semibold mb-2'>Produtos</h1>
+                                <Tooltip title="Adicionar produto">
+                                    <div>
+                                        <IoMdAddCircleOutline size='27' onClick={() => setShowForm(true)} className='mb-2.5 text-green-500 transition-all duration-300 hover:text-green-300' />
+                                    </div>
+                                </Tooltip>
+                            </div>
+                            <div className='max-h-40 overflow-y-auto'>
+                                {produtos.length === 0 ? (
+                                    <p className='text-gray-500'>Nenhum produto adicionado até agora.</p>
+                                ) : (
+                                    produtos.map((produto, index) => (
+                                        <div key={index} className='flex justify-between w-[600px]'>
+                                            <div className='flex flex-row items-center mb-2'>
+                                                <div>
+                                                    <p>{produto.nome}</p>
+                                                    <p className='text-gray-500'>Adicionado em: {produto.data}</p>
+                                                </div>
+                                            </div>
+
+                                            <div className='flex flex-row items-start space-x-9 justify-start'>
+                                                <div>
+                                                    <p className='w-20'>Quantidade</p>
+                                                    <p>{produto.quantidade}</p>
+                                                </div>
+                                                <div>
+                                                    <p className='w-20'>Valor</p>
+                                                    <p>R$ {formatPriceWithoutCurrency(produto.preco)}</p>
+                                                </div>
+                                                <div>
+                                                    <p className='w-20'>Subtotal</p>
+                                                    <p>R$ {formatPriceWithoutCurrency(produto.preco * produto.quantidade)}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        </div>
+
+                        <div className='mt-5 flex flex-row space-x-3'>
+                            <h1 className='text-xl font-semibold mb-2'>Total: R$ {total.toFixed(2)}</h1>
+                            <Tooltip title="Abater valor" className='mb-6'>
+                                <div>
+                                    <MdMoneyOff size='27' onClick={() => setShowAbater(true)} className='text-neutral-700 transition-all duration-300 hover:text-neutral-500' />
+                                </div>
+                            </Tooltip>
+                        </div>
+                    </motion.div>
+                    {abaterCheck()}
+                </div>
+            );
+        } else {
+            return (
+                <div className='flex flex-col justify-start space-y-2'>
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.5 }}
+                        key={showForm ? "form" : "list"}
+                    >
+                        <button
+                            onClick={() => setShowForm(false)}
+                            className='text-lg w-56 h-9 flex items-center transition-all duration-300 text-neutral-700 hover:text-neutral-400'
+                        >
+                            <IoIosReturnLeft />
+                            Voltar
+                        </button>
+                        <p>Nome do produto</p>
+                        <input
+                            type="text"
+                            value={produtoNome}
+                            onChange={(e) => setProdutoNome(e.target.value)}
+                            className='w-56 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
+                            onKeyDown={(e) => handleKeyDown(e, handleAddProduto)}
+                            placeholder='Digite o produto'
+                            maxLength='75'
+                        />
+                        <p>Quantidade</p>
+                        <input
+                            type="number"
+                            value={produtoQuantidade}
+                            onChange={(e) => setProdutoQuantidade(e.target.value)}
+                            className='w-56 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
+                            onKeyDown={(e) => handleKeyDown(e, handleAddProduto)}
+                            placeholder='Digite a quantidade'
+                        />
+                        <p>Preço</p>
+                        <input
+                            type="text"
+                            value={produtoPreco}
+                            onChange={(e) => setProdutoPreco(e.target.value.replace(',', '.'))} // Substitui vírgula por ponto
+                            className='w-56 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
+                            onKeyDown={(e) => handleKeyDown(e, handleAddProduto)}
+                            placeholder='Digite o preço'
+                            maxLength='20'
+                        />
+                        <button
+                            onClick={handleClickAdd}
+                            className='text-lg bg-slate-200 mt-3 w-56 h-9 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 text-neutral-700 hover:bg-slate-100'
+                        >
+                            Acrescentar
+                        </button>
+                    </motion.div>
+                </div>
+            );
+        }
+    };
+
+    const abaterCheck = () => {
+        if (showAbater === true) {
+            return (
+                <div>
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.5 }}
+                    >
+                        <p>Valor para abater</p>
+                        <div className='flex flex-row items-center space-x-2'>
+                            <input
+                                type="text"
+                                value={valorAbater}
+                                onChange={(e) => setValorAbater(e.target.value.replace(',', '.'))} // Substitui vírgula por ponto
+                                className='w-56 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
+                                onKeyDown={(e) => handleKeyDown(e, handleAbaterValor)}
+                                placeholder='Digite o valor'
+                            />
+                            <button
+                                onClick={handleAbaterClick}
+                                className='text-lg bg-slate-200 w-28 h-9 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 text-neutral-700 hover:bg-slate-100'
+                            >
+                                Abater
+                            </button>
+                        </div>
+                    </motion.div>
+                </div>
+            )
+        }
+    }
+
 
     return (
         <Modal
@@ -177,7 +362,13 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
             <Box sx={style}>
                 <Typography id="modal-modal-title" variant="h6" component="h2">
                     <div className='flex flex-row justify-between'>
-                        <h1 className='text-3xl'>{pedido.nomeCliente}</h1>
+                        <div>
+                            <h1 className='text-3xl'>{pedido.nomeCliente}</h1>
+                            <div className='flex flex-row space-x-2'>
+                                <p>Último pedido feito:</p>
+                                <p className='font-semibold'>{pedido.dataPedido}</p>
+                            </div>
+                        </div>
                         <div className='flex flex-row space-x-5 items-center mb-3'>
                             {confirmacaoExclusao ? (
                                 <motion.div
@@ -185,21 +376,23 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                                     animate={{ opacity: 1, scale: 1 }}
                                     transition={{ duration: 0.5 }}
                                 >
-                                    <div className='flex flex-row justify-center items-center'>
-                                        <p className='text-lg mr-2'>Você tem certeza?</p>
-                                        <div className='flex flex-row justify-center space-x-2'>
-                                            <button
-                                                onClick={handleDeleteCliente}
-                                                className='text-lg bg-red-600 w-20 h-10 text-white rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:shadow-2xl hover:bg-red-400'
-                                            >
-                                                Sim
-                                            </button>
-                                            <button
-                                                onClick={cancelarExclusao}
-                                                className='text-lg bg-slate-200 w-20 h-10 text-neutral-700 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:shadow-2xl hover:bg-slate-100'
-                                            >
-                                                Não
-                                            </button>
+                                    <div className='flex flex-row justify-end items-center'>
+                                        <div className='flex flex-col justify-center items-center'>
+                                            <p className='text-lg'>Você tem certeza?</p>
+                                            <div className='flex flex-row space-x-2'>
+                                                <button
+                                                    onClick={handleDeleteCliente}
+                                                    className='text-lg bg-red-600 w-20 h-10 text-white rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:shadow-2xl hover:bg-red-400'
+                                                >
+                                                    Sim
+                                                </button>
+                                                <button
+                                                    onClick={cancelarExclusao}
+                                                    className='text-lg bg-slate-200 w-20 h-10 text-neutral-700 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:shadow-2xl hover:bg-slate-100'
+                                                >
+                                                    Não
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </motion.div>
@@ -224,139 +417,20 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                                     </div>
                                 </Tooltip>
                             )}
-                            <div>
-                                <Tooltip title="Fechar">
-                                    <div>
-                                        <IoIosCloseCircle size="30" onClick={handleClose} style={{ cursor: 'pointer' }} color='#dc2626' />
-                                    </div>
-                                </Tooltip>
-                            </div>
+                            <Tooltip title="Fechar modal">
+                                <button
+                                    onClick={handleClose}
+                                    className='text-xl text-neutral-700 flex justify-center items-center transition-all duration-300'
+                                >
+                                    {/* Fechar */}
+                                    <IoIosCloseCircle size='34' className='transition-all duration-300 hover:text-neutral-500' />
+                                </button>
+                            </Tooltip>
                         </div>
                     </div>
                 </Typography>
                 <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                    <div className='flex flex-row justify-between'>
-                        <div>
-                            <div className='flex space-x-2 text-2xl'>
-                                <p>Total: <span className='font-semibold'>R$ {(total * 1).toFixed(2)}</span></p>
-                            </div>
-                            <div className='flex space-x-2 text-2xl'>
-                                <p>Último pedido feito:</p>
-                                <p className='font-semibold'>{pedido.dataPedido}</p>
-                            </div>
-                            <div className='flex flex-col items-start mt-3'>
-                                <div className='flex flex-row space-x-1'>
-                                    <p className='w-40'>Produto</p>
-                                    <p className='w-20'>Qtd</p>
-                                    <p className='w-20'>R$</p>
-                                    <p>Subtotal</p>
-                                </div>
-                                <div className='mt-2'>
-                                    {produtos.map((produto, index) => (
-                                        <div key={index} className='flex flex-row space-x-1'>
-                                            <div className='flex flex-col'>
-                                                <div className='flex flex-row space-x-1'>
-                                                    <p className='w-40'>{produto.nome}</p>
-                                                    <p className='w-20'>{produto.quantidade}</p>
-                                                    <p className='w-20'>{formatPriceWithoutCurrency(produto.preco)}</p>
-                                                    <p>{formatPriceWithoutCurrency(produto.quantidade * produto.preco)}</p>
-                                                </div>
-                                                <div className=' w-[390px] border-2 border-gray-200'></div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                            <p className='mt-3'>Histórico de Abatimentos:</p>
-                            <ul className='list-disc list-inside ml-5'>
-                                {historicoAbatimentos.map((abatimento, index) => (
-                                    <li key={index}>
-                                        R$ {(abatimento.valor * 1).toFixed(2)} - {abatimento.data}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                        <div>
-                            <Accordion className='mb-4 w-64'>
-                                <AccordionSummary
-                                    expandIcon={<ArrowDownwardIcon />}
-                                    aria-controls="panel1-content"
-                                    id="panel1-header"
-                                >
-                                    <Typography>Acrescentar produto</Typography>
-                                </AccordionSummary>
-                                <AccordionDetails>
-                                    <Typography>
-                                        <div className='flex flex-col justify-start space-y-2'>
-                                            <p>Nome do produto</p>
-                                            <input
-                                                type="text"
-                                                value={produtoNome}
-                                                onChange={(e) => setProdutoNome(e.target.value)}
-                                                className='w-56 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
-                                                onKeyDown={(e) => handleKeyDown(e, handleAddProduto)}
-                                                placeholder='Digite o produto'
-                                                maxLength='75'
-                                            />
-                                            <p>Quantidade</p>
-                                            <input
-                                                type="number"
-                                                value={produtoQuantidade}
-                                                onChange={(e) => setProdutoQuantidade(e.target.value)}
-                                                className='w-56 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
-                                                onKeyDown={(e) => handleKeyDown(e, handleAddProduto)}
-                                                placeholder='Digite a quantidade'
-                                            />
-                                            <p>Preço</p>
-                                            <input
-                                                type="text"
-                                                value={produtoPreco}
-                                                onChange={(e) => setProdutoPreco(e.target.value.replace(',', '.'))} // Substitui vírgula por ponto
-                                                className='w-56 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
-                                                onKeyDown={(e) => handleKeyDown(e, handleAddProduto)}
-                                                placeholder='Digite o preço'
-                                                maxLength='20'
-                                            />
-                                            <button
-                                                onClick={handleAddProduto}
-                                                className='text-lg bg-slate-200 mt-3 w-56 h-9 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 text-neutral-700 hover:bg-slate-100'
-                                            >
-                                                Acrescentar
-                                            </button>
-                                        </div>
-                                    </Typography>
-                                </AccordionDetails>
-                            </Accordion>
-                            <Accordion className='mb-4  w-64'>
-                                <AccordionSummary
-                                    expandIcon={<ArrowDownwardIcon />}
-                                    aria-controls="panel1-content"
-                                    id="panel1-header"
-                                >
-                                    <Typography>Abater valor</Typography>
-                                </AccordionSummary>
-                                <AccordionDetails>
-                                    <Typography>
-                                        <p>Valor para abater</p>
-                                        <input
-                                            type="text"
-                                            value={valorAbater}
-                                            onChange={(e) => setValorAbater(e.target.value.replace(',', '.'))} // Substitui vírgula por ponto
-                                            className='w-56 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
-                                            onKeyDown={(e) => handleKeyDown(e, handleAbaterValor)}
-                                            placeholder='Digite o valor'
-                                        />
-                                        <button
-                                            onClick={handleAbaterValor}
-                                            className='text-lg bg-slate-200 mt-3 w-56 h-9 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 text-neutral-700 hover:bg-slate-100'
-                                        >
-                                            Abater
-                                        </button>
-                                    </Typography>
-                                </AccordionDetails>
-                            </Accordion>
-                        </div>
-                    </div>
+                    {checkEdit()}
                 </Typography>
                 <div style={{ display: 'none' }}>
                     <PrintComponent ref={printRef} pedido={pedido} total={total} />
