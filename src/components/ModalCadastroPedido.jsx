@@ -58,7 +58,7 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
     const [nomeCliente, setNomeCliente] = useState('');
     const [dataPedido, setDataPedido] = useState('');
     const [dataVencimento, setDataVencimento] = useState('');
-    const [produtos, setProdutos] = useState([{ nome: '', preco: '', quantidade: '' }]);
+    const [produtos, setProdutos] = useState([{ nome: '', preco: '', quantidade: '', data: new Date().toLocaleDateString() }]);
     const [total, setTotal] = useState(0);
     const [buttonHidden, setButtonHidden] = useState(false);
     const [clientes, setClientes] = useState([]);
@@ -87,7 +87,7 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
 
     //Handle para adicionar produtos
     const handleAddProduto = () => {
-        setProdutos([...produtos, { nome: '', preco: '', quantidade: '' }]);
+        setProdutos([...produtos, { nome: '', preco: '', quantidade: '', data: new Date().toLocaleDateString() }]);
     };
 
     //Handle para mudar a virgula para ponto (facilitar a conta)
