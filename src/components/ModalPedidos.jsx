@@ -6,6 +6,8 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import Tooltip from '@mui/material/Tooltip';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 
 // Imports do React-to-print (função imprimir)
 import ReactToPrint from 'react-to-print';
@@ -61,6 +63,7 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
     const [dataInicialPedido, setDataInicialPedido] = useState(pedido?.dataPedido || '');
     const [showForm, setShowForm] = useState(false);
     const [showAbater, setShowAbater] = useState(false);
+    const [anchorEl, setAnchorEl] = React.useState(null);
 
     // Variável para o funcionamento da impressão
     const printRef = useRef();
@@ -75,6 +78,15 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
     if (!pedido) {
         return null;
     }
+
+    //Função para o menu
+    const openMenu = Boolean(anchorEl);
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleCloseMenu = () => {
+        setAnchorEl(null);
+    };
 
     // Handle para adicionar produto
     const handleAddProduto = () => {
@@ -115,6 +127,8 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
         setProdutoQuantidade('');
         setProdutoPreco('');
     };
+
+
 
     const handleClickAdd = () => {
         handleAddProduto()
@@ -222,7 +236,7 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                                     <p className='text-gray-500'>Nenhum produto adicionado até agora.</p>
                                 ) : (
                                     produtos.map((produto, index) => (
-                                        <div key={index} className='flex justify-between w-[600px]'>
+                                        <div key={index} onClick={handleClick} className='flex justify-between w-[600px] transition-all duration-200 p-1 hover:bg-gray-100 hover:rounded-xl hover:scale-[98%]'>
                                             <div className='flex flex-row items-center mb-2'>
                                                 <div>
                                                     <p>{produto.nome}</p>
@@ -247,6 +261,18 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                                         </div>
                                     ))
                                 )}
+                                <Menu
+                                    id="basic-menu"
+                                    anchorEl={anchorEl}
+                                    open={openMenu}
+                                    onClose={handleCloseMenu}
+                                    MenuListProps={{
+                                        'aria-labelledby': 'basic-button',
+                                    }}
+                                >
+                                    <MenuItem onClick={handleCloseMenu}>Editar</MenuItem>
+                                    <MenuItem onClick={handleCloseMenu}>Excluir</MenuItem>
+                                </Menu>
                             </div>
                         </div>
 
