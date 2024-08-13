@@ -323,7 +323,7 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
                                     <div className=''>
                                         <p>Subtotal</p>
                                         <div className='w-auto px-3 py-1.5 text-base font-normal leading-6 flex justify-center items-center text-gray-900 bg-white border border-gray-300 rounded-md'>
-                                            <p>{produto.quantidade * produto.preco}</p>
+                                            <p>{(produto.quantidade * produto.preco).toFixed(2)}</p>
                                         </div>
                                     </div>
                                     {index > 0 && (
