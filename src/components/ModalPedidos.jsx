@@ -64,6 +64,7 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
     const [showForm, setShowForm] = useState(false);
     const [showAbater, setShowAbater] = useState(false);
     const [anchorEl, setAnchorEl] = React.useState(null);
+    const [produtoSelecionado, setProdutoSelecionado] = useState(null);
 
     // Variável para o funcionamento da impressão
     const printRef = useRef();
@@ -81,14 +82,14 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
 
     //Função para o menu
     const openMenu = Boolean(anchorEl);
-    const handleClick = (event) => {
+    const handleClick = (event, produto) => {
         setAnchorEl(event.currentTarget);
+        setProdutoSelecionado(produto);
     };
     const handleCloseMenu = () => {
         setAnchorEl(null);
     };
 
-    // Handle para adicionar produto
     const handleAddProduto = () => {
         const precoNumerico = parseFloat(produtoPreco.replace(',', '.')); // Substitui vírgula por ponto
         const quantidadeNumerica = parseInt(produtoQuantidade, 10); // Converte para número inteiro
@@ -98,27 +99,35 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
             return;
         }
 
-        const dataAtual = new Date().toLocaleDateString();
-        const novoProduto = {
-            nome: produtoNome,
-            quantidade: quantidadeNumerica,
-            preco: precoNumerico,
-            data: produtos.length === 0 ? dataInicialPedido : dataAtual // Data inicial para o primeiro produto, data atual para os outros
-        };
+        let produtosAtualizados;
 
-        const produtosAtualizados = [...produtos, novoProduto];
-        const totalAtualizado = total + (precoNumerico * quantidadeNumerica);
+        if (produtoSelecionado) {
+            // Edição de produto
+            produtosAtualizados = produtos.map((produto) =>
+                produto === produtoSelecionado
+                    ? { ...produtoSelecionado, nome: produtoNome, quantidade: quantidadeNumerica, preco: precoNumerico }
+                    : produto
+            );
+        } else {
+            // Adição de novo produto
+            const dataAtual = new Date().toLocaleDateString();
+            const novoProduto = {
+                nome: produtoNome,
+                quantidade: quantidadeNumerica,
+                preco: precoNumerico,
+                data: produtos.length === 0 ? dataInicialPedido : dataAtual, // Data inicial para o primeiro produto, data atual para os outros
+            };
+            produtosAtualizados = [...produtos, novoProduto];
+        }
+
+        const totalAtualizado = produtosAtualizados.reduce((acc, produto) => acc + produto.preco * produto.quantidade, 0);
 
         const pedidoAtualizado = {
             ...pedido,
             produtos: produtosAtualizados,
             total: totalAtualizado,
-            dataPedido: dataInicialPedido || dataAtual
+            dataPedido: dataInicialPedido || new Date().toLocaleDateString(),
         };
-
-        if (!dataInicialPedido) {
-            setDataInicialPedido(dataAtual);
-        }
 
         atualizarPedido(pedidoAtualizado);
         setProdutos(produtosAtualizados);
@@ -126,14 +135,42 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
         setProdutoNome('');
         setProdutoQuantidade('');
         setProdutoPreco('');
+        setShowForm(false);
+        setProdutoSelecionado(null);
     };
 
+     // Handle para abrir o formulário de edição
+     const handleEditProduto = () => {
+        if (produtoSelecionado) {
+            setProdutoNome(produtoSelecionado.nome);
+            setProdutoQuantidade(produtoSelecionado.quantidade);
+            setProdutoPreco(produtoSelecionado.preco.toString().replace('.', ',')); // Converte ponto para vírgula
+            setShowForm(true);
+        }
+        handleCloseMenu();
+    };
 
+    const handleDeleteProduto = () => {
+        const produtosAtualizados = produtos.filter((produto) => produto !== produtoSelecionado);
+        const totalAtualizado = produtosAtualizados.reduce((acc, produto) => acc + produto.preco * produto.quantidade, 0);
 
-    const handleClickAdd = () => {
-        handleAddProduto()
-        setShowForm(false)
-    }
+        const pedidoAtualizado = {
+            ...pedido,
+            produtos: produtosAtualizados,
+            total: totalAtualizado,
+        };
+
+        atualizarPedido(pedidoAtualizado);
+        setProdutos(produtosAtualizados);
+        setTotal(totalAtualizado);
+        handleCloseMenu();
+    };
+
+        const handleClickAdd = () => {
+        handleAddProduto();
+        setShowForm(false);
+    };
+
 
     // Handle para abater valor
     const handleAbaterValor = () => {
@@ -236,7 +273,7 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                                     <p className='text-gray-500'>Nenhum produto adicionado até agora.</p>
                                 ) : (
                                     produtos.map((produto, index) => (
-                                        <div key={index} onClick={handleClick} className='flex justify-between w-[600px] transition-all duration-200 p-1 hover:bg-gray-100 hover:rounded-xl hover:scale-[98%]'>
+                                        <div key={index} onClick={(event) => handleClick(event, produto)} className='flex justify-between w-[600px] transition-all duration-200 p-1 hover:bg-gray-100 hover:rounded-xl hover:scale-[98%] cursor-pointer'>
                                             <div className='flex flex-row items-center mb-2'>
                                                 <div>
                                                     <p>{produto.nome}</p>
@@ -270,8 +307,8 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                                         'aria-labelledby': 'basic-button',
                                     }}
                                 >
-                                    <MenuItem onClick={handleCloseMenu}>Editar</MenuItem>
-                                    <MenuItem onClick={handleCloseMenu}>Excluir</MenuItem>
+                                    <MenuItem onClick={handleEditProduto}>Editar</MenuItem>
+                                    <MenuItem onClick={handleDeleteProduto}>Excluir</MenuItem>
                                 </Menu>
                             </div>
                         </div>
