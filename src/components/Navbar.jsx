@@ -26,6 +26,7 @@ import { notifySuccess } from './ui/Toast';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Skeleton from '@mui/material/Skeleton';
+import Tooltip from '@mui/material/Tooltip';
 
 //Imports do framer-motion (animação)
 import { motion } from "framer-motion";
@@ -56,7 +57,7 @@ function Navbar({ onClienteCadastrado, onPedidoCadastrado }) {
 
                 const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
                 saveAs(blob, fileName);
-                notifySuccess("Backup automático realizado com sucesso.","",3000)
+                notifySuccess("Backup automático realizado com sucesso.", "", 3000)
             };
 
             // Schedule backup at 12:00 PM and 5:00 PM
@@ -195,9 +196,9 @@ function Navbar({ onClienteCadastrado, onPedidoCadastrado }) {
                 </div>
             ) : (
                 <motion.div
-                initial={{ opacity: 0, scale: 1 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5 }}
+                    initial={{ opacity: 0, scale: 1 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5 }}
                     className="flex justify-between items-center"
                 >
                     {/* Logo e texto */}
@@ -286,22 +287,24 @@ function Navbar({ onClienteCadastrado, onPedidoCadastrado }) {
                             <MenuItem onClick={handleClickExport}><MdBackup className='mr-3' />Exportar backup</MenuItem>
                         </Menu>
                     </div>
-                      {/* Ícones à direita */}
-                      <div className='flex space-x-9 mr-8'>
-                            {isLoading ? (
-                                <Skeleton variant="rectangular" width={100} height={50} className="rounded-2xl" />
-                            ) : (
-                                <div className='flex flex-col justify-center text-neutral-700 items-center transition-colors duration-300 hover:text-orange-600'>
-                                    <a href='https://www.youtube.com/' className='flex flex-col justify-center items-center'>
+                    {/* Ícones à direita */}
+                    <div className='flex space-x-9 mr-8'>
+                        {isLoading ? (
+                            <Skeleton variant="rectangular" width={100} height={50} className="rounded-2xl" />
+                        ) : (
+                            <div>
+                                <Tooltip title="Em breve!">
+                                    <div className='flex flex-col justify-center text-neutral-700 items-center transition-colors duration-300 hover:text-orange-600'>
                                         <FaRegQuestionCircle size='30' />
                                         <p className='text-xl'>Dúvidas</p>
-                                    </a>
-                                </div>
-                            )}
-                        </div>
+                                    </div>
+                                </Tooltip>
+                            </div>
+                        )}
+                    </div>
                 </motion.div>
             )}
-            
+
             <ModalCadastro open={modalCadastroOpen} handleClose={handleCloseModalCadastro} onClienteCadastrado={onClienteCadastrado} />
             <ModalCadastroPedido
                 open={modalPedidoOpen}

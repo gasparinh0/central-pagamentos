@@ -76,6 +76,12 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
         setDataInicialPedido(pedido?.dataPedido || '');
     }, [pedido]);
 
+    useEffect(() => {
+        if (produtoSelecionado === null) {
+            setShowForm(false);
+        }
+    }, [produtos]);
+
     if (!pedido) {
         return null;
     }
@@ -153,17 +159,25 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
     const handleDeleteProduto = () => {
         const produtosAtualizados = produtos.filter((produto) => produto !== produtoSelecionado);
         const totalAtualizado = produtosAtualizados.reduce((acc, produto) => acc + produto.preco * produto.quantidade, 0);
-
+    
         const pedidoAtualizado = {
             ...pedido,
             produtos: produtosAtualizados,
             total: totalAtualizado,
         };
-
+    
         atualizarPedido(pedidoAtualizado);
         setProdutos(produtosAtualizados);
         setTotal(totalAtualizado);
+        setProdutoSelecionado(null);  // Limpa a seleção do produto
         handleCloseMenu();
+    
+        // Força a atualização completa antes de adicionar um novo produto
+        setTimeout(() => {
+            setProdutoNome('');
+            setProdutoQuantidade('');
+            setProdutoPreco('');
+        }, 0); // Isso garante que o estado seja atualizado antes de permitir novas ações
     };
 
         const handleClickAdd = () => {
