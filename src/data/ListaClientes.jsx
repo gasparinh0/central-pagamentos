@@ -240,7 +240,7 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
                                             <h1 className='text-3xl'>{cliente.nome}</h1>
                                             <div className='flex space-x-2'>
                                                 <p className='text-2xl'>Telefone:</p>
-                                                <p className='text-2xl font-light'>{cliente.telefone}</p>
+                                                <p className='text-2xl font-light'>{formatToPhone(cliente.telefone)}</p>
                                             </div>
                                         </div>
                                         <div className='flex ml-auto items-center space-x-6'>
