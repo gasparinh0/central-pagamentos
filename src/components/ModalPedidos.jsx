@@ -13,7 +13,7 @@ import MenuItem from '@mui/material/MenuItem';
 import ReactToPrint from 'react-to-print';
 
 // Imports do react-icons
-import { BiSave } from "react-icons/bi";
+import { FaFolder } from "react-icons/fa";
 import { FaPrint } from "react-icons/fa";
 import { IoIosCloseCircle } from "react-icons/io";
 import { IoMdAddCircleOutline } from "react-icons/io";
@@ -480,7 +480,7 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                                         className='text-xl text-neutral-700 flex justify-center items-center transition-all duration-300'
                                     >
                                         {/* Excluir */}
-                                        <BiSave size='30' className='transition-all duration-300 hover:text-neutral-500' />
+                                        <FaFolder size='30' className='transition-all duration-300 hover:text-neutral-500' />
                                     </button>
                                 </Tooltip>
                             )}
