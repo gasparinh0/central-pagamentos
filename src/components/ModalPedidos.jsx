@@ -82,6 +82,16 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
         }
     }, [produtos]);
 
+    useEffect(() => {
+        if (pedido) {
+            // Verifica se o pedido realmente mudou para evitar resets desnecessários
+            setTotal(pedido?.total || 0);
+            setProdutos(pedido?.produtos || []);
+            setHistoricoAbatimentos(pedido?.historicoAbatimentos || []);
+            setDataInicialPedido(pedido?.dataPedido || '');
+        }
+    }, [pedido]);
+
     if (!pedido) {
         return null;
     }
@@ -96,17 +106,18 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
         setAnchorEl(null);
     };
 
+    //Função para adicionar produto
     const handleAddProduto = () => {
         const precoNumerico = parseFloat(produtoPreco.replace(',', '.')); // Substitui vírgula por ponto
         const quantidadeNumerica = parseFloat(produtoQuantidade, 10); // Converte para número inteiro
-
+    
         if (!produtoNome || isNaN(precoNumerico) || isNaN(quantidadeNumerica)) {
             alert('Por favor, coloque as informações necessárias para adicionar o produto.');
             return;
         }
-
+    
         let produtosAtualizados;
-
+    
         if (produtoSelecionado) {
             // Edição de produto
             produtosAtualizados = produtos.map((produto) =>
@@ -125,19 +136,25 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
             };
             produtosAtualizados = [...produtos, novoProduto];
         }
-
+    
         const totalAtualizado = produtosAtualizados.reduce((acc, produto) => acc + produto.preco * produto.quantidade, 0);
-
+    
         const pedidoAtualizado = {
             ...pedido,
             produtos: produtosAtualizados,
             total: totalAtualizado,
             dataPedido: dataInicialPedido || new Date().toLocaleDateString(),
         };
-
+    
+        // Sincronize manualmente o localStorage após a atualização
         atualizarPedido(pedidoAtualizado);
         setProdutos(produtosAtualizados);
         setTotal(totalAtualizado);
+    
+        // Atualize o localStorage
+        localStorage.setItem('clientes', JSON.stringify(pedidoAtualizado));
+    
+        // Resete o formulário e a seleção
         setProdutoNome('');
         setProdutoQuantidade('');
         setProdutoPreco('');
