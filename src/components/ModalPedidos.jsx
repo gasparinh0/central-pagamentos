@@ -98,7 +98,7 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
 
     const handleAddProduto = () => {
         const precoNumerico = parseFloat(produtoPreco.replace(',', '.')); // Substitui vírgula por ponto
-        const quantidadeNumerica = parseInt(produtoQuantidade, 10); // Converte para número inteiro
+        const quantidadeNumerica = parseFloat(produtoQuantidade, 10); // Converte para número inteiro
 
         if (!produtoNome || isNaN(precoNumerico) || isNaN(quantidadeNumerica)) {
             alert('Por favor, coloque as informações necessárias para adicionar o produto.');
