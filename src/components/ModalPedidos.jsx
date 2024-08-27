@@ -151,9 +151,6 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
         setProdutos(produtosAtualizados);
         setTotal(totalAtualizado);
     
-        // Atualize o localStorage
-        localStorage.setItem('clientes', JSON.stringify(pedidoAtualizado));
-    
         // Resete o formulário e a seleção
         setProdutoNome('');
         setProdutoQuantidade('');
