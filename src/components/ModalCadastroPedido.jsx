@@ -376,7 +376,6 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
                                         <p className='text-xl'>Valor total: R$ {total.toFixed(2)}</p>
                                     </div>
                                     <div className='w-72 flex flex-col items-start justify-center'>
-                                        <p className='mt-3'>Eu concordo que, ao assinar essa nota, me comprometo a pagar o valor citado no prazo de 30 dias.</p>
                                         <div className='content-none bg-black w-48 h-0.5 mt-24 mb-2'></div>
                                         <p>Assinatura</p>
                                         <p className='mt-3'>Data do pedido: {formatarData(dataPedido)}</p>
