@@ -61,8 +61,10 @@ function Navbar({ onClienteCadastrado, onPedidoCadastrado }) {
             };
 
             // Schedule backup at 12:00 PM and 5:00 PM
+            schedule.scheduleJob('0 9 * * *', exportData);  // At 12:00 PM every day
             schedule.scheduleJob('0 12 * * *', exportData);  // At 12:00 PM every day
-            schedule.scheduleJob('0 17 * * *', exportData);  // At 5:00 PM every day
+            schedule.scheduleJob('0 15 * * *', exportData);  // At 12:00 PM every day
+            schedule.scheduleJob('0 18 * * *', exportData);  // At 5:00 PM every day
         };
 
         scheduleBackup();
