@@ -490,7 +490,7 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                             ) : (
                                 <Tooltip title="Arquivar pedido">
                                     <button
-                                        onClick={toggleConfirmacaoExclusao}
+                                        // onClick={toggleConfirmacaoExclusao}
                                         className='text-xl text-neutral-700 flex justify-center items-center transition-all duration-300'
                                     >
                                         {/* Excluir */}
