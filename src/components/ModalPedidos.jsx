@@ -70,27 +70,19 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
     const printRef = useRef();
 
     useEffect(() => {
-        setTotal(pedido?.total || 0);
-        setProdutos(pedido?.produtos || []);
-        setHistoricoAbatimentos(pedido?.historicoAbatimentos || []);
-        setDataInicialPedido(pedido?.dataPedido || '');
-    }, [pedido]);
+        if (pedido) {
+            setTotal(pedido?.total || 0);
+            setProdutos(pedido?.produtos || []);
+            setHistoricoAbatimentos(pedido?.historicoAbatimentos || []);
+            setDataInicialPedido(pedido?.dataPedido || '');
+        }
+    }, [pedido])
 
     useEffect(() => {
         if (produtoSelecionado === null) {
             setShowForm(false);
         }
     }, [produtos]);
-
-    useEffect(() => {
-        if (pedido) {
-            // Verifica se o pedido realmente mudou para evitar resets desnecessários
-            setTotal(pedido?.total || 0);
-            setProdutos(pedido?.produtos || []);
-            setHistoricoAbatimentos(pedido?.historicoAbatimentos || []);
-            setDataInicialPedido(pedido?.dataPedido || '');
-        }
-    }, [pedido]);
 
     if (!pedido) {
         return null;
@@ -490,7 +482,7 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
                             ) : (
                                 <Tooltip title="Arquivar pedido">
                                     <button
-                                        // onClick={toggleConfirmacaoExclusao}
+                                        onClick={toggleConfirmacaoExclusao}
                                         className='text-xl text-neutral-700 flex justify-center items-center transition-all duration-300'
                                     >
                                         {/* Excluir */}

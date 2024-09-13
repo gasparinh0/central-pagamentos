@@ -3,6 +3,9 @@ import * as React from 'react';
 // Imports do React
 import { useEffect, useState, useRef } from 'react';
 
+//Imports do react-toastify
+import { notifySuccess } from '../components/ui/Toast';
+
 // Imports de componentes
 import BasicModal from "../components/ModalPedidos";
 
@@ -57,6 +60,11 @@ const ResumoPedido = ({ pedidosProp, onDelete }) => {
         }
     }, []);
 
+    useEffect(() => {
+        // Sincroniza o localStorage assim que pedidos forem atualizados
+        localStorage.setItem('pedidos', JSON.stringify(pedidos));
+    }, [pedidos]);
+
     // Abrir botão de filtros
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -81,9 +89,12 @@ const ResumoPedido = ({ pedidosProp, onDelete }) => {
         setPedidoIndexSelecionado(null); // Limpe o índice do pedido selecionado
     };
 
-    // Função para atualizar o pedido
     const atualizarPedido = (pedidoAtualizado) => {
-        const pedidosAtualizados = pedidos.map(p => p.nomeCliente === pedidoAtualizado.nomeCliente ? pedidoAtualizado : p);
+        const pedidosAtualizados = pedidos.map(p => 
+            p.nomeCliente === pedidoAtualizado.nomeCliente ? pedidoAtualizado : p
+        );
+    
+        // Atualiza o estado e o localStorage corretamente
         setPedidos(pedidosAtualizados);
         localStorage.setItem('pedidos', JSON.stringify(pedidosAtualizados));
     };
@@ -95,19 +106,21 @@ const ResumoPedido = ({ pedidosProp, onDelete }) => {
 
     // Função para deletar o pedido
     const deletarPedido = (index) => {
-        const globalIndex = getGlobalIndex(index); // Calcule o índice global
+        const globalIndex = getGlobalIndex(index); // Calcula o índice global corretamente
+    
         const pedidosAtualizados = pedidos.filter((_, i) => i !== globalIndex);
         const pedidoRemovido = pedidos[globalIndex];
+        
+        // Atualiza pedidos e salva no localStorage
         setPedidos(pedidosAtualizados);
         localStorage.setItem('pedidos', JSON.stringify(pedidosAtualizados));
-
-        const savedPaidOrders = JSON.parse(localStorage.getItem('paidOrders'));
+    
+        // Adiciona o pedido removido ao localStorage de pedidos pagos
+        const savedPaidOrders = JSON.parse(localStorage.getItem('paidOrders')) || [];
         savedPaidOrders.push(pedidoRemovido);
         localStorage.setItem('paidOrders', JSON.stringify(savedPaidOrders));
 
-        if (onDelete) {
-            onDelete(globalIndex);
-        }
+        notifySuccess("Pedido de " + pedidoRemovido.nomeCliente + " arquivado com sucesso", "", 3000)
     };
 
     // Função de pesquisa
