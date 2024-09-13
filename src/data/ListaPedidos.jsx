@@ -197,7 +197,7 @@ const ResumoPedido = ({ pedidosProp, onDelete }) => {
 
     return (
         <div ref={listRef}>
-            <div className='flex flex-row justify-between'>
+            <div className='flex flex-row justify-between items-center'>
                 <input
                     type="text"
                     className='w-56 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
@@ -213,7 +213,7 @@ const ResumoPedido = ({ pedidosProp, onDelete }) => {
                     onClick={handleClick}
                     className='text-xl bg-slate-200 w-40 h-12 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 text-neutral-700 hover:bg-slate-100'
                 >
-                    <MdFilterAlt size='40' /> Filtros
+                    <MdFilterAlt size='30' /> Filtros
                 </button>
                 <Menu
                     id="basic-menu"

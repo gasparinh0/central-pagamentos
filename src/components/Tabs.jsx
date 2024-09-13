@@ -90,7 +90,7 @@ const Tabs = () => {
         <>
             <div>
                 <Navbar onClienteCadastrado={handleClienteCadastrado} onPedidoCadastrado={handlePedidoCadastrado} />
-                <div className='bg-yellow-400 opacity-70 p-5 flex items-center justify-center font-bold space-x-2'><IoIosWarning size='30'/><h1>AVISO: Evite arquivar pedidos após fazer alterações, pode ser que suas últimas alterações desapareçam, estamos trabalhando para corrigir o problema.</h1></div>
+                <div className='bg-yellow-400 opacity-70 p-5 flex items-center justify-center font-bold space-x-2'><IoIosWarning size='30'/><h1>AVISO: Os pedidos não estão sendo arquivados corretamente, estamos trabalhando para resolver.</h1></div>
                 <div className="container mx-auto p-8 bg-white mt-6 rounded-xl shadow-xl">
                     <div className="relative flex justify-around text-3xl space-x-4 border-b">
                         {isLoading ? (
