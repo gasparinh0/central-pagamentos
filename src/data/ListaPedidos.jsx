@@ -3,11 +3,11 @@ import * as React from 'react';
 // Imports do React
 import { useEffect, useState, useRef } from 'react';
 
-//Imports do react-toastify
-import { notifySuccess } from '../components/ui/Toast';
-
 // Imports de componentes
 import BasicModal from "../components/ModalPedidos";
+
+//Imports do react-toastify
+import { notifySuccess } from '../components/ui/Toast';
 
 // Imports do react-icons
 import { MdFilterAlt } from "react-icons/md";
@@ -60,11 +60,6 @@ const ResumoPedido = ({ pedidosProp, onDelete }) => {
         }
     }, []);
 
-    useEffect(() => {
-        // Sincroniza o localStorage assim que pedidos forem atualizados
-        localStorage.setItem('pedidos', JSON.stringify(pedidos));
-    }, [pedidos]);
-
     // Abrir botão de filtros
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -89,12 +84,9 @@ const ResumoPedido = ({ pedidosProp, onDelete }) => {
         setPedidoIndexSelecionado(null); // Limpe o índice do pedido selecionado
     };
 
+    // Função para atualizar o pedido
     const atualizarPedido = (pedidoAtualizado) => {
-        const pedidosAtualizados = pedidos.map(p => 
-            p.nomeCliente === pedidoAtualizado.nomeCliente ? pedidoAtualizado : p
-        );
-    
-        // Atualiza o estado e o localStorage corretamente
+        const pedidosAtualizados = pedidos.map(p => p.nomeCliente === pedidoAtualizado.nomeCliente ? pedidoAtualizado : p);
         setPedidos(pedidosAtualizados);
         localStorage.setItem('pedidos', JSON.stringify(pedidosAtualizados));
     };
@@ -106,17 +98,13 @@ const ResumoPedido = ({ pedidosProp, onDelete }) => {
 
     // Função para deletar o pedido
     const deletarPedido = (index) => {
-        const globalIndex = getGlobalIndex(index); // Calcula o índice global corretamente
-    
+        const globalIndex = getGlobalIndex(index); // Calcule o índice global
         const pedidosAtualizados = pedidos.filter((_, i) => i !== globalIndex);
         const pedidoRemovido = pedidos[globalIndex];
-        
-        // Atualiza pedidos e salva no localStorage
         setPedidos(pedidosAtualizados);
         localStorage.setItem('pedidos', JSON.stringify(pedidosAtualizados));
-    
-        // Adiciona o pedido removido ao localStorage de pedidos pagos
-        const savedPaidOrders = JSON.parse(localStorage.getItem('paidOrders')) || [];
+
+        const savedPaidOrders = JSON.parse(localStorage.getItem('paidOrders'));
         savedPaidOrders.push(pedidoRemovido);
         localStorage.setItem('paidOrders', JSON.stringify(savedPaidOrders));
 
@@ -135,17 +123,17 @@ const ResumoPedido = ({ pedidosProp, onDelete }) => {
             setIsAlphabetical(!isAlphabetical);
             setIsMostRecent(false);
             setIsOldest(false);
-        // Mais recente
+            // Mais recente
         } else if (filter === 'mostRecent') {
             setIsMostRecent(!isMostRecent);
             setIsAlphabetical(false);
             setIsOldest(false);
-        // Mais velho
+            // Mais velho
         } else if (filter === 'oldest') {
             setIsOldest(!isOldest);
             setIsAlphabetical(false);
             setIsMostRecent(false);
-        // Já pago
+            // Já pago
         } else if (filter === 'paid') {
             setIsPaid(!isPaid);
         }
@@ -197,95 +185,106 @@ const ResumoPedido = ({ pedidosProp, onDelete }) => {
 
     return (
         <div ref={listRef}>
-            <div className='flex flex-row justify-between items-center'>
-                <input
-                    type="text"
-                    className='w-56 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
-                    placeholder='Pesquisar'
-                    value={searchTerm}
-                    onChange={handleSearchChange}
-                />
-                <button
-                    id="basic-button"
-                    aria-controls={open ? 'basic-menu' : undefined}
-                    aria-haspopup="true"
-                    aria-expanded={open ? 'true' : undefined}
-                    onClick={handleClick}
-                    className='text-xl bg-slate-200 w-40 h-12 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 text-neutral-700 hover:bg-slate-100'
-                >
-                    <MdFilterAlt size='30' /> Filtros
-                </button>
-                <Menu
-                    id="basic-menu"
-                    anchorEl={anchorEl}
-                    open={open}
-                    onClose={handleClose}
-                    MenuListProps={{
-                        'aria-labelledby': 'basic-button',
-                    }}
-                >
-                    <MenuItem>
-                        <Switch
-                            checked={isAlphabetical}
-                            onChange={() => handleSwitchChange('alphabetical')}
-                            {...label}
-                        /> Ordem alfabética
-                    </MenuItem>
-                    <MenuItem>
-                        <Switch
-                            checked={isMostRecent}
-                            onChange={() => handleSwitchChange('mostRecent')}
-                            {...label}
-                        /> Mais recente
-                    </MenuItem>
-                    <MenuItem>
-                        <Switch
-                            checked={isOldest}
-                            onChange={() => handleSwitchChange('oldest')}
-                            {...label}
-                        /> Mais antigo
-                    </MenuItem>
-                    <MenuItem>
-                        <Switch
-                            checked={isPaid}
-                            onChange={() => handleSwitchChange('paid')}
-                            {...label}
-                        /> Pedidos já pagos
-                    </MenuItem>
-                </Menu>
-            </div>
             {displayPedidos.length === 0 ? (
                 <div className='flex justify-center items-center text-2xl mt-9'>Nenhum pedido encontrado.</div>
             ) : (
-                <div className='grid grid-cols-4 gap-x-4 gap-y-4 p-4'>
-                    {paginatedPedidos.map((pedido, index) => (
-                        <div key={index} className='bg-gray-100 p-6 rounded-xl shadow-lg'>
-                            <div className='flex justify-between'>
-                                <p className='text-xl font-light'>Cliente:</p>
-                                {isPaid ? (
-                                    <div className='text-green-500 text-lg flex flex-row'><FaCheck size="28" className="text-green-500 mr-2"/>Já pago</div>
-                                ) : (
-                                    <Tooltip title="Visualizar pedido">
-                                    <button
-                                        onClick={() => handleOpenModalPedidos(pedido, index)} // Passe o índice ao abrir o modal
-                                        className="text-xl bg-slate-200 w-10 h-8 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 text-neutral-700 hover:bg-[#3b82f6] hover:text-white"
-                                    >
-                                        <FaEye />
-                                    </button>
-                                    </Tooltip>
-                                )}
+                <div>
+                    <div className='flex flex-row justify-between'>
+                        <input
+                            type="text"
+                            className='w-56 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
+                            placeholder='Pesquisar'
+                            value={searchTerm}
+                            onChange={handleSearchChange}
+                        />
+                        <button
+                            id="basic-button"
+                            aria-controls={open ? 'basic-menu' : undefined}
+                            aria-haspopup="true"
+                            aria-expanded={open ? 'true' : undefined}
+                            onClick={handleClick}
+                            className='text-xl bg-slate-200 w-40 h-12 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 text-neutral-700 hover:bg-slate-100'
+                        >
+                            <MdFilterAlt size='40' /> Filtros
+                        </button>
+                        <Menu
+                            id="basic-menu"
+                            anchorEl={anchorEl}
+                            open={open}
+                            onClose={handleClose}
+                            MenuListProps={{
+                                'aria-labelledby': 'basic-button',
+                            }}
+                        >
+                            <MenuItem>
+                                <Switch
+                                    checked={isAlphabetical}
+                                    onChange={() => handleSwitchChange('alphabetical')}
+                                    {...label}
+                                /> Ordem alfabética
+                            </MenuItem>
+                            <MenuItem>
+                                <Switch
+                                    checked={isMostRecent}
+                                    onChange={() => handleSwitchChange('mostRecent')}
+                                    {...label}
+                                /> Mais recente
+                            </MenuItem>
+                            <MenuItem>
+                                <Switch
+                                    checked={isOldest}
+                                    onChange={() => handleSwitchChange('oldest')}
+                                    {...label}
+                                /> Mais antigo
+                            </MenuItem>
+                            <MenuItem>
+                                <Switch
+                                    checked={isPaid}
+                                    onChange={() => handleSwitchChange('paid')}
+                                    {...label}
+                                /> Pedidos já pagos
+                            </MenuItem>
+                        </Menu>
+                    </div>
+                    <div className='grid grid-cols-4 gap-x-4 gap-y-4 p-4'>
+                        {paginatedPedidos.map((pedido, index) => (
+                            <div key={index} className='bg-gray-100 p-6 rounded-xl shadow-lg'>
+                                <div className='flex justify-between'>
+                                    <p className='text-xl font-light'>Cliente:</p>
+                                    {isPaid ? (
+                                        <div className='text-green-500 text-lg flex flex-row'><FaCheck size="28" className="text-green-500 mr-2" />Já pago</div>
+                                    ) : (
+                                        <Tooltip title="Visualizar pedido">
+                                            <button
+                                                onClick={() => handleOpenModalPedidos(pedido, index)} // Passe o índice ao abrir o modal
+                                                className="text-xl bg-slate-200 w-10 h-8 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 text-neutral-700 hover:bg-[#3b82f6] hover:text-white"
+                                            >
+                                                <FaEye />
+                                            </button>
+                                        </Tooltip>
+                                    )}
+                                </div>
+                                <h1 className='text-3xl mb-5'>{pedido.nomeCliente}</h1>
+                                <div className='flex space-x-2'>
+                                    <p>Total do pedido:</p>
+                                    <p className='font-semibold'>R$ {(pedido.total * 1).toFixed(2)}</p>
+                                </div>
+                                <div className='flex space-x-2'>
+                                    <p>Último pedido feito:</p>
+                                    <p className='font-semibold'>{pedido.dataPedido}</p>
+                                </div>
                             </div>
-                            <h1 className='text-3xl mb-5'>{pedido.nomeCliente}</h1>
-                            <div className='flex space-x-2'>
-                                <p>Total do pedido:</p>
-                                <p className='font-semibold'>R$ {(pedido.total * 1).toFixed(2)}</p>
-                            </div>
-                            <div className='flex space-x-2'>
-                                <p>Último pedido feito:</p>
-                                <p className='font-semibold'>{pedido.dataPedido}</p>
-                            </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
+                    <div className='flex justify-center mt-8'>
+                        <Stack spacing={2}>
+                            <Pagination
+                                count={pageCount}
+                                page={currentPage}
+                                onChange={handlePageChange}
+                            />
+                        </Stack>
+                    </div>
                 </div>
             )}
             {pedidoSelecionado && (
@@ -297,15 +296,6 @@ const ResumoPedido = ({ pedidosProp, onDelete }) => {
                     deletarPedido={() => deletarPedido(pedidoIndexSelecionado)} // Utilize o índice do estado ao deletar
                 />
             )}
-            <div className='flex justify-center mt-8'>
-                <Stack spacing={2}>
-                    <Pagination
-                        count={pageCount}
-                        page={currentPage}
-                        onChange={handlePageChange}
-                    />
-                </Stack>
-            </div>
         </div>
     );
 };
