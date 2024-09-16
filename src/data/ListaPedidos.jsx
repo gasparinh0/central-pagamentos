@@ -25,7 +25,7 @@ import Tooltip from '@mui/material/Tooltip';
 // Variável que determina a quantidade de pedidos por página
 const ITEMS_PER_PAGE = 12;
 
-const ResumoPedido = ({ pedidosProp, onDelete }) => {
+const ResumoPedido = ({ pedidosProp }) => {
     const [pedidos, setPedidos] = useState(pedidosProp || []);
     const [modalPedidosOpen, setModalPedidosOpen] = useState(false);
     const [pedidoSelecionado, setPedidoSelecionado] = useState(null);

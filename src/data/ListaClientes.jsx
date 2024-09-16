@@ -19,6 +19,9 @@ import { formatToPhone } from 'brazilian-values';
 //Imports do framer-motion
 import { motion } from "framer-motion"
 
+//Imports do react-toastify
+import { notifySuccess } from '../components/ui/Toast';
+
 //Variável para determinar a quantidade de clientes por página
 const ITEMS_PER_PAGE = 10;
 
@@ -278,6 +281,7 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
                                                             <button
                                                                 onClick={() => {
                                                                     onDelete(globalIndex);
+                                                                    notifySuccess("Cliente removido com sucesso", "", 3000)
                                                                     setConfirmacaoExclusao((prev) => ({
                                                                         ...prev,
                                                                         [index]: false
