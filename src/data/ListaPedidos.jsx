@@ -185,28 +185,30 @@ const ResumoPedido = ({ pedidosProp }) => {
 
     return (
         <div ref={listRef}>
+            <div className='flex flex-row justify-between'>
+                <input
+                    type="text"
+                    className='w-56 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
+                    placeholder='Pesquisar'
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                />
+                <button
+                    id="basic-button"
+                    aria-controls={open ? 'basic-menu' : undefined}
+                    aria-haspopup="true"
+                    aria-expanded={open ? 'true' : undefined}
+                    onClick={handleClick}
+                    className='text-xl bg-slate-200 w-40 h-12 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 text-neutral-700 hover:bg-slate-100'
+                >
+                    <MdFilterAlt size='40' /> Filtros
+                </button>
+            </div>
             {displayPedidos.length === 0 ? (
                 <div className='flex justify-center items-center text-2xl mt-9'>Nenhum pedido encontrado.</div>
             ) : (
                 <div>
                     <div className='flex flex-row justify-between'>
-                        <input
-                            type="text"
-                            className='w-56 px-3 py-1.5 text-base font-normal leading-6 text-gray-900 bg-white border border-gray-300 rounded-md transition duration-150 ease-in-out focus:text-gray-900 focus:bg-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600/25'
-                            placeholder='Pesquisar'
-                            value={searchTerm}
-                            onChange={handleSearchChange}
-                        />
-                        <button
-                            id="basic-button"
-                            aria-controls={open ? 'basic-menu' : undefined}
-                            aria-haspopup="true"
-                            aria-expanded={open ? 'true' : undefined}
-                            onClick={handleClick}
-                            className='text-xl bg-slate-200 w-40 h-12 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 text-neutral-700 hover:bg-slate-100'
-                        >
-                            <MdFilterAlt size='40' /> Filtros
-                        </button>
                         <Menu
                             id="basic-menu"
                             anchorEl={anchorEl}
