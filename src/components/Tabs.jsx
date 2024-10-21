@@ -71,13 +71,22 @@ const Tabs = () => {
     };
 
     //Handle para editar cliente
-    const handleEditCliente = (index, clienteAtualizado) => {
+    const handleEditCliente = (idCliente, clienteAtualizado) => {
         const novosClientes = [...clientes];
-        novosClientes[index] = clienteAtualizado;
-        setClientes(novosClientes);
-        localStorage.setItem('clientes', JSON.stringify(novosClientes));
+        const index = novosClientes.findIndex(cliente => cliente.id === idCliente);
+    
+        if (index !== -1) {
+            // Preserva o ID do cliente existente
+            novosClientes[index] = { ...clienteAtualizado, id: novosClientes[index].id };
+            
+            localStorage.setItem('clientes', JSON.stringify(novosClientes));
+            setClientes(novosClientes);
+        } else {
+            console.error('Cliente não encontrado para atualização');
+        }
     };
-
+    
+    
     //Handle para deletar pedido
     const handleDeletePedido = (index) => {
         const novosPedidos = pedidos.filter((_, i) => i !== index);

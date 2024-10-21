@@ -50,18 +50,23 @@ const ModalCadastroCliente = ({ open, handleClose, onClienteCadastrado }) => {
             return;
         }
 
-        const cliente = { nome, telefone };
+        // Gerar um ID único para o cliente
+        const id = Date.now();  // Gera um timestamp como ID único
+        const cliente = { id, nome, telefone }; // Inclui o ID no objeto cliente
+
         const clientes = JSON.parse(localStorage.getItem('clientes')) || [];
         clientes.push(cliente);
         localStorage.setItem('clientes', JSON.stringify(clientes));
+
         setNome('');
         setTelefone('');
-        notifySuccess("Cliente salvo com sucesso","",3000)
+        notifySuccess("Cliente salvo com sucesso", "", 3000);
         handleClose();
         if (onClienteCadastrado) {
             onClienteCadastrado(cliente);
         }
     };
+
 
     //Handle para formatar telefone na tela de editar
     const handleTelefoneChange = (e) => {

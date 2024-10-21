@@ -26,7 +26,7 @@ import { notifySuccess } from '../components/ui/Toast';
 const ITEMS_PER_PAGE = 10;
 
 const ListaClientes = ({ clientes, onDelete, onEdit }) => {
-    const [editIndex, setEditIndex] = useState(null);
+    const [editId, setEditId] = useState(null);  // Substituir editIndex por editId
     const [editNome, setEditNome] = useState('');
     const [editTelefone, setEditTelefone] = useState('');
     const [colors, setColors] = useState({});
@@ -36,163 +36,168 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
     const [isAlphabetical, setIsAlphabetical] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
 
-    //Variável de âncora
-    const [anchorEl, setAnchorEl] = useState(null); // Definido anchorEl
-    const open = Boolean(anchorEl); // Definido open
-
-    const listRef = useRef(null);
-
-    //Variável para determinar cores para os avatares
-    useEffect(() => {
-        const newColors = {};
-        clientes.forEach(cliente => {
-            if (!colors[cliente.nome]) {
-                newColors[cliente.nome] = stringToColor(cliente.nome);
-            }
-        });
-        setColors(prevColors => ({ ...prevColors, ...newColors }));
-    }, [clientes]);
-
-    //Variável para determinar as abreviações dos clientes
-    useEffect(() => {
-        let displayedClientes = clientes;
-        if (searchTerm !== '') {
-            displayedClientes = displayedClientes.filter(cliente =>
-                cliente.nome.toLowerCase().includes(searchTerm.toLowerCase())
-            );
+      //Variável de âncora
+      const [anchorEl, setAnchorEl] = useState(null); // Definido anchorEl
+      const open = Boolean(anchorEl); // Definido open
+  
+      const listRef = useRef(null);
+  
+      //Variável para determinar cores para os avatares
+      useEffect(() => {
+          const newColors = {};
+          clientes.forEach(cliente => {
+              if (!colors[cliente.nome]) {
+                  newColors[cliente.nome] = stringToColor(cliente.nome);
+              }
+          });
+          setColors(prevColors => ({ ...prevColors, ...newColors }));
+      }, [clientes]);
+  
+      //Variável para determinar as abreviações dos clientes
+      useEffect(() => {
+          let displayedClientes = clientes;
+          if (searchTerm !== '') {
+              displayedClientes = displayedClientes.filter(cliente =>
+                  cliente.nome.toLowerCase().includes(searchTerm.toLowerCase())
+              );
+          }
+          if (isAlphabetical) {
+              displayedClientes = [...displayedClientes].sort((a, b) =>
+                  a.nome.localeCompare(b.nome)
+              );
+          }
+          setFilteredClientes(displayedClientes);
+      }, [searchTerm, isAlphabetical, clientes]);
+  
+      //Handle para trocar de página
+      const handlePageChange = (event, value) => {
+          setCurrentPage(value);
+          listRef.current.scrollIntoView({ behavior: 'smooth' });
+      };
+  
+      //Função para paginação
+      const paginatedClientes = filteredClientes.slice(
+          (currentPage - 1) * ITEMS_PER_PAGE,
+          currentPage * ITEMS_PER_PAGE
+      );
+  
+      //Função para determinar as páginas
+      const pageCount = Math.ceil(filteredClientes.length / ITEMS_PER_PAGE);
+  
+      //Handle para âncora
+      const handleClick = (event) => {
+          setAnchorEl(event.currentTarget);
+      };
+  
+      //Handle para âncora
+      const handleClose = () => {
+          setAnchorEl(null);
+      };
+  
+      //Handle para filtro em ordem alfabética
+      const handleSwitchChange = (event) => {
+          setIsAlphabetical(event.target.checked);
+      };
+  
+      const label = { inputProps: { 'aria-label': 'Switch demo' } };
+  
+     // Função para iniciar a edição de um cliente, agora utilizando o ID
+    const handleEdit = (id) => {
+        const cliente = clientes.find(cliente => cliente.id === id);
+        if (cliente) {
+            setEditId(cliente.id);  // Armazena o ID do cliente em vez do índice
+            setEditNome(cliente.nome);
+            setEditTelefone(cliente.telefone);
         }
-        if (isAlphabetical) {
-            displayedClientes = [...displayedClientes].sort((a, b) =>
-                a.nome.localeCompare(b.nome)
-            );
-        }
-        setFilteredClientes(displayedClientes);
-    }, [searchTerm, isAlphabetical, clientes]);
-
-    //Handle para trocar de página
-    const handlePageChange = (event, value) => {
-        setCurrentPage(value);
-        listRef.current.scrollIntoView({ behavior: 'smooth' });
     };
 
-    //Função para paginação
-    const paginatedClientes = filteredClientes.slice(
-        (currentPage - 1) * ITEMS_PER_PAGE,
-        currentPage * ITEMS_PER_PAGE
-    );
-
-    //Função para determinar as páginas
-    const pageCount = Math.ceil(filteredClientes.length / ITEMS_PER_PAGE);
-
-    //Handle para âncora
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    //Handle para âncora
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
-
-    //Handle para filtro em ordem alfabética
-    const handleSwitchChange = (event) => {
-        setIsAlphabetical(event.target.checked);
-    };
-
-    const label = { inputProps: { 'aria-label': 'Switch demo' } };
-
-    //Handle para editar cliente
-    const handleEdit = (index) => {
-        const globalIndex = (currentPage - 1) * ITEMS_PER_PAGE + index;
-        setEditIndex(globalIndex);
-        setEditNome(filteredClientes[globalIndex].nome);
-        setEditTelefone(filteredClientes[globalIndex].telefone);
-    };
-
-    //Handle para salvar a edição
+    // Função para salvar as edições feitas com base no ID do cliente
     const handleSaveEdit = () => {
-        onEdit(editIndex, { nome: editNome, telefone: editTelefone });
-        setEditIndex(null);
-        setEditNome('');
-        setEditTelefone('');
-    };
-
-    //Handle da seção editar do campo telefone
-    const handleEditTelefoneChange = (e) => {
-        setEditTelefone(e.target.value);
-    };
-
-    //Handle para prosseguir com o enter
-    const handleKeyDown = (e) => {
-        if (e.key === 'Enter') {
-            const form = e.target.form;
-            const index = Array.prototype.indexOf.call(form, e.target);
-            if (form.elements[index + 1]) {
-                form.elements[index + 1].focus();
-                e.preventDefault();
-            } else {
-                handleSaveEdit();
-            }
+        if (editId !== null) {
+            onEdit(editId, { nome: editNome, telefone: editTelefone });
+            setEditId(null);
+            setEditNome('');
+            setEditTelefone('');
         }
     };
+  
+      //Handle da seção editar do campo telefone
+      const handleEditTelefoneChange = (e) => {
+          setEditTelefone(e.target.value);
+      };
+  
+      //Handle para prosseguir com o enter
+      const handleKeyDown = (e) => {
+          if (e.key === 'Enter') {
+              const form = e.target.form;
+              const index = Array.prototype.indexOf.call(form, e.target);
+              if (form.elements[index + 1]) {
+                  form.elements[index + 1].focus();
+                  e.preventDefault();
+              } else {
+                  handleSaveEdit();
+              }
+          }
+      };
+  
+      //Condição que detecta se não há nenhum cliente na lista
+      if (clientes.length === 0) {
+          return <div className='flex justify-center items-center text-2xl mt-9'>Nenhum cliente encontrado.</div>;
+      }
+  
+      //Função para as cores do avatar do cliente
+      function stringToColor(string) {
+          let hash = 0;
+          let i;
+  
+          for (i = 0; i < string.length; i += 1) {
+              hash = string.charCodeAt(i) + ((hash << 5) - hash);
+          }
+  
+          let color = '#';
+  
+          for (i = 0; i < 3; i += 1) {
+              const value = (hash >> (i * 8)) & 0xff;
+              color += `00${value.toString(16)}`.slice(-2);
+          }
+  
+          return color;
+      }
+  
+      //Função para o avatar do cliente
+      function stringAvatar(name, size = 56) {
+          const nameParts = name.split(' ');
+  
+          let initials = nameParts[0][0];
+          if (nameParts.length >= 2) {
+              initials += nameParts[1][0];
+          }
+  
+          return {
+              sx: {
+                  bgcolor: colors[name] || stringToColor(name),
+                  width: size,
+                  height: size,
+                  color: '#fff',
+                  fontSize: size / 2,
+              },
+              children: initials,
+          };
+      }
+  
+      //Função para confirmar exclusão
+      const toggleConfirmacaoExclusao = (index) => {
+          setConfirmacaoExclusao((prev) => ({
+              ...prev,
+              [index]: !prev[index]
+          }));
+      };
+  
+      //Função para cancelar exclusão
+      const cancelarExclusao = () => {
+          setConfirmacaoExclusao({});
+      };
 
-    //Condição que detecta se não há nenhum cliente na lista
-    if (clientes.length === 0) {
-        return <div className='flex justify-center items-center text-2xl mt-9'>Nenhum cliente encontrado.</div>;
-    }
-
-    //Função para as cores do avatar do cliente
-    function stringToColor(string) {
-        let hash = 0;
-        let i;
-
-        for (i = 0; i < string.length; i += 1) {
-            hash = string.charCodeAt(i) + ((hash << 5) - hash);
-        }
-
-        let color = '#';
-
-        for (i = 0; i < 3; i += 1) {
-            const value = (hash >> (i * 8)) & 0xff;
-            color += `00${value.toString(16)}`.slice(-2);
-        }
-
-        return color;
-    }
-
-    //Função para o avatar do cliente
-    function stringAvatar(name, size = 56) {
-        const nameParts = name.split(' ');
-
-        let initials = nameParts[0][0];
-        if (nameParts.length >= 2) {
-            initials += nameParts[1][0];
-        }
-
-        return {
-            sx: {
-                bgcolor: colors[name] || stringToColor(name),
-                width: size,
-                height: size,
-                color: '#fff',
-                fontSize: size / 2,
-            },
-            children: initials,
-        };
-    }
-
-    //Função para confirmar exclusão
-    const toggleConfirmacaoExclusao = (index) => {
-        setConfirmacaoExclusao((prev) => ({
-            ...prev,
-            [index]: !prev[index]
-        }));
-    };
-
-    //Função para cancelar exclusão
-    const cancelarExclusao = () => {
-        setConfirmacaoExclusao({});
-    };
 
     return (
         <div ref={listRef}>
@@ -233,7 +238,7 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
                     paginatedClientes.map((cliente, index) => {
                         const globalIndex = (currentPage - 1) * ITEMS_PER_PAGE + index;
                         return (
-                            <li key={index}>
+                            <li key={cliente.id}>
                                 <div>
                                     <div className='flex bg-gray-100 p-7 rounded-3xl gap-y-4 mt-5 shadow-md'>
                                         <div className='mr-3'>
@@ -251,7 +256,7 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
                                                 <Tooltip title="Editar">
                                                     <button
                                                         className="text-xl bg-slate-200 text-neutral-700 w-14 h-12 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:bg-[#3b82f6] hover:text-white"
-                                                        onClick={() => handleEdit(index)}
+                                                        onClick={() => handleEdit(cliente.id)}
                                                     >
                                                         {/* Editar */}
                                                         <MdModeEdit />
@@ -303,7 +308,7 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
                                             )}
                                         </div>
                                     </div>
-                                    {editIndex === globalIndex && (
+                                    {editId === cliente.id && (  // Verifica se o cliente sendo editado é o de ID correspondente
                                         <motion.div
                                             initial={{ opacity: 0, y: -20 }}
                                             animate={{ opacity: 1, y: 0 }}
@@ -328,13 +333,11 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
                                                         value={editTelefone && formatToPhone(editTelefone)}
                                                         placeholder='Digite o telefone'
                                                         onChange={handleEditTelefoneChange}
-                                                        onKeyDown={handleKeyDown}
                                                     />
                                                 </form>
                                                 <button
-                                                    className='text-lg bg-slate-200 w-44 mt-3 h-10 rounded-2xl flex justify-center items-center shadow-lg transition-all duration-300 hover:bg-slate-100'
                                                     onClick={handleSaveEdit}
-                                                >
+                                                    className='mt-4 bg-blue-600 text-white rounded-md px-4 py-2'>
                                                     Salvar
                                                 </button>
                                             </div>
