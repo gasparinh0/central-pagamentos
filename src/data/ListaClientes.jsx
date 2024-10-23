@@ -236,7 +236,6 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
             <ul>
                 {paginatedClientes.length > 0 ? (
                     paginatedClientes.map((cliente, index) => {
-                        const globalIndex = (currentPage - 1) * ITEMS_PER_PAGE + index;
                         return (
                             <li key={cliente.id}>
                                 <div>
@@ -285,7 +284,7 @@ const ListaClientes = ({ clientes, onDelete, onEdit }) => {
                                                         <div className='flex flex-row justify-center space-x-2'>
                                                             <button
                                                                 onClick={() => {
-                                                                    onDelete(globalIndex);
+                                                                    onDelete(cliente.id);
                                                                     notifySuccess("Cliente removido com sucesso", "", 3000)
                                                                     setConfirmacaoExclusao((prev) => ({
                                                                         ...prev,

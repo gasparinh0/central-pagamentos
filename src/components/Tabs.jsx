@@ -63,30 +63,30 @@ const Tabs = () => {
         localStorage.setItem('pedidos', JSON.stringify(pedidosAtualizados));
     };
 
-    //Handle para deletar cliente
-    const handleDeleteCliente = (index) => {
-        const novosClientes = clientes.filter((_, i) => i !== index);
+    // Handle para deletar cliente usando o ID
+    const handleDeleteCliente = (idCliente) => {
+        const novosClientes = clientes.filter(cliente => cliente.id !== idCliente);
         setClientes(novosClientes);
         localStorage.setItem('clientes', JSON.stringify(novosClientes));
     };
+
 
     //Handle para editar cliente
     const handleEditCliente = (idCliente, clienteAtualizado) => {
         const novosClientes = [...clientes];
         const index = novosClientes.findIndex(cliente => cliente.id === idCliente);
-    
+
         if (index !== -1) {
             // Preserva o ID do cliente existente
             novosClientes[index] = { ...clienteAtualizado, id: novosClientes[index].id };
-            
+
             localStorage.setItem('clientes', JSON.stringify(novosClientes));
             setClientes(novosClientes);
         } else {
             console.error('Cliente não encontrado para atualização');
         }
     };
-    
-    
+
     //Handle para deletar pedido
     const handleDeletePedido = (index) => {
         const novosPedidos = pedidos.filter((_, i) => i !== index);
@@ -158,7 +158,7 @@ const Tabs = () => {
                     <BasicModal open={modalPedidosOpen} handleClose={handleCloseModalPedidos} />
                 </div>
             </div>
-            <ToastContainer/>
+            <ToastContainer />
         </>
     );
 };
