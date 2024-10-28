@@ -26,10 +26,10 @@ import Tooltip from '@mui/material/Tooltip';
 const ITEMS_PER_PAGE = 12;
 
 const ResumoPedido = ({ pedidosProp }) => {
-    const [pedidos, setPedidos] = useState(pedidosProp || []);
+    const [pedidos, setPedidos] = useState([]);
+    const [paidOrders, setPaidOrders] = useState([]);
     const [modalPedidosOpen, setModalPedidosOpen] = useState(false);
     const [pedidoSelecionado, setPedidoSelecionado] = useState(null);
-    const [pedidoIndexSelecionado, setPedidoIndexSelecionado] = useState(null); // Novo estado para armazenar o índice do pedido selecionado
     const [searchTerm, setSearchTerm] = useState('');
     const [isAlphabetical, setIsAlphabetical] = useState(false);
     const [isMostRecent, setIsMostRecent] = useState(false);
@@ -40,25 +40,35 @@ const ResumoPedido = ({ pedidosProp }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const listRef = useRef(null);
 
-    // Atualizar a lista de pedidos
     useEffect(() => {
-        if (pedidosProp) {
-            setPedidos(pedidosProp);
+        // Carregar pedidos ativos
+        const savedPedidos = localStorage.getItem('pedidos');
+        if (savedPedidos) {
+            const pedidosAtivos = JSON.parse(savedPedidos);
+            setPedidos(pedidosAtivos);
+        }
+
+        // Carregar pedidos pagos
+        const savedPaidOrders = localStorage.getItem('paidOrders');
+        if (savedPaidOrders) {
+            setPaidOrders(JSON.parse(savedPaidOrders));
         } else {
-            const savedPedidos = localStorage.getItem('pedidos');
-            if (savedPedidos) {
-                setPedidos(JSON.parse(savedPedidos));
-            }
+            localStorage.setItem('paidOrders', JSON.stringify([]));
         }
     }, [pedidosProp]);
 
-    // Atualizar a lista de pedidos pagos
     useEffect(() => {
-        const savedPaidOrders = localStorage.getItem('paidOrders');
-        if (!savedPaidOrders) {
-            localStorage.setItem('paidOrders', JSON.stringify([]));
-        }
-    }, []);
+        // Carregar pedidos ativos e pedidos pagos ao montar o componente
+        const carregarPedidos = () => {
+            const savedPedidos = JSON.parse(localStorage.getItem('pedidos')) || [];
+            const savedPaidOrders = JSON.parse(localStorage.getItem('paidOrders')) || [];
+            setPedidos(savedPedidos);
+            setPaidOrders(savedPaidOrders);
+        };
+
+        carregarPedidos();
+    }, [pedidosProp]);
+
 
     // Abrir botão de filtros
     const handleClick = (event) => {
@@ -71,9 +81,8 @@ const ResumoPedido = ({ pedidosProp }) => {
     };
 
     // Abrir modal para visualização do pedido
-    const handleOpenModalPedidos = (pedido, index) => {
+    const handleOpenModalPedidos = (pedido) => {
         setPedidoSelecionado(pedido);
-        setPedidoIndexSelecionado(index); // Armazene o índice do pedido selecionado
         setModalPedidosOpen(true);
     };
 
@@ -81,35 +90,36 @@ const ResumoPedido = ({ pedidosProp }) => {
     const handleCloseModalPedidos = () => {
         setModalPedidosOpen(false);
         setPedidoSelecionado(null);
-        setPedidoIndexSelecionado(null); // Limpe o índice do pedido selecionado
     };
 
-    // Função para atualizar o pedido
+    // Função para atualizar um pedido ativo
     const atualizarPedido = (pedidoAtualizado) => {
-        const pedidosAtualizados = pedidos.map(p => p.nomeCliente === pedidoAtualizado.nomeCliente ? pedidoAtualizado : p);
+        const pedidosAtualizados = pedidos.map(p =>
+            p.id === pedidoAtualizado.id ? pedidoAtualizado : p
+        );
         setPedidos(pedidosAtualizados);
         localStorage.setItem('pedidos', JSON.stringify(pedidosAtualizados));
     };
 
-    // Função para calcular o índice global do pedido
-    const getGlobalIndex = (index) => {
-        return (currentPage - 1) * ITEMS_PER_PAGE + index;
+    const deletarPedido = (pedidoId) => {
+        const pedidoParaArquivar = pedidos.find(p => p.id === pedidoId);
+
+        if (pedidoParaArquivar) {
+            // Remover o pedido da lista de pedidos ativos
+            const pedidosAtualizados = pedidos.filter(p => p.id !== pedidoId);
+            setPedidos(pedidosAtualizados);
+            localStorage.setItem('pedidos', JSON.stringify(pedidosAtualizados));
+
+            // Adicionar o pedido pago à lista de pedidos arquivados
+            const updatedPaidOrders = [...paidOrders, { ...pedidoParaArquivar, pago: true }];
+            setPaidOrders(updatedPaidOrders);
+            localStorage.setItem('paidOrders', JSON.stringify(updatedPaidOrders));
+
+            // Notificação de sucesso
+            notifySuccess(`Pedido de ${pedidoParaArquivar.nomeCliente} arquivado com sucesso.`, "", 3000);
+        }
     };
 
-    // Função para deletar o pedido
-    const deletarPedido = (index) => {
-        const globalIndex = getGlobalIndex(index); // Calcule o índice global
-        const pedidosAtualizados = pedidos.filter((_, i) => i !== globalIndex);
-        const pedidoRemovido = pedidos[globalIndex];
-        setPedidos(pedidosAtualizados);
-        localStorage.setItem('pedidos', JSON.stringify(pedidosAtualizados));
-
-        const savedPaidOrders = JSON.parse(localStorage.getItem('paidOrders'));
-        savedPaidOrders.push(pedidoRemovido);
-        localStorage.setItem('paidOrders', JSON.stringify(savedPaidOrders));
-
-        notifySuccess("Pedido de " + pedidoRemovido.nomeCliente + " arquivado com sucesso", "", 3000)
-    };
 
     // Função de pesquisa
     const handleSearchChange = (e) => {
@@ -164,7 +174,11 @@ const ResumoPedido = ({ pedidosProp }) => {
     };
 
     // Função para os pedidos já pagos
-    const displayPedidos = isPaid ? JSON.parse(localStorage.getItem('paidOrders')) : filterAndSortPedidos();
+    // Atualize `displayPedidos` para evitar a exibição de duplicatas
+    const displayPedidos = isPaid
+    ? paidOrders
+    : filterAndSortPedidos().filter(p => !paidOrders.find(pago => pago.id === p.id));
+ 
 
     // Função para mudar de página
     const handlePageChange = (event, value) => {
@@ -295,7 +309,7 @@ const ResumoPedido = ({ pedidosProp }) => {
                     handleClose={handleCloseModalPedidos}
                     pedido={pedidoSelecionado}
                     atualizarPedido={atualizarPedido}
-                    deletarPedido={() => deletarPedido(pedidoIndexSelecionado)} // Utilize o índice do estado ao deletar
+                    deletarPedido={() => deletarPedido(pedidoSelecionado.id)} // Utilize o índice do estado ao deletar
                 />
             )}
         </div>

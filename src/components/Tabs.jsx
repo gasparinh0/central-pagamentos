@@ -87,9 +87,9 @@ const Tabs = () => {
         }
     };
 
-    //Handle para deletar pedido
-    const handleDeletePedido = (index) => {
-        const novosPedidos = pedidos.filter((_, i) => i !== index);
+    // Handle para deletar pedido usando o ID
+    const handleDeletePedido = (pedidoId) => {
+        const novosPedidos = pedidos.filter(pedido => pedido.id !== pedidoId);
         setPedidos(novosPedidos);
         localStorage.setItem('pedidos', JSON.stringify(novosPedidos));
     };

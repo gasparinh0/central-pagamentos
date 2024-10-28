@@ -146,34 +146,33 @@ const ModalCadastroPedido = ({ open, handleClose, onPedidoCadastrado }) => {
     //Handle para salvar o pedido
     const handleSave = async () => {
         setButtonHidden(true);
-
+    
         const pedido = {
+            id: Date.now(), // Gera um ID único com base no timestamp atual
             nomeCliente,
             dataPedido: formatarData(dataPedido),
             novaData: dataVencimento,
             produtos,
             total,
         };
-
+    
         const pedidosSalvos = JSON.parse(localStorage.getItem('pedidos')) || [];
         pedidosSalvos.push(pedido);
         localStorage.setItem('pedidos', JSON.stringify(pedidosSalvos));
         onPedidoCadastrado(pedido);
-
+    
         setNomeCliente('');
         setDataPedido('');
         setProdutos([{ nome: '', preco: '', quantidade: '' }]);
         setTotal(0);
-
-
-
-        notifySuccess("Pedido salvo com sucesso", "", 3000)
-
+    
+        notifySuccess("Pedido salvo com sucesso", "", 3000);
+    
         handleClose();
         handleReset();
         setButtonHidden(false);
-
     };
+    
 
     //Handle para prosseguir com o enter
     const handleKeyDown = (e) => {

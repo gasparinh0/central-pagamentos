@@ -224,7 +224,7 @@ const BasicModal = ({ open, handleClose, pedido, atualizarPedido, deletarPedido 
 
     // Handle para deletar o cliente
     const handleDeleteCliente = () => {
-        deletarPedido(pedido.nomeCliente);
+        deletarPedido(pedido.id);
         handleClose();
     };
 
